@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en" data-phase="morning" data-scheme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Vidura Life</title>
+    <meta name="description" content="A calm, time-aware wellness companion tuned to the light outside. Your details stay on this device." />
+    <meta name="theme-color" content="#FBF2DF" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="./icons/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Vidura" />
+    <!--phase-tokens-->
+    <script>
+      // Choose the sky before first paint (same phases as src/data/content.ts), honouring ?at=HH:MM.
+      (function () {
+        try {
+          /*__PHASE_BOOT__*/
+          var d = new Date();
+          var q = /[?&]at=(\d{1,2}):(\d{2})/.exec(location.search);
+          var m = q ? +q[1] * 60 + +q[2] : d.getHours() * 60 + d.getMinutes();
+          var hit = PHASES[PHASES.length - 1];
+          for (var i = 0; i < PHASES.length; i++) {
+            var p = PHASES[i];
+            if (p[1] < p[2] ? m >= p[1] && m < p[2] : m >= p[1] || m < p[2]) { hit = p; break; }
+          }
+          var el = document.documentElement;
+          el.setAttribute("data-phase", hit[0]);
+          el.setAttribute("data-scheme", hit[3]);
+          document.querySelector('meta[name="theme-color"]').setAttribute("content", BASES[hit[0]]);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Vidura Life needs JavaScript to run.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

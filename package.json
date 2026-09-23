@@ -1,0 +1,43 @@
+{
+  "name": "vidura-life",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Vidura Life — a calm, time-aware wellness companion. Local-first, no backend.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "qa": "node scripts/qa.mjs",
+    "contrast": "node scripts/check-contrast.mjs",
+    "extract": "node scripts/extract-artifact.mjs",
+    "images:prompts": "node scripts/generate-images.mjs --list",
+    "images:dry": "node scripts/generate-images.mjs --dry",
+    "images": "node scripts/generate-images.mjs",
+    "images:lqip": "node scripts/build-lqip.mjs",
+    "icons": "node scripts/make-icons.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "framer-motion": "^12.23.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "playwright-core": "^1.63.0",
+    "sharp": "^0.34.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "~5.9.2",
+    "vite": "^7.1.0"
+  }
+}

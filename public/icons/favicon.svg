@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFE7C8"/><stop offset=".55" stop-color="#F8C2D2"/><stop offset="1" stop-color="#CCD3F6"/>
+    </linearGradient>
+    <radialGradient id="orb" cx=".36" cy=".3" r=".75">
+      <stop offset="0" stop-color="#FFF8EE"/><stop offset=".22" stop-color="#FFD2A6"/>
+      <stop offset=".58" stop-color="#EE8C69"/><stop offset="1" stop-color="#8A386B"/>
+    </radialGradient>
+    <radialGradient id="glow" cx=".5" cy=".5" r=".5">
+      <stop offset=".55" stop-color="#FFB48E" stop-opacity=".55"/><stop offset="1" stop-color="#FFB48E" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="spec" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="100" height="100" rx="22" fill="url(#sky)"/>
+  <circle cx="50" cy="52" r="39.00" fill="url(#glow)"/>
+  <circle cx="50" cy="50" r="28.00" fill="url(#orb)"/>
+  <ellipse cx="41.50" cy="38.00" rx="10.00" ry="6.00" fill="url(#spec)" transform="rotate(-24 41.50 38.00)"/>
+</svg>
