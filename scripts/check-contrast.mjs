@@ -31,6 +31,18 @@ const ratio = (a, b) => {
   return (l1 + 0.05) / (l2 + 0.05);
 };
 
+// Extremes an illustration can put behind a panel.
+const ART = [
+  ["black", "#000000"],
+  ["white", "#FFFFFF"],
+  ["saffron", "#E8702A"],
+  ["teal", "#1F6F8B"],
+  ["navy", "#1E2A4A"],
+  ["yellow", "#F2C94C"],
+  ["rose", "#C8506A"],
+  ["plum", "#4A2340"],
+];
+
 let failures = 0;
 const rows = [];
 const check = (phase, label, fg, bg, min) => {
@@ -70,6 +82,12 @@ for (const [id, t] of Object.entries(THEMES)) {
   worst(id, "accent (UI) vs mesh", hex(t.accent), surfaces, 3);
   worst(id, "focus ring vs mesh", hex(t.focus), surfaces, 3);
   worst(id, "focus ring vs glass", hex(t.focus), glass, 3);
+
+  // Frosted text panels sit on illustrations: test against extreme art colours.
+  const panels = ART.map(([n, c]) => [`panel/${n}`, over(t.panel, hex(c))]);
+  worst(id, "ink on art panel", ink, panels, 4.5);
+  worst(id, "ink-soft on art panel", soft, panels, 4.5);
+  worst(id, "accent text on art panel", hex(t.accent), panels, 4.5);
 }
 
 // Text over photography: white text sits in the scrim zone (≥ 0.72 of #0A0814).

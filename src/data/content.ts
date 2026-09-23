@@ -149,23 +149,28 @@ export const APP = {
 export const MIN = (h: number, m = 0) => h * 60 + m;
 
 // ── Images ────────────────────────────────────────────────────────────────────
-/** Shared style block appended to every Nano Banana Pro prompt. */
+/**
+ * Shared style block appended to every Nano Banana Pro prompt: content-themed,
+ * modern minimalist flat art whose palette follows the time phase, so each image
+ * sits inside that phase's living-light background. Flat colour also keeps files small.
+ */
 export const STYLE_BLOCK =
-  "soft cinematic natural light, calm minimal composition, muted earthy palette with {phase} tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain";
+  "modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of {phase}, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame";
 
+/** Per-phase palettes, matched to the app's phase themes (src/lib/palette.ts). */
 export const PHASE_TONES: Record<PhaseId, string> = {
-  dawn: "dawn — soft peach and lilac",
-  morning: "morning — warm gold and cream",
-  midday: "midday — clear, bright daylight",
-  afternoon: "afternoon — clear sky blue and sage",
-  evening: "evening — amber and rose",
-  night: "night — indigo and deep teal",
+  dawn: "soft peach, blush pink, lilac, warm cream and a touch of deep plum",
+  morning: "saffron orange, warm gold, cream, soft teal and charcoal",
+  midday: "clear sky blue, sunny yellow, off-white, turquoise and deep navy",
+  afternoon: "sage green, pale aqua, warm sand, teal and charcoal",
+  evening: "amber, terracotta, dusty rose, deep plum and warm cream",
+  night: "indigo, deep teal, midnight navy, soft lavender and pale moonlight yellow",
 };
 
 const COMPOSITION: Record<ImageRatio, string> = {
-  "16:9": "Wide 16:9 frame with generous open space; subject off-centre.",
-  "1:1": "Square 1:1 frame, subject centred with breathing room, simple uncluttered background.",
-  "4:5": "Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it.",
+  "16:9": "Wide 16:9 frame; subject off-centre to the right with a calm, open left side.",
+  "1:1": "Square 1:1 frame; one clear subject centred with generous flat negative space.",
+  "4:5": "Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes.",
 };
 
 export function buildImagePrompt(slot: ImageSlot): string {

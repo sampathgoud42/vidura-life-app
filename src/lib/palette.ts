@@ -2,7 +2,7 @@
  * "Living Light" — one palette per time phase.
  *
  * Single source of truth for colour: the CSS tokens for every phase are
- * generated from THEMES (see `themeCss`, served as a virtual stylesheet by
+ * generated from THEMES (see `themeCss`, inlined into index.html by
  * vite.config.ts), and scripts/check-contrast.mjs verifies WCAG AA for each
  * phase from the same object.
  */
@@ -22,6 +22,8 @@ export interface PhaseTheme {
   inkSoft: string;
   glass: string;
   glassStrong: string;
+  /** Frosted text panel laid over illustrations (checked against worst-case art colours). */
+  panel: string;
   hairline: string;
   highlight: string;
   accent: string;
@@ -43,6 +45,7 @@ export const THEMES: Record<PhaseId, PhaseTheme> = {
     inkSoft: "#584860",
     glass: "rgba(255, 250, 248, 0.56)",
     glassStrong: "rgba(255, 249, 247, 0.9)",
+    panel: "rgba(255, 249, 247, 0.86)",
     hairline: "rgba(90, 55, 100, 0.16)",
     highlight: "rgba(255, 255, 255, 0.75)",
     accent: "#8E3A5E",
@@ -61,6 +64,7 @@ export const THEMES: Record<PhaseId, PhaseTheme> = {
     inkSoft: "#5A4829",
     glass: "rgba(255, 252, 244, 0.56)",
     glassStrong: "rgba(255, 251, 242, 0.9)",
+    panel: "rgba(255, 251, 242, 0.86)",
     hairline: "rgba(110, 80, 20, 0.16)",
     highlight: "rgba(255, 255, 255, 0.78)",
     accent: "#8A4A0C",
@@ -79,6 +83,7 @@ export const THEMES: Record<PhaseId, PhaseTheme> = {
     inkSoft: "#394F60",
     glass: "rgba(250, 253, 255, 0.58)",
     glassStrong: "rgba(248, 252, 255, 0.9)",
+    panel: "rgba(248, 252, 255, 0.86)",
     hairline: "rgba(20, 70, 110, 0.15)",
     highlight: "rgba(255, 255, 255, 0.8)",
     accent: "#1A5C8E",
@@ -97,6 +102,7 @@ export const THEMES: Record<PhaseId, PhaseTheme> = {
     inkSoft: "#3A5243",
     glass: "rgba(250, 255, 251, 0.56)",
     glassStrong: "rgba(247, 253, 249, 0.9)",
+    panel: "rgba(247, 253, 249, 0.86)",
     hairline: "rgba(30, 80, 50, 0.16)",
     highlight: "rgba(255, 255, 255, 0.78)",
     accent: "#27684A",
@@ -115,6 +121,7 @@ export const THEMES: Record<PhaseId, PhaseTheme> = {
     inkSoft: "#EAD3CE",
     glass: "rgba(38, 17, 38, 0.44)",
     glassStrong: "rgba(36, 17, 37, 0.9)",
+    panel: "rgba(36, 17, 37, 0.8)",
     hairline: "rgba(255, 220, 210, 0.16)",
     highlight: "rgba(255, 240, 235, 0.12)",
     accent: "#FFB48E",
@@ -133,6 +140,7 @@ export const THEMES: Record<PhaseId, PhaseTheme> = {
     inkSoft: "#BAC5EA",
     glass: "rgba(14, 20, 50, 0.46)",
     glassStrong: "rgba(12, 18, 46, 0.9)",
+    panel: "rgba(12, 18, 46, 0.8)",
     hairline: "rgba(190, 205, 255, 0.15)",
     highlight: "rgba(220, 230, 255, 0.1)",
     accent: "#9DB9FF",
@@ -143,12 +151,15 @@ export const THEMES: Record<PhaseId, PhaseTheme> = {
   },
 };
 
-/** CSS custom properties for every phase — served as `virtual:phase-tokens.css`. */
+/** CSS custom properties for every phase — inlined into index.html at build time. */
 export function themeCss(): string {
+  // Opaque twin of the panel colour, so an illustration can fade into it without a seam.
+  const solid = (rgba: string) => rgba.replace(/rgba\((\d+),\s*(\d+),\s*(\d+),[^)]*\)/, "rgb($1 $2 $3)");
   const block = (id: string, t: PhaseTheme) =>
     `[data-phase="${id}"]{color-scheme:${t.scheme};` +
     `--bg-base:${t.base};--ink:${t.ink};--ink-soft:${t.inkSoft};` +
-    `--glass:${t.glass};--glass-strong:${t.glassStrong};--hairline:${t.hairline};--highlight:${t.highlight};` +
+    `--glass:${t.glass};--glass-strong:${t.glassStrong};--panel:${t.panel};--panel-solid:${solid(t.panel)};` +
+    `--hairline:${t.hairline};--highlight:${t.highlight};` +
     `--accent:${t.accent};--on-accent:${t.onAccent};--accent-soft:${t.accentSoft};--focus:${t.focus};` +
     `--shadow-rgb:${t.shadow};` +
     t.blobs.map((c, i) => `--blob-${i + 1}:${c};`).join("") +

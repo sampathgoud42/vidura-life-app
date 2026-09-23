@@ -36,10 +36,16 @@ Try any time of day with `?at=HH:MM`, e.g. `http://localhost:5173/?at=19:15` (th
 2. `npm run images:dry` shows the cost estimate. 37 images at 2K is about **$5** (1K and 2K cost the same; 4K costs more).
 3. `npm run images` generates them. Existing files are skipped; use `--force` to redo them or `--only=night` to filter.
 
+Art direction: content-themed **modern minimalist flat illustration**. Bold geometric shapes, clean
+edges and flat colour, with each image's palette taken from its time phase (dawn peach/lilac →
+night indigo/teal), so it sits naturally inside the living-light background. Flat art is light:
+about 10–20 KB per image.
+
 Slots: category tiles **1:1** → `public/assets/focus/*.webp`, phase heroes **16:9** →
 `public/assets/{phase}/hero.webp`, phase × activity cards **4:5** → `public/assets/{phase}/{slug}.webp`.
 Until an image exists, its slot shows a phase-tinted gradient. When one exists, it's lazy-loaded
-over a blurred LQIP with a dark scrim, so text stays readable.
+over a blurred LQIP. Text over art sits on frosted, theme-coloured panels (contrast-checked
+against worst-case art colours) rather than dark scrims.
 
 ## Project map
 

@@ -3,7 +3,7 @@
 Generated from `src/data/content.ts` by `npm run images:prompts`. Every prompt is the scene
 description + a composition hint for its aspect ratio + the shared style block:
 
-> soft cinematic natural light, calm minimal composition, muted earthy palette with {phase} tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain
+> modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of {phase}, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame
 
 `{phase}` is filled with the slot's tone (e.g. *dawn — soft peach and lilac*). Files land in
 `public/assets/{phase|focus}/{slug}.webp` (+ `-sm.webp`), lazy-loaded with a blurred placeholder.
@@ -17,7 +17,7 @@ Total: **37 images** (≈ $4.96 at 2K).
 `assets/focus/cholesterol.webp` · 1:1 · tone: morning
 
 ```text
-A clay bowl of oats topped with walnuts, almonds and pomegranate seeds beside a small brass cup of green tea on a linen cloth. Square 1:1 frame, subject centred with breathing room, simple uncluttered background. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with morning — warm gold and cream tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A clay bowl of oats topped with walnuts, almonds and pomegranate seeds beside a small brass cup of green tea on a linen cloth. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Blood Sugar
@@ -25,7 +25,7 @@ A clay bowl of oats topped with walnuts, almonds and pomegranate seeds beside a 
 `assets/focus/sugar.webp` · 1:1 · tone: midday
 
 ```text
-Overhead view of a steel thali with jowar roti, dal, cucumber slices and leafy greens, a small bowl of fenugreek seeds and a cinnamon stick on a stone counter. Square 1:1 frame, subject centred with breathing room, simple uncluttered background. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with midday — clear, bright daylight tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+Overhead view of a steel thali with jowar roti, dal, cucumber slices and leafy greens, a small bowl of fenugreek seeds and a cinnamon stick on a stone counter. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of clear sky blue, sunny yellow, off-white, turquoise and deep navy, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Fertility
@@ -33,7 +33,7 @@ Overhead view of a steel thali with jowar roti, dal, cucumber slices and leafy g
 `assets/focus/fertility.webp` · 1:1 · tone: evening
 
 ```text
-A South Asian couple sitting close together on a quiet veranda sharing cups of tea, seen from behind, relaxed shoulders, potted plants and warm light. Square 1:1 frame, subject centred with breathing room, simple uncluttered background. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with evening — amber and rose tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian couple sitting close together on a quiet veranda sharing cups of tea, seen from behind, relaxed shoulders, potted plants and warm light. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of amber, terracotta, dusty rose, deep plum and warm cream, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Hormonal Balance
@@ -41,7 +41,7 @@ A South Asian couple sitting close together on a quiet veranda sharing cups of t
 `assets/focus/hormonal.webp` · 1:1 · tone: dawn
 
 ```text
-A South Asian woman in a gentle seated yoga stretch on a cotton mat beside an open window with sheer curtains, a brass bowl of jasmine flowers nearby. Square 1:1 frame, subject centred with breathing room, simple uncluttered background. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with dawn — soft peach and lilac tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian woman in a gentle seated yoga stretch on a cotton mat beside an open window with sheer curtains, a brass bowl of jasmine flowers nearby. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of soft peach, blush pink, lilac, warm cream and a touch of deep plum, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Gut Health
@@ -49,7 +49,7 @@ A South Asian woman in a gentle seated yoga stretch on a cotton mat beside an op
 `assets/focus/gut.webp` · 1:1 · tone: afternoon
 
 ```text
-Earthenware bowls of homemade curd and soft idli with a glass of spiced buttermilk and fresh curry leaves arranged on a banana leaf. Square 1:1 frame, subject centred with breathing room, simple uncluttered background. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with afternoon — clear sky blue and sage tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+Earthenware bowls of homemade curd and soft idli with a glass of spiced buttermilk and fresh curry leaves arranged on a banana leaf. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Inflammation
@@ -57,7 +57,7 @@ Earthenware bowls of homemade curd and soft idli with a glass of spiced buttermi
 `assets/focus/inflammation.webp` · 1:1 · tone: morning
 
 ```text
-Fresh turmeric root, ginger, whole black pepper and a cup of golden turmeric milk on a rustic wooden board. Square 1:1 frame, subject centred with breathing room, simple uncluttered background. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with morning — warm gold and cream tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+Fresh turmeric root, ginger, whole black pepper and a cup of golden turmeric milk on a rustic wooden board. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ## Phase heroes (16:9)
@@ -67,7 +67,7 @@ Fresh turmeric root, ginger, whole black pepper and a cup of golden turmeric mil
 `assets/dawn/hero.webp` · 16:9 · tone: dawn
 
 ```text
-A quiet South Asian rooftop terrace at first light, a potted tulsi plant, a folded cotton yoga mat and a steel tumbler of warm water on the parapet, distant low city silhouette under a peach and lilac sky. Wide 16:9 frame with generous open space; subject off-centre. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with dawn — soft peach and lilac tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A quiet South Asian rooftop terrace at first light, a potted tulsi plant, a folded cotton yoga mat and a steel tumbler of warm water on the parapet, distant low city silhouette under a peach and lilac sky. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of soft peach, blush pink, lilac, warm cream and a touch of deep plum, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Morning hero
@@ -75,7 +75,7 @@ A quiet South Asian rooftop terrace at first light, a potted tulsi plant, a fold
 `assets/morning/hero.webp` · 16:9 · tone: morning
 
 ```text
-A sunlit Indian home kitchen window, a steaming cup of chai, a bowl of poha with curry leaves and a string of marigolds, warm golden light pouring across a stone counter. Wide 16:9 frame with generous open space; subject off-centre. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with morning — warm gold and cream tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A sunlit Indian home kitchen window, a steaming cup of chai, a bowl of poha with curry leaves and a string of marigolds, warm golden light pouring across a stone counter. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Midday hero
@@ -83,7 +83,7 @@ A sunlit Indian home kitchen window, a steaming cup of chai, a bowl of poha with
 `assets/midday/hero.webp` · 16:9 · tone: midday
 
 ```text
-A shaded Indian courtyard under a neem tree, a simple home-cooked thali on a low wooden table, dappled bright daylight on terracotta floor tiles. Wide 16:9 frame with generous open space; subject off-centre. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with midday — clear, bright daylight tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A shaded Indian courtyard under a neem tree, a simple home-cooked thali on a low wooden table, dappled bright daylight on terracotta floor tiles. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of clear sky blue, sunny yellow, off-white, turquoise and deep navy, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Afternoon hero
@@ -91,7 +91,7 @@ A shaded Indian courtyard under a neem tree, a simple home-cooked thali on a low
 `assets/afternoon/hero.webp` · 16:9 · tone: afternoon
 
 ```text
-A calm tree-lined park path in an Indian city with an empty bench, a South Asian person walking far in the distance, clear sky and sage-green leaves. Wide 16:9 frame with generous open space; subject off-centre. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with afternoon — clear sky blue and sage tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A calm tree-lined park path in an Indian city with an empty bench, a South Asian person walking far in the distance, clear sky and sage-green leaves. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Evening hero
@@ -99,7 +99,7 @@ A calm tree-lined park path in an Indian city with an empty bench, a South Asian
 `assets/evening/hero.webp` · 16:9 · tone: evening
 
 ```text
-A balcony at sunset overlooking quiet rooftops, a brass diya glowing and a glass cup of herbal tea on the ledge, amber and rose sky fading to dusk. Wide 16:9 frame with generous open space; subject off-centre. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with evening — amber and rose tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A balcony at sunset overlooking quiet rooftops, a brass diya glowing and a glass cup of herbal tea on the ledge, amber and rose sky fading to dusk. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of amber, terracotta, dusty rose, deep plum and warm cream, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Night hero
@@ -107,7 +107,7 @@ A balcony at sunset overlooking quiet rooftops, a brass diya glowing and a glass
 `assets/night/hero.webp` · 16:9 · tone: night
 
 ```text
-A serene bedroom corner at night, a floor cushion, a steel cup of warm golden milk and a softly glowing lamp, indigo window with a few faint stars. Wide 16:9 frame with generous open space; subject off-centre. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with night — indigo and deep teal tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A serene bedroom corner at night, a floor cushion, a steel cup of warm golden milk and a softly glowing lamp, indigo window with a few faint stars. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of indigo, deep teal, midnight navy, soft lavender and pale moonlight yellow, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ## Phase × activity cards (4:5)
@@ -117,7 +117,7 @@ A serene bedroom corner at night, a floor cushion, a steel cup of warm golden mi
 `assets/dawn/warm-water.webp` · 4:5 · tone: dawn
 
 ```text
-A steel tumbler of warm water with a slice of lemon and a few soaked fenugreek seeds on a windowsill at first light, thin steam rising. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with dawn — soft peach and lilac tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A steel tumbler of warm water with a slice of lemon and a few soaked fenugreek seeds on a windowsill at first light, thin steam rising. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of soft peach, blush pink, lilac, warm cream and a touch of deep plum, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Dawn · Morning movement
@@ -125,7 +125,7 @@ A steel tumbler of warm water with a slice of lemon and a few soaked fenugreek s
 `assets/dawn/move.webp` · 4:5 · tone: dawn
 
 ```text
-A South Asian woman in comfortable cotton clothes walking briskly along a tree-lined path at dawn, light mist, peach sky behind the trees. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with dawn — soft peach and lilac tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian woman in comfortable cotton clothes walking briskly along a tree-lined path at dawn, light mist, peach sky behind the trees. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of soft peach, blush pink, lilac, warm cream and a touch of deep plum, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Dawn · Soaked almonds & walnuts
@@ -133,7 +133,7 @@ A South Asian woman in comfortable cotton clothes walking briskly along a tree-l
 `assets/dawn/soaked-nuts.webp` · 4:5 · tone: dawn
 
 ```text
-A small brass bowl of soaked almonds with skins slipping off, walnut halves and pumpkin seeds on a white cotton cloth, soft dawn window light. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with dawn — soft peach and lilac tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A small brass bowl of soaked almonds with skins slipping off, walnut halves and pumpkin seeds on a white cotton cloth, soft dawn window light. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of soft peach, blush pink, lilac, warm cream and a touch of deep plum, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Dawn · Sunrise breathing
@@ -141,7 +141,7 @@ A small brass bowl of soaked almonds with skins slipping off, walnut halves and 
 `assets/dawn/sunrise-breath.webp` · 4:5 · tone: dawn
 
 ```text
-A South Asian man sitting cross-legged on a rooftop at sunrise with eyes closed and relaxed posture, lilac and peach sky. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with dawn — soft peach and lilac tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian man sitting cross-legged on a rooftop at sunrise with eyes closed and relaxed posture, lilac and peach sky. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of soft peach, blush pink, lilac, warm cream and a touch of deep plum, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Morning · Twenty minutes of morning light
@@ -149,7 +149,7 @@ A South Asian man sitting cross-legged on a rooftop at sunrise with eyes closed 
 `assets/morning/light.webp` · 4:5 · tone: morning
 
 ```text
-A South Asian woman standing on a balcony holding a cup of tea, face turned towards warm morning sun, potted marigolds on the ledge. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with morning — warm gold and cream tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian woman standing on a balcony holding a cup of tea, face turned towards warm morning sun, potted marigolds on the ledge. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Morning · Breakfast
@@ -157,7 +157,7 @@ A South Asian woman standing on a balcony holding a cup of tea, face turned towa
 `assets/morning/breakfast.webp` · 4:5 · tone: morning
 
 ```text
-A home-cooked Indian breakfast of vegetable oats upma with a small bowl of curd on a brass plate, gentle steam, warm morning light on a wooden table. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with morning — warm gold and cream tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A home-cooked Indian breakfast of vegetable oats upma with a small bowl of curd on a brass plate, gentle steam, warm morning light on a wooden table. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Morning · Five rounds of Surya Namaskar
@@ -165,7 +165,7 @@ A home-cooked Indian breakfast of vegetable oats upma with a small bowl of curd 
 `assets/morning/surya.webp` · 4:5 · tone: morning
 
 ```text
-A South Asian man mid sun salutation on a cotton yoga mat on a sunlit terrace, arms raised, warm golden morning light. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with morning — warm gold and cream tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian man mid sun salutation on a cotton yoga mat on a sunlit terrace, arms raised, warm golden morning light. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Morning · Mid-morning bite
@@ -173,7 +173,7 @@ A South Asian man mid sun salutation on a cotton yoga mat on a sunlit terrace, a
 `assets/morning/mid-bite.webp` · 4:5 · tone: morning
 
 ```text
-A small ceramic plate of guava slices, fresh amla and a few walnuts on a wooden desk by a window, late-morning light. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with morning — warm gold and cream tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A small ceramic plate of guava slices, fresh amla and a few walnuts on a wooden desk by a window, late-morning light. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Midday · Lunch
@@ -181,7 +181,7 @@ A small ceramic plate of guava slices, fresh amla and a few walnuts on a wooden 
 `assets/midday/lunch.webp` · 4:5 · tone: midday
 
 ```text
-A balanced South Indian lunch on a banana leaf: brown rice, sambar, vegetable poriyal, cucumber raita and salad, bright clear daylight. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with midday — clear, bright daylight tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A balanced South Indian lunch on a banana leaf: brown rice, sambar, vegetable poriyal, cucumber raita and salad, bright clear daylight. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of clear sky blue, sunny yellow, off-white, turquoise and deep navy, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Midday · A bowl of homemade curd
@@ -189,7 +189,7 @@ A balanced South Indian lunch on a banana leaf: brown rice, sambar, vegetable po
 `assets/midday/curd.webp` · 4:5 · tone: midday
 
 ```text
-A clay bowl of thick homemade curd and a glass of spiced buttermilk with curry leaves and roasted cumin on a stone surface, bright midday light. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with midday — clear, bright daylight tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A clay bowl of thick homemade curd and a glass of spiced buttermilk with curry leaves and roasted cumin on a stone surface, bright midday light. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of clear sky blue, sunny yellow, off-white, turquoise and deep navy, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Midday · Ten-minute walk after lunch
@@ -197,7 +197,7 @@ A clay bowl of thick homemade curd and a glass of spiced buttermilk with curry l
 `assets/midday/walk.webp` · 4:5 · tone: midday
 
 ```text
-A South Asian office worker taking an easy walk through a sunny courtyard with neem trees after lunch, relaxed stride, clear sky. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with midday — clear, bright daylight tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian office worker taking an easy walk through a sunny courtyard with neem trees after lunch, relaxed stride, clear sky. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of clear sky blue, sunny yellow, off-white, turquoise and deep navy, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Midday · Two-minute desk reset
@@ -205,7 +205,7 @@ A South Asian office worker taking an easy walk through a sunny courtyard with n
 `assets/midday/reset.webp` · 4:5 · tone: midday
 
 ```text
-A South Asian woman stretching her arms overhead beside her desk near a bright window with green plants, calm expression, midday light. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with midday — clear, bright daylight tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian woman stretching her arms overhead beside her desk near a bright window with green plants, calm expression, midday light. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of clear sky blue, sunny yellow, off-white, turquoise and deep navy, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Afternoon · Protein snack
@@ -213,7 +213,7 @@ A South Asian woman stretching her arms overhead beside her desk near a bright w
 `assets/afternoon/snack.webp` · 4:5 · tone: afternoon
 
 ```text
-A small steel bowl of roasted chana and a glass of cumin water on a wooden table, soft afternoon light through leaves. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with afternoon — clear sky blue and sage tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A small steel bowl of roasted chana and a glass of cumin water on a wooden table, soft afternoon light through leaves. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Afternoon · Herbal tea pause
@@ -221,7 +221,7 @@ A small steel bowl of roasted chana and a glass of cumin water on a wooden table
 `assets/afternoon/tea.webp` · 4:5 · tone: afternoon
 
 ```text
-A glass cup of herbal tea with fresh tulsi leaves and a cinnamon stick on a wooden table, afternoon light through leaves, sage tones. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with afternoon — clear sky blue and sage tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A glass cup of herbal tea with fresh tulsi leaves and a cinnamon stick on a wooden table, afternoon light through leaves, sage tones. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Afternoon · Five-minute movement break
@@ -229,7 +229,7 @@ A glass cup of herbal tea with fresh tulsi leaves and a cinnamon stick on a wood
 `assets/afternoon/move.webp` · 4:5 · tone: afternoon
 
 ```text
-A South Asian man doing slow bodyweight squats in a bright living room with plants, relaxed focus, clear afternoon light. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with afternoon — clear sky blue and sage tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian man doing slow bodyweight squats in a bright living room with plants, relaxed focus, clear afternoon light. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Afternoon · Refill your water
@@ -237,7 +237,7 @@ A South Asian man doing slow bodyweight squats in a bright living room with plan
 `assets/afternoon/water.webp` · 4:5 · tone: afternoon
 
 ```text
-A copper water bottle and a clear glass of water on a sunlit desk beside a small potted plant, afternoon light, sage and sky tones. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with afternoon — clear sky blue and sage tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A copper water bottle and a clear glass of water on a sunlit desk beside a small potted plant, afternoon light, sage and sky tones. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Evening · Anulom Vilom, ten minutes
@@ -245,7 +245,7 @@ A copper water bottle and a clear glass of water on a sunlit desk beside a small
 `assets/evening/anulom.webp` · 4:5 · tone: evening
 
 ```text
-A South Asian woman practising alternate-nostril breathing, seated on a floor cushion at dusk beside a warm amber lamp, calm face. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with evening — amber and rose tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian woman practising alternate-nostril breathing, seated on a floor cushion at dusk beside a warm amber lamp, calm face. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of amber, terracotta, dusty rose, deep plum and warm cream, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Evening · Dinner by 7:30
@@ -253,7 +253,7 @@ A South Asian woman practising alternate-nostril breathing, seated on a floor cu
 `assets/evening/dinner.webp` · 4:5 · tone: evening
 
 ```text
-A light Indian dinner of moong dal khichdi, a bajra roti and a bowl of sabzi in steel bowls, warm amber evening light on a wooden table. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with evening — amber and rose tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A light Indian dinner of moong dal khichdi, a bajra roti and a bowl of sabzi in steel bowls, warm amber evening light on a wooden table. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of amber, terracotta, dusty rose, deep plum and warm cream, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Evening · Bhramari, the humming breath
@@ -261,7 +261,7 @@ A light Indian dinner of moong dal khichdi, a bajra roti and a bowl of sabzi in 
 `assets/evening/bhramari.webp` · 4:5 · tone: evening
 
 ```text
-A South Asian man seated with eyes closed, fingertips resting lightly over his ears, practising humming breath at dusk, rose and amber tones. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with evening — amber and rose tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian man seated with eyes closed, fingertips resting lightly over his ears, practising humming breath at dusk, rose and amber tones. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of amber, terracotta, dusty rose, deep plum and warm cream, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Evening · Easy stroll after dinner
@@ -269,7 +269,7 @@ A South Asian man seated with eyes closed, fingertips resting lightly over his e
 `assets/evening/stroll.webp` · 4:5 · tone: evening
 
 ```text
-An older South Asian couple taking an unhurried evening stroll down a quiet tree-lined lane at dusk, street lamps just glowing, amber sky. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with evening — amber and rose tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+An older South Asian couple taking an unhurried evening stroll down a quiet tree-lined lane at dusk, street lamps just glowing, amber sky. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of amber, terracotta, dusty rose, deep plum and warm cream, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Night · Warm golden milk
@@ -277,7 +277,7 @@ An older South Asian couple taking an unhurried evening stroll down a quiet tree
 `assets/night/golden-milk.webp` · 4:5 · tone: night
 
 ```text
-A steel cup of warm golden turmeric milk on a wooden bedside table next to a small glowing brass lamp, indigo window at night. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with night — indigo and deep teal tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A steel cup of warm golden turmeric milk on a wooden bedside table next to a small glowing brass lamp, indigo window at night. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of indigo, deep teal, midnight navy, soft lavender and pale moonlight yellow, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Night · Screens down, lights low
@@ -285,7 +285,7 @@ A steel cup of warm golden turmeric milk on a wooden bedside table next to a sma
 `assets/night/wind-down.webp` · 4:5 · tone: night
 
 ```text
-A calm bedroom at night, a phone lying face-down on a wooden shelf, a softly glowing lamp and an open journal with a pen, indigo tones. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with night — indigo and deep teal tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A calm bedroom at night, a phone lying face-down on a wooden shelf, a softly glowing lamp and an open journal with a pen, indigo tones. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of indigo, deep teal, midnight navy, soft lavender and pale moonlight yellow, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Night · Yoga nidra, 20 minutes
@@ -293,7 +293,7 @@ A calm bedroom at night, a phone lying face-down on a wooden shelf, a softly glo
 `assets/night/yoga-nidra.webp` · 4:5 · tone: night
 
 ```text
-A South Asian woman resting on her back on a yoga mat under a soft blanket, eyes closed, dim warm lamp at night, deep teal tones. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with night — indigo and deep teal tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A South Asian woman resting on her back on a yoga mat under a soft blanket, eyes closed, dim warm lamp at night, deep teal tones. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of indigo, deep teal, midnight navy, soft lavender and pale moonlight yellow, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Night · Triphala at bedtime
@@ -301,7 +301,7 @@ A South Asian woman resting on her back on a yoga mat under a soft blanket, eyes
 `assets/night/triphala.webp` · 4:5 · tone: night
 
 ```text
-A small brass bowl of triphala powder and a glass of warm water on a wooden tray lit by a single candle at night. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with night — indigo and deep teal tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A small brass bowl of triphala powder and a glass of warm water on a wooden tray lit by a single candle at night. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of indigo, deep teal, midnight navy, soft lavender and pale moonlight yellow, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Night · Lights out by 10:30
@@ -309,5 +309,5 @@ A small brass bowl of triphala powder and a glass of warm water on a wooden tray
 `assets/night/sleep.webp` · 4:5 · tone: night
 
 ```text
-A serene bedroom at night with rumpled linen bedding, moonlight through a window and a small jasmine sprig on the bedside, deep indigo. Vertical 4:5 frame; keep the lower third calm and uncluttered so text can sit over it. Style: soft cinematic natural light, calm minimal composition, muted earthy palette with night — indigo and deep teal tones, shallow depth of field, editorial wellness photography, South Asian subjects and settings where people appear, no text, no logos, 35mm film grain.
+A serene bedroom at night with rumpled linen bedding, moonlight through a window and a small jasmine sprig on the bedside, deep indigo. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of indigo, deep teal, midnight navy, soft lavender and pale moonlight yellow, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```

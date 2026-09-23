@@ -8,8 +8,9 @@
  *   node scripts/generate-images.mjs --list        # write docs/IMAGE_PROMPTS.md, no API calls
  *   node scripts/generate-images.mjs --dry         # show what would be generated + cost estimate
  *   node scripts/generate-images.mjs               # generate missing images
- *   node scripts/generate-images.mjs --only=night  # only paths containing "night"
+ *   node scripts/generate-images.mjs --only=night  # only paths containing "night" (comma-separate several)
  *   node scripts/generate-images.mjs --force       # regenerate even if the file exists
+ *   node scripts/generate-images.mjs --skip=a,b    # leave paths containing a or b alone
  *
  * Env (.env.local is loaded automatically):
  *   GEMINI_API_KEY      required for generation
@@ -30,6 +31,7 @@ const LIST = args.has("--list");
 const DRY = args.has("--dry");
 const FORCE = args.has("--force");
 const ONLY = flag("only");
+const SKIP = flag("skip");
 
 try {
   process.loadEnvFile(path.join(root, ".env.local"));
@@ -43,15 +45,20 @@ const SIZE = (process.env.IMAGE_SIZE || "2K").toUpperCase();
 const CONCURRENCY = Math.max(1, Number(process.env.CONCURRENCY || 2));
 const PRICE = SIZE === "4K" ? 0.24 : 0.134; // USD per output image (Gemini 3 Pro Image list price)
 
-/** Output sizes per ratio: [main width, main height]; a half-size "-sm" variant is written too. */
-const OUT = { "1:1": [1024, 1024], "4:5": [1080, 1350], "16:9": [1920, 1080] };
+/**
+ * Output sizes per ratio: [main width, main height]; a half-size "-sm" variant is
+ * written too. Flat illustrations stay crisp at these sizes and compress very well.
+ */
+const OUT = { "1:1": [720, 720], "4:5": [864, 1080], "16:9": [1440, 810] };
 
 // ── Collect every slot ──────────────────────────────────────────────────────
 const slots = [
   ...CATEGORIES.map((c) => ({ group: "Category tiles (1:1)", label: c.label, slot: c.image })),
   ...PHASES.map((p) => ({ group: "Phase heroes (16:9)", label: `${p.label} hero`, slot: p.hero })),
   ...ACTIVITIES.map((a) => ({ group: "Phase × activity cards (4:5)", label: `${PHASES.find((p) => p.id === a.phase).label} · ${a.title}`, slot: a.image })),
-].filter((s) => !ONLY || s.slot.src.includes(ONLY));
+]
+  .filter((s) => !ONLY || ONLY.split(",").some((part) => s.slot.src.includes(part.trim())))
+  .filter((s) => !SKIP || !SKIP.split(",").some((part) => s.slot.src.includes(part.trim())));
 
 const dest = (src) => path.join(root, "public", src);
 const exists = (src) => fs.existsSync(dest(src));
@@ -169,15 +176,21 @@ async function save(slot, buf) {
   const raw = path.join(root, "assets-src", slot.src.replace(/\.webp$/, ".png"));
   fs.mkdirSync(path.dirname(raw), { recursive: true });
   fs.writeFileSync(raw, buf);
+  await encode(slot, buf);
+}
+
+/** Flat art: a light median pass removes stray speckle before downscaling, then lean WebP. */
+async function encode(slot, buf) {
   const [w, h] = OUT[slot.ratio];
   const out = dest(slot.src);
   fs.mkdirSync(path.dirname(out), { recursive: true });
-  const base = sharp(buf).rotate();
-  await base.clone().resize(w, h, { fit: "cover", position: "attention" }).webp({ quality: 80, effort: 5 }).toFile(out);
+  const base = sharp(buf).rotate().median(3);
+  const webp = (q) => ({ quality: q, effort: 6, smartSubsample: true });
+  await base.clone().resize(w, h, { fit: "cover" }).webp(webp(76)).toFile(out);
   await base
     .clone()
-    .resize(Math.round(w / 2), Math.round(h / 2), { fit: "cover", position: "attention" })
-    .webp({ quality: 74, effort: 5 })
+    .resize(Math.round(w / 2), Math.round(h / 2), { fit: "cover" })
+    .webp(webp(72))
     .toFile(out.replace(/\.webp$/, "-sm.webp"));
 }
 
@@ -208,5 +221,5 @@ await Promise.all(
 
 console.log(`\n${done} generated, ${failed.length} failed.`);
 if (failed.length) fs.writeFileSync(path.join(root, "assets-src", "failed.json"), JSON.stringify(failed, null, 2));
-await import("./build-lqip.mjs");
+await import("./fix-borders.mjs"); // strips any stray white frame, then rebuilds the LQIPs
 process.exit(failed.length ? 1 : 0);

@@ -19,11 +19,12 @@
     "images:dry": "node scripts/generate-images.mjs --dry",
     "images": "node scripts/generate-images.mjs",
     "images:lqip": "node scripts/build-lqip.mjs",
+    "images:fix": "node scripts/fix-borders.mjs",
     "icons": "node scripts/make-icons.mjs"
   },
   "dependencies": {
-    "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
     "framer-motion": "^12.23.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

@@ -131,8 +131,8 @@ try {
     await wait(400);
     pass("Continuing with no focus shows a hint", (await page.locator("#focus-hint").innerText()).includes("at least one"));
 
-    await page.locator(".tile", { hasText: "Cholesterol" }).click();
-    await page.locator(".tile", { hasText: "Blood Sugar" }).click();
+    await page.locator(".tile", { hasText: "Cholesterol" }).click({ force: true });
+    await page.locator(".tile", { hasText: "Blood Sugar" }).click({ force: true });
     await wait(700);
     await shot(page, "A08-focus-selected");
     pass("Selected tiles are pressed", (await page.locator('.tile[aria-pressed="true"]').count()) === 2);
@@ -281,7 +281,7 @@ try {
     await wait(500);
     await page.keyboard.press("Enter");
     await wait(5200);
-    await page.locator(".tile", { hasText: "Gut Health" }).click();
+    await page.locator(".tile", { hasText: "Gut Health" }).click({ force: true });
     await page.getByRole("button", { name: "Continue" }).click();
     await wait(1000);
     await page.getByRole("button", { name: "Skip for now" }).click();

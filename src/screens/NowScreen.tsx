@@ -220,62 +220,63 @@ function NowCard({ item, onStart, onDone }: { item: Resolved; onStart: () => voi
       exit={reduced ? { opacity: 0 } : { opacity: 0, y: -12, scale: 0.98 }}
       transition={{ type: "spring", stiffness: 220, damping: 26 }}
     >
-      <SmartImage slot={item.activity.image} priority className="now-media" sizes="(min-width: 1024px) 44vw, 100vw">
-        <div className="now-overlay">
-          <span className="now-badge">
-            <span className="pulse-dot" aria-hidden="true" /> Now
+      <div className="now-art">
+        <SmartImage slot={item.activity.image} fill priority sizes="(min-width: 1024px) 44vw, 100vw" />
+        <span className="now-badge">
+          <span className="pulse-dot" aria-hidden="true" /> Now
+        </span>
+      </div>
+      <div className="now-body">
+        <p className="now-eyebrow">{item.eyebrow}</p>
+        <h2 id="now-title" className="display now-title">
+          {item.headline}
+        </h2>
+        <p className="now-detail">{item.detail}</p>
+        <div className="now-meta">
+          <span>
+            <Clock size={16} /> {item.minutes} min
           </span>
-          <p className="now-eyebrow">{item.eyebrow}</p>
-          <h2 id="now-title" className="display now-title">
-            {item.headline}
-          </h2>
-          <p className="now-detail">{item.detail}</p>
-          <div className="now-meta">
-            <span>
-              <Clock size={16} /> {item.minutes} min
+          {cats.map((c) => (
+            <span key={c.id} className="now-cat">
+              {c.emoji} {c.short}
             </span>
-            {cats.map((c) => (
-              <span key={c.id} className="now-cat">
-                {c.emoji} {c.short}
-              </span>
-            ))}
-          </div>
-          <div className="now-actions">
-            <MagneticButton variant="light" size="lg" onClick={onStart}>
-              <Play size={18} /> Start
-            </MagneticButton>
-            <MagneticButton
-              ref={doneRef}
-              variant="glassy"
-              size="lg"
-              onClick={() => {
-                const r = doneRef.current?.getBoundingClientRect();
-                onDone(item, r ? { x: r.left + r.width / 2, y: r.top } : undefined);
-              }}
-            >
-              <Check size={18} /> Done
-            </MagneticButton>
-          </div>
-        </div>
-      </SmartImage>
-      {(item.extra || item.focusNote || item.notes.length > 0) && (
-        <div className="now-notes">
-          {item.extra && <p className="now-extra">{item.extra}</p>}
-          {item.focusNote && (
-            <p className="focus-note">
-              <span className="focus-note-tag">
-                {catOf(item.focusNote.category).emoji} For your {catOf(item.focusNote.category).label} focus
-              </span>
-              {item.focusNote.text}
-            </p>
-          )}
-          {item.notes.map((n) => (
-            <p key={n} className="now-caution">
-              <Info size={14} /> {n}
-            </p>
           ))}
         </div>
-      )}
+        <div className="now-actions">
+          <MagneticButton variant="primary" size="lg" onClick={onStart}>
+            <Play size={18} /> Start
+          </MagneticButton>
+          <MagneticButton
+            ref={doneRef}
+            variant="soft"
+            size="lg"
+            onClick={() => {
+              const r = doneRef.current?.getBoundingClientRect();
+              onDone(item, r ? { x: r.left + r.width / 2, y: r.top } : undefined);
+            }}
+          >
+            <Check size={18} /> Done
+          </MagneticButton>
+        </div>
+        {(item.extra || item.focusNote || item.notes.length > 0) && (
+          <div className="now-notes">
+            {item.extra && <p className="now-extra">{item.extra}</p>}
+            {item.focusNote && (
+              <p className="focus-note">
+                <span className="focus-note-tag">
+                  {catOf(item.focusNote.category).emoji} For your {catOf(item.focusNote.category).label} focus
+                </span>
+                {item.focusNote.text}
+              </p>
+            )}
+            {item.notes.map((n) => (
+              <p key={n} className="now-caution">
+                <Info size={14} /> {n}
+              </p>
+            ))}
+          </div>
+        )}
+      </div>
     </motion.article>
   );
 }

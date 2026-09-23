@@ -1,17 +1,51 @@
 import { AnimatePresence, motion, useAnimationControls, useReducedMotion } from "framer-motion";
-import { useEffect, useState, type PointerEvent } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent, type RefObject } from "react";
 import { BreathingOrb } from "../components/BreathingOrb";
 import { MagneticButton } from "../components/Controls";
 import { ArrowRight } from "../components/Icons";
 import { SmartImage } from "../components/SmartImage";
 import { Display } from "../components/Typography";
-import { APP, CATEGORIES, type Category, type CategoryId } from "../data/content";
+import { CATEGORIES, type Category, type CategoryId } from "../data/content";
 import { haptics } from "../lib/device";
 import { useApp } from "../state/AppState";
 
-/** Bento order: the big tile goes to the artifact's headline goal. */
+/** Display order: the artifact's headline goals first. */
 const ORDER: CategoryId[] = ["cholesterol", "sugar", "gut", "inflammation", "hormonal", "fertility"];
-const AREAS = ["a", "b", "c", "d", "e", "f"];
+
+const rand = (a: number, b: number) => a + Math.random() * (b - a);
+
+/**
+ * Sizes the floating tiles so that every one of them fits between the header and
+ * the action bar: 3 × 2 on wide screens, 2 × 3 on phones.
+ */
+function useFitTiles(gridRef: RefObject<HTMLDivElement | null>, footRef: RefObject<HTMLElement | null>) {
+  const [fit, setFit] = useState({ tile: 0, cols: 2 });
+  useLayoutEffect(() => {
+    const measure = () => {
+      const grid = gridRef.current;
+      if (!grid) return;
+      const wide = window.innerWidth >= 768;
+      const cols = wide ? 3 : 2;
+      const rows = wide ? 2 : 3;
+      const gap = wide ? 28 : 14;
+      const top = grid.getBoundingClientRect().top + window.scrollY;
+      const below = (footRef.current?.offsetHeight ?? 64) + 20 + 44 + 18; // action bar + margin + page padding + safety
+      const byHeight = (window.innerHeight - top - below - 34 - (rows - 1) * gap) / rows; // 34 = field padding + float room
+      const byWidth = (grid.clientWidth - (cols - 1) * gap) / cols;
+      const tile = Math.floor(Math.max(128, Math.min(byWidth, byHeight, wide ? 300 : 230)));
+      setFit((f) => (f.tile === tile && f.cols === cols ? f : { tile, cols }));
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (gridRef.current) ro.observe(gridRef.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [gridRef, footRef]);
+  return fit;
+}
 
 export function FocusScreen({ onDone }: { onDone: () => void }) {
   const { profile, updateProfile } = useApp();
@@ -19,6 +53,15 @@ export function FocusScreen({ onDone }: { onDone: () => void }) {
   const [hint, setHint] = useState("");
   const shake = useAnimationControls();
   const reduced = useReducedMotion();
+  const gridRef = useRef<HTMLDivElement>(null);
+  const footRef = useRef<HTMLElement>(null);
+  const { tile, cols } = useFitTiles(gridRef, footRef);
+
+  // A loose, slightly different scatter every visit: tilt, drift, size and float timing.
+  const scatter = useMemo(
+    () => ORDER.map(() => ({ r: rand(-3.2, 3.2), dy: rand(-1, 1), s: rand(0.9, 1), dur: rand(6.5, 10), delay: -rand(0, 8) })),
+    [],
+  );
 
   const toggle = (id: CategoryId) => {
     haptics.select();
@@ -33,8 +76,7 @@ export function FocusScreen({ onDone }: { onDone: () => void }) {
       if (!reduced) shake.start({ x: [0, -8, 7, -5, 3, 0], transition: { duration: 0.4 } });
       return;
     }
-    const ordered = ORDER.filter((c) => selected.includes(c));
-    updateProfile({ categories: ordered });
+    updateProfile({ categories: ORDER.filter((c) => selected.includes(c)) });
     onDone();
   };
 
@@ -51,33 +93,49 @@ export function FocusScreen({ onDone }: { onDone: () => void }) {
         <p className="lede">Pick one or more. Every part of your day adapts to them.</p>
       </header>
 
-      <div className="bento" role="group" aria-label="Focus areas">
-        {ORDER.map((id, i) => (
-          <FocusTile
-            key={id}
-            cat={CATEGORIES.find((c) => c.id === id)!}
-            area={AREAS[i]}
-            index={i}
-            selected={selected.includes(id)}
-            onToggle={() => toggle(id)}
-          />
-        ))}
+      <div
+        ref={gridRef}
+        className="float-field"
+        style={{ "--tile": tile ? `${tile}px` : undefined, "--cols": cols } as CSSProperties}
+        role="group"
+        aria-label="Focus areas"
+      >
+        {ORDER.map((id, i) => {
+          const s = scatter[i];
+          return (
+            <div
+              key={id}
+              className="float-slot"
+              style={
+                {
+                  "--r": `${s.r.toFixed(2)}deg`,
+                  "--dy": `${(s.dy * (tile || 160) * 0.06).toFixed(1)}px`,
+                  "--s": s.s.toFixed(3),
+                  "--fd": `${s.dur.toFixed(1)}s`,
+                  "--fdl": `${s.delay.toFixed(1)}s`,
+                } as CSSProperties
+              }
+            >
+              <FocusTile cat={CATEGORIES.find((c) => c.id === id)!} index={i} selected={selected.includes(id)} onToggle={() => toggle(id)} />
+            </div>
+          );
+        })}
       </div>
 
-      <motion.footer className="focus-footer" animate={shake}>
+      <motion.footer ref={footRef} className="focus-footer" animate={shake}>
         <CounterPill count={selected.length} />
         <MagneticButton variant="primary" size="lg" onClick={next} aria-describedby="focus-hint">
           Continue <ArrowRight size={18} />
         </MagneticButton>
       </motion.footer>
       <p id="focus-hint" className="focus-hint" role="status" aria-live="polite">
-        {hint || APP.privacyNote}
+        {hint}
       </p>
     </main>
   );
 }
 
-function FocusTile({ cat, area, index, selected, onToggle }: { cat: Category; area: string; index: number; selected: boolean; onToggle: () => void }) {
+function FocusTile({ cat, index, selected, onToggle }: { cat: Category; index: number; selected: boolean; onToggle: () => void }) {
   const reduced = useReducedMotion();
   const [entered, setEntered] = useState(false);
   useEffect(() => {
@@ -96,16 +154,16 @@ function FocusTile({ cat, area, index, selected, onToggle }: { cat: Category; ar
     <motion.button
       type="button"
       className={`tile glow ${selected ? "tile-on" : ""}`}
-      style={{ gridArea: area }}
       aria-pressed={selected}
       onClick={onToggle}
       onPointerMove={glow}
-      initial={reduced ? { opacity: 0 } : { opacity: 0, y: 26, scale: 0.97 }}
-      animate={{ opacity: 1, y: selected && !reduced ? -5 : 0, scale: selected && !reduced ? 1.018 : 1 }}
-      whileTap={reduced ? undefined : { scale: 0.975 }}
+      initial={reduced ? { opacity: 0 } : { opacity: 0, y: 26, scale: 0.94 }}
+      animate={{ opacity: 1, y: selected && !reduced ? -6 : 0, scale: selected && !reduced ? 1.035 : 1 }}
+      whileHover={reduced ? undefined : { y: -4 }}
+      whileTap={reduced ? undefined : { scale: 0.97 }}
       transition={{ type: "spring", stiffness: 300, damping: 24, delay: entered ? 0 : 0.15 + index * 0.07 }}
     >
-      <SmartImage slot={cat.image} fill scrim="bottom" sizes="(min-width: 768px) 33vw, 50vw" />
+      <SmartImage slot={cat.image} fill sizes="(min-width: 768px) 300px, 45vw" />
       <span className="tile-emoji" aria-hidden="true">
         {cat.emoji}
       </span>

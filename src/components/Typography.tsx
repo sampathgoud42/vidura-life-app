@@ -67,7 +67,7 @@ interface DisplayProps {
   id?: string;
 }
 
-/** Display serif that settles in along Fraunces' weight / optical-size / softness axes. */
+/** Display heading (Plus Jakarta Sans, variable) that settles in along its weight axis. */
 export function Display({ as = "h1", className = "", children, delay = 0, id }: DisplayProps) {
   const reduced = useReducedMotion();
   const MotionTag = MOTION_TAGS[as];

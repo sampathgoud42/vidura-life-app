@@ -1,6 +1,6 @@
 import { useState, type CSSProperties, type ReactNode } from "react";
 import type { ImageSlot } from "../data/content";
-import { assetUrl, imageMeta, smallVariant } from "../lib/assets";
+import { imageMeta, smallVariant, versionedUrl } from "../lib/assets";
 import { THEMES } from "../lib/palette";
 
 interface Props {
@@ -32,15 +32,16 @@ function gradientFor(slot: ImageSlot): string {
 
 /**
  * Fixed-ratio image slot: phase-tinted gradient (or the generated blurred
- * LQIP) first, the real WebP fades in over it, and a scrim keeps text legible.
- * Slots whose image hasn't been generated yet simply keep the gradient.
+ * LQIP) first, then the flat illustration fades in over it. Text over art uses
+ * frosted theme panels (see .now-body / .tile-text); an optional scrim remains
+ * for the dimmed guided-mode backdrop. Slots without an image keep the gradient.
  */
 export function SmartImage({
   slot,
   className = "",
   priority = false,
   sizes = "(min-width: 1024px) 40vw, 100vw",
-  scrim = "bottom",
+  scrim = "none",
   fill = false,
   decorative = true,
   style,
@@ -64,8 +65,8 @@ export function SmartImage({
       />
       {showImg && (
         <img
-          src={assetUrl(slot.src)}
-          srcSet={meta.sm ? `${assetUrl(smallVariant(slot.src))} ${Math.round(meta.w / 2)}w, ${assetUrl(slot.src)} ${meta.w}w` : undefined}
+          src={versionedUrl(slot.src, meta)}
+          srcSet={meta.sm ? `${versionedUrl(smallVariant(slot.src), meta)} ${Math.round(meta.w / 2)}w, ${versionedUrl(slot.src, meta)} ${meta.w}w` : undefined}
           sizes={meta.sm ? sizes : undefined}
           width={meta.w}
           height={meta.h}

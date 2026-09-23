@@ -37,7 +37,7 @@ export function InsightsScreen() {
       </header>
 
       <GlassCard className="insight-hero">
-        <SmartImage slot={phase.hero} fill scrim="full" className="insight-hero-bg" />
+        <SmartImage slot={phase.hero} fill className="insight-hero-bg" sizes="(min-width: 1024px) 60vw, 100vw" />
         <div className="insight-hero-inner">
           <StreakRing days={days} streak={streak} size={176} stroke={12} showDays className="streak-ring-lg" />
           <div className="insight-hero-copy">

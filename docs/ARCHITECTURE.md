@@ -33,16 +33,16 @@ main.tsx
                ├─ Onboarding
                │  ├─ NameStep        TypeIn question · borderless input · InputLine · MagneticButton
                │  ├─ EmailStep       name morphs up (layoutId "name-text") · spring rise · live validation
-               │  └─ WelcomeReveal   orb bloom + radial particles · Display serif · random message · 3 s hold
+               │  └─ WelcomeReveal   orb bloom + radial particles · Display heading · random message · 3 s hold
                ├─ WelcomeReveal (returning)   "Welcome back, {name}"
-               ├─ FocusScreen        bento grid of FocusTile (SmartImage 1:1) · CounterPill
+               ├─ FocusScreen        floating, loosely scattered FocusTiles sized to fit the viewport · CounterPill
                ├─ KitchenScreen      PrefsFields (ChoiceGroup ×4) · live "today's plate" preview
                └─ MainShell
                   ├─ topbar          BreathingOrb · StreakRing (7-day) · Settings button
                   ├─ tab-view        (View Transitions on tab change)
                   │  ├─ NowScreen
-                  │  │  ├─ greeting        Display (Fraunces axes) · Intl date/time/zone · aria-live
-                  │  │  ├─ NowCard         SmartImage 4:5 + scrim · Start · Done → LightBurst + log
+                  │  │  ├─ greeting        Display (Plus Jakarta Sans, weight-axis entrance) · Intl date/time/zone · aria-live
+                  │  │  ├─ NowCard         flat illustration fading into a frosted body · Start · Done → LightBurst + log
                   │  │  ├─ "Also good right now"   swap into the Now card
                   │  │  ├─ Up next today   horizontal timeline (next 5 phases, scroll-snap)
                   │  │  └─ Your day        DayDial (24 h scrub → sky follows) · Today's plate
@@ -110,7 +110,15 @@ non-vegetarians). `upNext` scores each upcoming phase at a representative anchor
   boundaries, so the sky moves continuously under your finger). The orb subscribes to the same live palette.
 - Theme tokens (ink, glass, accent) glide with a temporary `html.phase-shift` transition class.
 - `scripts/check-contrast.mjs` verifies WCAG AA for every phase: text on the brightest
-  blob, glass over every blob, accent and focus rings. All 61 checks pass.
+  blob, glass over every blob, accent and focus rings, plus text on the frosted art panels
+  over extreme illustration colours (black, white, saturated saffron/teal/navy/yellow/rose/plum).
+
+### Illustrations
+
+Content-themed flat vector art from Nano Banana Pro (style block in `content.ts`). Each image's
+palette comes from its phase, and a median pass plus lean WebP keeps images around 10–20 KB. Text never sits
+directly on art: tiles use a frosted fade in `--panel`, the Now card's art melts into a frosted
+body, timeline times sit in frosted pills, and the Insights hero frames a frosted panel.
 
 ### Motion & interaction
 

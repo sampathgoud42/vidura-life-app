@@ -1,11 +1,11 @@
 @import "tailwindcss";
-@import "@fontsource-variable/fraunces/full.css";
+@import "@fontsource-variable/plus-jakarta-sans/wght.css";
 @import "@fontsource-variable/inter/opsz.css";
 
 /* Phase tokens (--ink, --glass, --accent …) are generated from src/lib/palette.ts and
    inlined into index.html by vite.config.ts. Tailwind reads them through @theme. */
 @theme inline {
-  --font-display: "Fraunces Variable", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-display: "Plus Jakarta Sans Variable", "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
@@ -31,7 +31,6 @@
   --text-title: clamp(1.8rem, 1.4rem + 1.9vw, 2.9rem);
   --text-card: clamp(1.7rem, 1.3rem + 1.7vw, 2.5rem);
   --text-body: clamp(0.975rem, 0.94rem + 0.18vw, 1.05rem);
-  --img-ink: #ffffff;
   --scrim-rgb: 10 8 20;
 }
 
@@ -336,26 +335,33 @@ html.phase-shift *::after {
 }
 
 /* ── Type ─────────────────────────────────────────────────────────────────── */
+/* Display: Plus Jakarta Sans (variable 200–800). Headings settle in along the weight axis. */
 .display {
   font-family: var(--font-display);
-  font-weight: 440;
-  font-variation-settings: "SOFT" 50, "WONK" 0;
-  letter-spacing: -0.022em;
-  line-height: 1.06;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
   text-wrap: balance;
 }
 .display-in {
-  animation: display-axes 1.8s var(--ease-calm) both;
+  animation: display-weight 1.6s var(--ease-calm) both;
 }
-@keyframes display-axes {
+@keyframes display-weight {
   from {
-    font-variation-settings: "opsz" 144, "wght" 180, "SOFT" 100, "WONK" 1;
-    letter-spacing: 0.01em;
+    font-weight: 250;
+    letter-spacing: 0.005em;
   }
   to {
-    font-variation-settings: "opsz" 96, "wght" 440, "SOFT" 50, "WONK" 0;
-    letter-spacing: -0.022em;
+    font-weight: 650;
+    letter-spacing: -0.035em;
   }
+}
+/* The name reads as a lighter, airy counterpoint to the greeting. */
+.greeting-name,
+.welcome-name,
+.onb-hi-name {
+  font-weight: 350;
+  letter-spacing: -0.03em;
 }
 .t-title {
   font-size: var(--text-title);
@@ -807,7 +813,8 @@ html.phase-shift *::after {
   color: var(--ink);
   font-family: var(--font-display);
   font-size: clamp(1.6rem, 1.3rem + 1.5vw, 2.2rem);
-  font-variation-settings: "SOFT" 60;
+  font-weight: 560;
+  letter-spacing: -0.02em;
   text-align: left;
   caret-color: var(--accent);
 }
@@ -922,10 +929,6 @@ html.phase-shift *::after {
   margin: 0;
   font-size: var(--text-hero);
 }
-.welcome-name {
-  font-style: italic;
-  font-variation-settings: "SOFT" 100, "WONK" 1;
-}
 .welcome-message {
   display: grid;
   gap: 0.35rem;
@@ -960,35 +963,62 @@ html.phase-shift *::after {
   border-radius: 999px;
 }
 
-/* ── Focus (bento) ────────────────────────────────────────────────────────── */
-.bento {
+/* ── Focus: floating tiles ────────────────────────────────────────────────── */
+/* Equal-ish tiles sized in JS to fit the viewport; each slot gets its own random tilt,
+   size and drift, and floats gently (individual transform properties, so Framer's
+   transforms on the tile itself never collide with the float). */
+.float-field {
+  --tile: 44vw;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-areas:
-    "a a"
-    "b c"
-    "d e"
-    "f f";
-  gap: 10px;
+  grid-template-columns: repeat(var(--cols, 2), var(--tile));
+  justify-content: center;
+  gap: 14px;
+  padding: 12px 0 18px;
+}
+.float-slot {
+  width: var(--tile);
+  aspect-ratio: 1;
+  rotate: var(--r, 0deg);
+  scale: var(--s, 1);
+  translate: 0 var(--dy, 0px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .float-slot {
+    animation: tile-float var(--fd, 8s) ease-in-out var(--fdl, 0s) infinite;
+  }
+}
+@keyframes tile-float {
+  0%,
+  100% {
+    translate: 0 var(--dy, 0px);
+  }
+  50% {
+    translate: 0 calc(var(--dy, 0px) - 9px);
+  }
 }
 .tile {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  aspect-ratio: 1;
+  container-type: inline-size;
+  width: 100%;
+  height: 100%;
   border-radius: 26px;
   border: 1px solid var(--hairline);
   padding: 0;
   text-align: left;
-  color: var(--img-ink);
-  box-shadow: 0 18px 40px -26px rgb(var(--shadow-rgb) / 0.5);
+  color: var(--ink);
+  box-shadow: 0 22px 44px -26px rgb(var(--shadow-rgb) / 0.55);
   transition: box-shadow 0.35s var(--ease-calm), border-color 0.35s;
 }
-.tile:nth-child(1) {
-  aspect-ratio: 16 / 10;
+.tile .smart-img img {
+  object-position: 50% 32%;
 }
-.tile:nth-child(6) {
-  aspect-ratio: 2 / 1;
+/* Small tiles keep just the label; the blurb appears when there's room. */
+@container (max-width: 199px) {
+  .tile-blurb {
+    display: none;
+  }
 }
 .tile-on {
   border-color: color-mix(in oklab, var(--accent) 70%, white 30%);
@@ -1008,11 +1038,12 @@ html.phase-shift *::after {
   height: 38px;
   border-radius: 50%;
   font-size: 1.15rem;
-  background: rgb(255 255 255 / 0.18);
-  border: 1px solid rgb(255 255 255 / 0.28);
+  background: var(--panel);
+  border: 1px solid var(--hairline);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
+/* Caption rises out of the art on a soft frosted fade in the phase's own colour. */
 .tile-text {
   position: absolute;
   left: 0;
@@ -1021,19 +1052,21 @@ html.phase-shift *::after {
   z-index: 2;
   display: grid;
   gap: 0.15rem;
-  padding: 0.9rem;
+  padding: 1.5rem 0.9rem 0.85rem;
+  background: linear-gradient(to top, var(--panel) 0%, var(--panel) 68%, transparent 100%);
 }
 .tile-label {
   font-family: var(--font-display);
-  font-size: clamp(1.1rem, 1rem + 0.6vw, 1.45rem);
-  font-weight: 500;
+  font-size: clamp(1.05rem, 0.98rem + 0.5vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
   line-height: 1.1;
-  text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
+  color: var(--ink);
 }
 .tile-blurb {
   font-size: 0.8rem;
   line-height: 1.35;
-  opacity: 0.92;
+  color: var(--ink-soft);
 }
 .tile-check {
   position: absolute;
@@ -1045,7 +1078,8 @@ html.phase-shift *::after {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1.5px solid rgb(255 255 255 / 0.7);
+  border: 1.5px solid var(--hairline);
+  background: var(--panel);
   color: var(--on-accent);
   transition: background-color 0.25s, border-color 0.25s;
 }
@@ -1087,6 +1121,9 @@ html.phase-shift *::after {
   font-size: 0.85rem;
   color: var(--ink-soft);
   text-align: center;
+}
+.focus-hint:empty {
+  margin: 0;
 }
 .counter-pill {
   display: inline-flex;
@@ -1169,10 +1206,6 @@ html.phase-shift *::after {
   margin: 0;
   font-size: var(--text-hero);
   line-height: 1.02;
-}
-.greeting-name {
-  font-style: italic;
-  font-variation-settings: "SOFT" 100, "WONK" 1;
 }
 .greeting-sub {
   margin: 0.55rem 0 0;
@@ -1349,59 +1382,77 @@ html.phase-shift *::after {
   align-content: start;
   min-width: 0;
 }
+/* Now card: the illustration on top melts into a frosted body in the phase's colour. */
 .now-card {
   border-radius: 30px;
   overflow: hidden;
+  background: var(--panel-solid);
 }
-.now-media {
-  max-height: min(84vh, 760px);
-  width: 100%;
+/* 6:5 on phones keeps Start/Done above the fold; the art's subject lives in its upper part. */
+.now-art {
+  position: relative;
+  aspect-ratio: 6 / 5;
+  overflow: hidden;
 }
-.now-overlay {
+.now-art .smart-img img {
+  object-position: 50% 22%;
+}
+.now-art::after {
+  content: "";
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 2;
-  display: grid;
-  gap: 0.55rem;
-  padding: 1.25rem 1.2rem 1.25rem;
-  color: var(--img-ink);
-  text-shadow: 0 1px 14px rgb(0 0 0 / 0.35);
+  height: 34%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--panel-solid) 0%, var(--panel-solid) 18%, transparent);
 }
 .now-badge {
-  justify-self: start;
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
   padding: 0.3rem 0.75rem;
   border-radius: 999px;
-  background: rgb(var(--scrim-rgb) / 0.5);
-  border: 1px solid rgb(255 255 255 / 0.22);
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  text-shadow: none;
+}
+.now-body {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 0.55rem;
+  margin-top: -1.4rem;
+  padding: 0 1.2rem 1.25rem;
 }
 .now-eyebrow {
-  margin: 0.2rem 0 0;
-  font-size: 0.86rem;
-  font-weight: 600;
-  opacity: 0.95;
+  margin: 0;
+  font-size: 0.84rem;
+  font-weight: 650;
+  color: var(--accent);
 }
 .now-title {
   margin: 0;
   font-size: var(--text-card);
-  color: inherit;
+  color: var(--ink);
 }
 .now-detail {
   margin: 0;
   font-size: 0.95rem;
   line-height: 1.45;
   max-width: 34rem;
+  color: var(--ink-soft);
 }
 .now-meta {
   display: flex;
@@ -1410,6 +1461,7 @@ html.phase-shift *::after {
   align-items: center;
   font-size: 0.85rem;
   font-weight: 600;
+  color: var(--ink-soft);
 }
 .now-meta > span {
   display: inline-flex;
@@ -1419,13 +1471,14 @@ html.phase-shift *::after {
 .now-cat {
   padding: 0.15rem 0.6rem;
   border-radius: 999px;
-  background: rgb(255 255 255 / 0.14);
-  border: 1px solid rgb(255 255 255 / 0.24);
+  background: var(--accent-soft);
+  border: 1px solid var(--hairline);
+  color: var(--ink);
 }
 .now-actions {
   display: flex;
   gap: 0.6rem;
-  margin-top: 0.6rem;
+  margin-top: 0.5rem;
 }
 .now-actions .btn {
   flex: 1;
@@ -1433,7 +1486,9 @@ html.phase-shift *::after {
 .now-notes {
   display: grid;
   gap: 0.7rem;
-  padding: 1.1rem 1.2rem 1.25rem;
+  margin-top: 0.6rem;
+  padding-top: 0.95rem;
+  border-top: 1px solid var(--hairline);
   font-size: 0.92rem;
 }
 .now-notes p {
@@ -1550,14 +1605,23 @@ html.phase-shift *::after {
 .timeline-media {
   aspect-ratio: 4 / 3 !important;
 }
+.timeline-media img {
+  object-position: 50% 30%;
+}
 .timeline-when {
   position: absolute;
-  left: 0.75rem;
-  bottom: 0.65rem;
+  left: 0.6rem;
+  bottom: 0.6rem;
   z-index: 2;
-  font-size: 0.8rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  font-size: 0.76rem;
   font-weight: 650;
-  color: var(--img-ink);
+  color: var(--ink);
 }
 .timeline-body {
   padding: 0.75rem 0.9rem 0.9rem;
@@ -1678,7 +1742,9 @@ html.phase-shift *::after {
   pointer-events: none;
 }
 .dial-time {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
+  font-weight: 650;
+  letter-spacing: -0.03em;
   font-size: clamp(1.6rem, 1.4rem + 1vw, 2.1rem);
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -1832,7 +1898,9 @@ html.phase-shift *::after {
   gap: 0.3rem;
 }
 .guided-time {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.03em;
   font-size: clamp(2.4rem, 2rem + 2vw, 3.4rem);
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -1988,13 +2056,18 @@ html.phase-shift *::after {
 }
 
 /* ── Insights ─────────────────────────────────────────────────────────────── */
+/* The phase's hero illustration frames a frosted panel holding your streak. */
 .insight-hero {
   border-radius: 30px;
   overflow: hidden;
-  color: #fff;
+  color: var(--ink);
+  padding: min(30vw, 150px) 0.7rem 0.7rem;
 }
 .insight-hero-bg {
   z-index: 0;
+}
+.insight-hero-bg img {
+  object-position: 60% 40%;
 }
 .insight-hero-inner {
   position: relative;
@@ -2003,7 +2076,13 @@ html.phase-shift *::after {
   align-items: center;
   gap: 1.25rem;
   flex-wrap: wrap;
-  padding: 1.4rem 1.2rem;
+  padding: 1.2rem 1.1rem;
+  border-radius: 24px;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  box-shadow: inset 0 1px 0 var(--highlight);
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
 }
 .insight-hero-copy {
   display: grid;
@@ -2018,26 +2097,14 @@ html.phase-shift *::after {
 }
 .insight-big span {
   font-size: 0.45em;
-  font-style: italic;
+  font-weight: 400;
 }
 .insight-hero-sub {
   font-size: 1rem;
 }
 .insight-hero-week {
   font-size: 0.85rem;
-  color: rgb(255 255 255 / 0.85);
-}
-.insight-hero .ring-track {
-  stroke: rgb(255 255 255 / 0.22);
-}
-.insight-hero .ring-lit {
-  stroke: #fff;
-}
-.insight-hero .ring-day {
-  fill: rgb(255 255 255 / 0.85);
-}
-.insight-hero .streak-ring-center {
-  color: #fff;
+  color: var(--ink-soft);
 }
 .insight-grid {
   display: grid;
@@ -2079,7 +2146,8 @@ html.phase-shift *::after {
   font-size: 1.05rem;
 }
 .radial-stat-value {
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
+  font-weight: 700;
   font-size: 1.35rem;
   font-variant-numeric: tabular-nums;
 }
@@ -2157,7 +2225,9 @@ html.phase-shift *::after {
 }
 .streak-ring-center {
   position: relative;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
@@ -2271,22 +2341,22 @@ html.phase-shift *::after {
   }
 }
 @media (min-width: 768px) {
-  .bento {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    grid-template-areas:
-      "a a b"
-      "a a c"
-      "d e f";
-    gap: 14px;
+  .float-field {
+    gap: 28px;
+    padding-block: 16px 22px;
   }
-  .tile:nth-child(n) {
-    aspect-ratio: 1;
+  .focus .screen-head {
+    text-align: center;
   }
-  .tile:nth-child(1) {
-    aspect-ratio: auto;
+  .focus .head-row {
+    justify-content: center;
+  }
+  .focus .lede {
+    margin-inline: auto;
   }
   .focus-footer {
-    justify-content: flex-end;
+    max-width: 560px;
+    margin-inline: auto;
   }
 }
 @media (min-width: 1024px) {
@@ -2323,8 +2393,8 @@ html.phase-shift *::after {
     position: sticky;
     top: 92px;
   }
-  .now-media {
-    max-height: max(360px, min(640px, calc(100dvh - 300px)));
+  .now-art {
+    aspect-ratio: 4 / 3;
   }
   .timeline {
     margin-inline: 0;
