@@ -3,7 +3,8 @@
  *
  * Score = daily foundation (+2) + matching focus categories (+3 each, max 2)
  *       + time-window fit (+6 inside, up to +3 just before, −1.5 once passed)
- *       + meal-time boost (+2.5 inside a meal window) − 100 if done today.
+ *       + meal-time boost (+2.5 inside a meal window) − 100 if done today
+ *       + 8 for an activity added to today by a balance suggestion.
  * A tiny per-day jitter breaks ties, so equal options rotate across the week.
  */
 import {
@@ -18,10 +19,11 @@ import {
   type CategoryId,
   type DayPlan,
   type Meal,
+  type MealSlot,
   type Phase,
   type PhaseId,
 } from "../data/content";
-import type { Prefs } from "./storage";
+import type { DayExtra, Prefs } from "./storage";
 import { DAY_MINUTES, phaseAt, phaseById, phaseLocalMinutes, phasesAfter, weekdayIndex } from "./time";
 
 export interface PlanContext {
@@ -32,6 +34,10 @@ export interface PlanContext {
   /** Local minutes after midnight being looked at (now, or the dial preview). */
   minutes: number;
   doneToday: ReadonlySet<string>;
+  /** Today's swapped meals, additions and lighter portions (today only). */
+  swaps?: Partial<Record<MealSlot, Meal>>;
+  extras?: readonly DayExtra[];
+  lighter?: Partial<Record<MealSlot, string>>;
 }
 
 export interface Resolved {
@@ -48,6 +54,10 @@ export interface Resolved {
   notes: string[];
   matched: CategoryId[];
   done: boolean;
+  /** Meals: approximate protein, including anything added to this slot today. */
+  protein?: number;
+  slot?: MealSlot;
+  swapped?: boolean;
 }
 
 /** One representative moment per phase, used for timeline headlines. */
@@ -70,6 +80,12 @@ export function dayPlan(prefs: Prefs, weekday: number): DayPlan {
     if (weekday % 2 === 1) out.lunch = AIR_FRY_LUNCHES[weekday];
   }
   return out;
+}
+
+/** Today's plate: the plan with any swaps applied. */
+export function todayPlan(prefs: Prefs, weekday: number, swaps?: Partial<Record<MealSlot, Meal>>): DayPlan {
+  const plan = dayPlan(prefs, weekday);
+  return swaps ? { ...plan, ...swaps } : plan;
 }
 
 export function eligible(a: Activity, prefs: Prefs): boolean {
@@ -95,6 +111,7 @@ function score(a: Activity, ctx: PlanContext, phase: Phase, useWindow: boolean):
     s += 1;
   }
   s += ((hash(a.id) + weekdayIndex(ctx.date) * 7) % 10) / 100;
+  if (ctx.extras?.some((e) => e.activityId === a.id)) s += 8;
   if (ctx.doneToday.has(a.id)) s -= 100;
   return s;
 }
@@ -119,8 +136,9 @@ const KIND_LABEL: Record<ActivityKind, string> = {
 
 export function resolve(a: Activity, ctx: PlanContext): Resolved {
   const weekday = weekdayIndex(ctx.date);
-  const plan = dayPlan(ctx.prefs, weekday);
+  const plan = todayPlan(ctx.prefs, weekday, ctx.swaps);
   const meal: Meal | undefined = a.meal ? plan[a.meal] : undefined;
+  const added = a.meal ? (ctx.extras ?? []).filter((e) => e.slot === a.meal && e.kind === "food") : [];
   const exercise = a.exercise ? EXERCISE_PLAN[weekday] : undefined;
   const phaseLabel = phaseById(a.phase).label;
 
@@ -134,6 +152,7 @@ export function resolve(a: Activity, ctx: PlanContext): Resolved {
     eyebrow = `${a.title} · ${plan.theme} ${plan.emoji}`.trim();
     headline = meal.title;
     detail = meal.detail;
+    if (added.length) extra = `Added today: ${added.map((e) => `${e.title}, ${e.detail}`).join(" · ")}`;
   } else if (meal) {
     extra = `Today's early drink: ${meal.title} (${meal.detail.toLowerCase()})`;
   }
@@ -157,6 +176,8 @@ export function resolve(a: Activity, ctx: PlanContext): Resolved {
     if (an) notes.push(an);
   }
   if (a.note) notes.push(a.note);
+  const lighter = a.meal && ctx.lighter?.[a.meal];
+  if (a.kind === "meal" && lighter) notes.unshift(`Lighter today: ${lighter}.`);
 
   return {
     activity: a,
@@ -171,6 +192,9 @@ export function resolve(a: Activity, ctx: PlanContext): Resolved {
     notes,
     matched,
     done: ctx.doneToday.has(a.id),
+    ...(a.kind === "meal" && meal && a.meal
+      ? { protein: meal.protein + added.reduce((sum, e) => sum + e.protein, 0), slot: a.meal, swapped: !!ctx.swaps?.[a.meal] }
+      : {}),
   };
 }
 
@@ -211,7 +235,9 @@ export function upNext(ctx: PlanContext): TimelineItem[] {
     const startsIn = (phase.start - nowM + DAY_MINUTES) % DAY_MINUTES;
     const tomorrow = nowM + startsIn >= DAY_MINUTES;
     const date = tomorrow ? new Date(ctx.date.getTime() + 864e5) : ctx.date;
-    const pctx: PlanContext = { ...ctx, date, minutes: PHASE_ANCHORS[phase.id], doneToday: tomorrow ? new Set() : ctx.doneToday };
+    const pctx: PlanContext = tomorrow
+      ? { ...ctx, date, minutes: PHASE_ANCHORS[phase.id], doneToday: new Set(), swaps: undefined, extras: undefined, lighter: undefined }
+      : { ...ctx, date, minutes: PHASE_ANCHORS[phase.id] };
     const list = ACTIVITIES.filter((a) => a.phase === phase.id && eligible(a, ctx.prefs));
     const best = [...list].sort((x, y) => score(y, pctx, phase, true) - score(x, pctx, phase, true))[0];
     return { phase, headline: resolve(best, pctx), count: list.length, startsIn, tomorrow };

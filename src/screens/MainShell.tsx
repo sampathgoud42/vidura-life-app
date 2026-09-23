@@ -11,6 +11,8 @@ import { currentStreak, lastSevenDays } from "../lib/insights";
 import type { Resolved } from "../lib/plan";
 import { formatMinutes } from "../lib/time";
 import { useApp } from "../state/AppState";
+import { ExtrasScreen } from "./ExtrasScreen";
+import { FertilityGuide } from "./FertilityGuide";
 import { GuidedMode } from "./GuidedMode";
 import { InsightsScreen } from "./InsightsScreen";
 import { NowScreen } from "./NowScreen";
@@ -22,6 +24,7 @@ export function MainShell() {
   const [tab, setTab] = useState<TabId>("now");
   const [settings, setSettings] = useState(false);
   const [guided, setGuided] = useState<Resolved | null>(null);
+  const [guide, setGuide] = useState(false);
   const burst = useLightBurst();
   const toast = useToast();
   const days = lastSevenDays(log, now);
@@ -30,9 +33,15 @@ export function MainShell() {
   const closeSettings = useCallback(() => setSettings(false), []);
   const closeGuided = useCallback(() => setGuided(null), []);
 
+  const openGuide = (open: boolean) => {
+    withViewTransition(() => setGuide(open));
+    window.scrollTo({ top: 0 });
+  };
+
   const changeTab = (t: TabId) => {
     withViewTransition(() => {
       setTab(t);
+      setGuide(false);
       setPreviewMinutes(null);
     });
     window.scrollTo({ top: 0 });
@@ -54,9 +63,16 @@ export function MainShell() {
         </header>
 
         <div className="tab-view">
-          {tab === "now" && <NowScreen onStart={setGuided} />}
-          {tab === "tips" && <TipsScreen />}
-          {tab === "insights" && <InsightsScreen />}
+          {guide ? (
+            <FertilityGuide onBack={() => openGuide(false)} />
+          ) : (
+            <>
+              {tab === "now" && <NowScreen onStart={setGuided} onOpenGuide={() => openGuide(true)} />}
+              {tab === "tips" && <TipsScreen onOpenGuide={() => openGuide(true)} />}
+              {tab === "insights" && <InsightsScreen />}
+              {tab === "extras" && <ExtrasScreen />}
+            </>
+          )}
         </div>
       </main>
 

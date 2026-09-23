@@ -4,7 +4,8 @@ import { BreathingOrb } from "../components/BreathingOrb";
 import { ChoiceGroup, GlassCard, MagneticButton } from "../components/Controls";
 import { ArrowRight } from "../components/Icons";
 import { Display } from "../components/Typography";
-import { APPROACHES, AUDIENCES, DEFAULT_PREFS, DIETS, REGIONS, WEEKDAYS } from "../data/content";
+import { APPROACHES, AUDIENCES, DEFAULT_PREFS, DIETS, MEAL_SLOTS, REGIONS, WEEKDAYS } from "../data/content";
+import { PROTEIN_TARGET } from "../lib/balance";
 import { dayPlan } from "../lib/plan";
 import type { Prefs } from "../lib/storage";
 import { weekdayIndex } from "../lib/time";
@@ -68,16 +69,16 @@ export function KitchenScreen({ onDone }: { onDone: () => void }) {
             {WEEKDAYS[weekday]} · {today.theme} {today.emoji}
           </p>
           <motion.ul key={`${prefs.region}-${prefs.diet}`} initial={{ opacity: 0.4 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
-            <li>
-              <span>Breakfast</span> {today.breakfast.title}
-            </li>
-            <li>
-              <span>Lunch</span> {today.lunch.title}
-            </li>
-            <li>
-              <span>Dinner</span> {today.dinner.title}
-            </li>
+            {(["breakfast", "lunch", "dinner"] as const).map((slot) => (
+              <li key={slot}>
+                <span>{MEAL_SLOTS.find((m) => m.id === slot)!.label}</span> {today[slot].title}
+                <em className="plate-preview-protein">≈ {today[slot].protein} g protein</em>
+              </li>
+            ))}
           </motion.ul>
+          <p className="plate-preview-total">
+            Whole day ≈ {MEAL_SLOTS.reduce((sum, m) => sum + today[m.id].protein, 0)} g protein · guide ~{PROTEIN_TARGET[prefs.audience]} g
+          </p>
         </GlassCard>
       </div>
 

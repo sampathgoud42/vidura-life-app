@@ -20,7 +20,9 @@
     "images": "node scripts/generate-images.mjs",
     "images:lqip": "node scripts/build-lqip.mjs",
     "images:fix": "node scripts/fix-borders.mjs",
-    "icons": "node scripts/make-icons.mjs"
+    "icons": "node scripts/make-icons.mjs",
+    "wellness-api": "node server/wellness-api.mjs",
+    "qa:setup": "node scripts/qa-setup.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",

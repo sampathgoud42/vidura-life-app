@@ -5,6 +5,7 @@ import { Chip, MagneticButton } from "../components/Controls";
 import { Lock } from "../components/Icons";
 import { useToast } from "../components/Toast";
 import { APP, CATEGORIES, DEFAULT_PREFS, type CategoryId } from "../data/content";
+import { saveContact } from "../lib/remote";
 import type { Prefs } from "../lib/storage";
 import { EMAIL_HINTS, NAME_HINTS, validateEmail, validateName } from "../lib/validation";
 import { useApp } from "../state/AppState";
@@ -43,6 +44,7 @@ export function SettingsSheet({ open, onClose }: { open: boolean; onClose: () =>
       setEmailHint("");
       if (r.value !== profile.email) {
         updateProfile({ email: r.value });
+        void saveContact({ name: profile.name, email: r.value, previousEmail: profile.email });
         toast("Email updated");
       }
     }, 300);
@@ -62,6 +64,7 @@ export function SettingsSheet({ open, onClose }: { open: boolean; onClose: () =>
     setName(r.value);
     if (r.value !== profile.name) {
       updateProfile({ name: r.value });
+      void saveContact({ name: r.value, email: profile.email });
       toast("Name updated");
     }
   };
@@ -155,7 +158,7 @@ export function SettingsSheet({ open, onClose }: { open: boolean; onClose: () =>
           Your data
         </h3>
         <p className="privacy-note">
-          <Lock size={16} /> {APP.privacyNote} Nothing is sent anywhere.
+          <Lock size={16} /> {APP.privacyNote} Focus areas, meals, history and cycle details are never sent anywhere.
         </p>
         {!storageOk && <p className="storage-note">This browser is blocking storage, so changes last until you close this tab.</p>}
         <AnimatePresence mode="wait" initial={false}>

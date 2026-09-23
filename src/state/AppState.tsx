@@ -1,11 +1,18 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { DEFAULT_PREFS, type CategoryId, type Phase, type PhaseId } from "../data/content";
+import { DEFAULT_PREFS, type CategoryId, type Meal, type MealSlot, type Phase, type PhaseId } from "../data/content";
 import { doneOn } from "../lib/insights";
 import { THEMES } from "../lib/palette";
+import { syncContactOnce } from "../lib/remote";
 import {
+  DAY_KEY,
   LOG_KEY,
   PROFILE_KEY,
   clearAll,
+  emptyDay,
+  loadDay,
+  saveDay,
+  type DayExtra,
+  type DayState,
   loadLog,
   loadProfile,
   newId,
@@ -37,6 +44,13 @@ export interface AppApi {
   undo: (entryId: string) => void;
   clearData: () => void;
   doneToday: ReadonlySet<string>;
+  /** Today's swaps, additions and lighter portions (resets on a new day). */
+  day: DayState;
+  swapMeal: (slot: MealSlot, meal: Meal | null) => void;
+  addExtra: (extra: DayExtra) => void;
+  removeExtra: (id: string) => void;
+  setLighter: (slot: MealSlot, hint: string | null) => void;
+  dismissSuggestion: (id: string) => void;
 }
 
 const Ctx = createContext<AppApi | null>(null);
@@ -85,6 +99,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [log, setLog] = useState<LogEntry[]>(loadLog);
   const [storageOk, setStorageOk] = useState(storageAvailable);
   const [previewMinutes, setPreviewMinutes] = useState<number | null>(null);
+  const [dayRaw, setDayRaw] = useState<DayState>(() => loadDay(localDateKey(clockNow())));
   const now = useClock();
 
   const nowMinutes = minutesOf(now);
@@ -149,13 +164,63 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setProfile(null);
     setLog([]);
     setPreviewMinutes(null);
+    setDayRaw(emptyDay(localDateKey(clockNow())));
   }, []);
+
+  /** Apply a change to today's state; yesterday's state is dropped first. */
+  const updateDay = useCallback((fn: (d: DayState) => DayState) => {
+    setDayRaw((prev) => {
+      const key = localDateKey(clockNow());
+      const next = fn(prev.date === key ? prev : emptyDay(key));
+      if (!saveDay(next)) setStorageOk(false);
+      return next;
+    });
+  }, []);
+
+  const swapMeal = useCallback<AppApi["swapMeal"]>(
+    (slot, meal) =>
+      updateDay((d) => {
+        const swaps = { ...d.swaps };
+        if (meal) swaps[slot] = meal;
+        else delete swaps[slot];
+        const lighter = { ...d.lighter };
+        delete lighter[slot];
+        return { ...d, swaps, lighter };
+      }),
+    [updateDay],
+  );
+  const addExtra = useCallback<AppApi["addExtra"]>(
+    (extra) => updateDay((d) => ({ ...d, extras: [...d.extras.filter((e) => e.id !== extra.id), extra] })),
+    [updateDay],
+  );
+  const removeExtra = useCallback<AppApi["removeExtra"]>((id) => updateDay((d) => ({ ...d, extras: d.extras.filter((e) => e.id !== id) })), [updateDay]);
+  const setLighter = useCallback<AppApi["setLighter"]>(
+    (slot, hint) =>
+      updateDay((d) => {
+        const lighter = { ...d.lighter };
+        if (hint) lighter[slot] = hint;
+        else delete lighter[slot];
+        return { ...d, lighter };
+      }),
+    [updateDay],
+  );
+  const dismissSuggestion = useCallback<AppApi["dismissSuggestion"]>(
+    (id) => updateDay((d) => ({ ...d, dismissed: [...new Set([...d.dismissed, id])] })),
+    [updateDay],
+  );
+
+  // Save the email to the wellness database once, if it isn't there yet (optional, silent).
+  const profileEmail = profile?.email;
+  useEffect(() => {
+    if (profileRef.current && profileEmail) syncContactOnce({ name: profileRef.current.name, email: profileEmail });
+  }, [profileEmail]);
 
   // Keep several tabs in sync.
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === PROFILE_KEY || e.key === null) setProfile(loadProfile());
       if (e.key === LOG_KEY || e.key === null) setLog(loadLog());
+      if (e.key === DAY_KEY || e.key === null) setDayRaw(loadDay(localDateKey(clockNow())));
     };
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
@@ -176,6 +241,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const todayKey = localDateKey(now);
   const doneToday = useMemo(() => doneOn(log, todayKey), [log, todayKey]);
   const prefs = profile?.prefs ?? DEFAULT_PREFS;
+  const day = useMemo(() => (dayRaw.date === todayKey ? dayRaw : emptyDay(todayKey)), [dayRaw, todayKey]);
 
   const api = useMemo<AppApi>(
     () => ({
@@ -196,8 +262,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
       undo,
       clearData,
       doneToday,
+      day,
+      swapMeal,
+      addExtra,
+      removeExtra,
+      setLighter,
+      dismissSuggestion,
     }),
-    [profile, prefs, log, storageOk, now, nowMinutes, phase, previewMinutes, displayMinutes, displayPhase, createProfile, updateProfile, complete, undo, clearData, doneToday],
+    // prettier-ignore
+    [profile, prefs, log, storageOk, now, nowMinutes, phase, previewMinutes, displayMinutes, displayPhase, createProfile, updateProfile, complete, undo, clearData, doneToday, day, swapMeal, addExtra, removeExtra, setLighter, dismissSuggestion],
   );
 
   return <Ctx.Provider value={api}>{children}</Ctx.Provider>;

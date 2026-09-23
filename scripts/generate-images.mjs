@@ -2,7 +2,8 @@
 /**
  * Image pipeline for Vidura Life — Nano Banana Pro (Gemini 3 Pro Image).
  *
- * Every slot (category tiles 1:1, phase heroes 16:9, phase×activity cards 4:5) and
+ * Every slot (category tiles 1:1, phase heroes 16:9, phase×activity cards 4:5, food
+ * guides 1:1, fertility guide heroes 16:9) and
  * its prompt comes from src/data/content.ts, with the shared style block appended.
  *
  *   node scripts/generate-images.mjs --list        # write docs/IMAGE_PROMPTS.md, no API calls
@@ -22,7 +23,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
-import { ACTIVITIES, CATEGORIES, PHASES, STYLE_BLOCK, buildImagePrompt } from "../src/data/content.ts";
+import { ACTIVITIES, CATEGORIES, FERTILITY, FOOD_GUIDES, PHASES, STYLE_BLOCK, buildImagePrompt } from "../src/data/content.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = new Set(process.argv.slice(2));
@@ -56,6 +57,15 @@ const slots = [
   ...CATEGORIES.map((c) => ({ group: "Category tiles (1:1)", label: c.label, slot: c.image })),
   ...PHASES.map((p) => ({ group: "Phase heroes (16:9)", label: `${p.label} hero`, slot: p.hero })),
   ...ACTIVITIES.map((a) => ({ group: "Phase × activity cards (4:5)", label: `${PHASES.find((p) => p.id === a.phase).label} · ${a.title}`, slot: a.image })),
+  ...FOOD_GUIDES.flatMap((g) => {
+    const label = CATEGORIES.find((c) => c.id === g.category).label;
+    return [
+      { group: "Food guides (1:1)", label: `${label} · enjoy`, slot: g.enjoyImage },
+      { group: "Food guides (1:1)", label: `${label} · go easy on`, slot: g.limitImage },
+    ];
+  }),
+  { group: "Fertility guide (16:9)", label: "Fertility guide · women", slot: FERTILITY.heroes.women },
+  { group: "Fertility guide (16:9)", label: "Fertility guide · men", slot: FERTILITY.heroes.men },
 ]
   .filter((s) => !ONLY || ONLY.split(",").some((part) => s.slot.src.includes(part.trim())))
   .filter((s) => !SKIP || !SKIP.split(",").some((part) => s.slot.src.includes(part.trim())));

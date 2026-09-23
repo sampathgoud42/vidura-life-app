@@ -8,6 +8,7 @@ import { useLightBurst } from "../components/LightBurst";
 import { Display, TypeIn } from "../components/Typography";
 import { APP, MESSAGES } from "../data/content";
 import { haptics } from "../lib/device";
+import { saveContact } from "../lib/remote";
 import { EMAIL_HINTS, NAME_HINTS, NAME_MAX, graphemeLength, validateEmail, validateName } from "../lib/validation";
 import { useApp } from "../state/AppState";
 
@@ -54,6 +55,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
                 onNext={(v) => {
                   setEmail(v);
                   createProfile(name, v);
+                  void saveContact({ name, email: v }); // optional: silent if it can't be saved
                   setStep("welcome");
                 }}
               />

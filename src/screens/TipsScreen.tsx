@@ -1,11 +1,26 @@
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion, useTransform, type PanInfo } from "framer-motion";
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
-import { Chip } from "../components/Controls";
+import { Chip, Segmented } from "../components/Controls";
 import { ArrowLeft, ArrowRight, Info } from "../components/Icons";
 import { Display } from "../components/Typography";
-import { APP, CATEGORIES, TIPS, type CategoryId, type Tip } from "../data/content";
+import { APP, CATEGORIES, FOOD_GUIDES, TIPS, type CategoryId, type Tip } from "../data/content";
 import { haptics } from "../lib/device";
 import { useApp } from "../state/AppState";
+import { FoodGuideCard, RoutinesSection, TricksSection } from "./TipsSections";
+
+export type TipsView = "tips" | "tricks" | "routines" | "foods";
+const VIEWS: { id: TipsView; label: string }[] = [
+  { id: "tips", label: "Tips" },
+  { id: "tricks", label: "Tricks" },
+  { id: "routines", label: "Routines" },
+  { id: "foods", label: "Foods" },
+];
+const LEDE: Record<TipsView, string> = {
+  tips: "Small, practical ideas for your focus. Swipe a card away for the next one.",
+  tricks: "Kitchen tricks and traditional remedies, matched to your approach.",
+  routines: "A daily ritual, morning add-ons and a rhythm for the rest of your day.",
+  foods: "What to enjoy often and what to go easy on, with rough protein per serving.",
+};
 
 const KIND_LABEL: Record<Tip["kind"], string> = {
   habit: "Habit",
@@ -16,11 +31,13 @@ const KIND_LABEL: Record<Tip["kind"], string> = {
   care: "Care",
 };
 
-export function TipsScreen() {
+export function TipsScreen({ onOpenGuide }: { onOpenGuide: () => void }) {
   const { profile, prefs } = useApp();
   const cats = profile?.categories ?? [];
+  const [view, setView] = useState<TipsView>("tips");
   const [filter, setFilter] = useState<CategoryId | "all">("all");
   const [index, setIndex] = useState(0);
+  const scope: CategoryId[] = filter === "all" ? (cats.length ? cats : CATEGORIES.map((c) => c.id)) : [filter];
 
   const deck = useMemo(
     () =>
@@ -41,8 +58,10 @@ export function TipsScreen() {
         <Display as="h1" className="t-title">
           Tips &amp; ideas
         </Display>
-        <p className="lede">Small, practical ideas for your focus. Swipe a card away for the next one.</p>
+        <p className="lede">{LEDE[view]}</p>
       </header>
+
+      <Segmented label="Show" options={VIEWS} value={view} onChange={setView} mode="tabs" idPrefix="tips" className="tips-views" />
 
       <div className="chip-row" role="group" aria-label="Filter tips by focus">
         <Chip selected={filter === "all"} onClick={() => setFilter("all")}>
@@ -58,7 +77,32 @@ export function TipsScreen() {
         })}
       </div>
 
-      {deck.length ? <CardStack deck={deck} index={index} setIndex={setIndex} /> : <p className="empty">No tips for this filter yet.</p>}
+      {scope.includes("fertility") && (
+        <button type="button" className="guide-link glass" onClick={onOpenGuide}>
+          <span className="guide-link-emoji" aria-hidden="true">
+            🧬
+          </span>
+          <span className="guide-link-text">
+            <span className="guide-link-title">Fertility guide</span>
+            <span className="guide-link-sub">Cycle and fertile window, best time to try, egg and sperm health, myths, supplements</span>
+          </span>
+          <ArrowRight size={18} />
+        </button>
+      )}
+
+      <div id="tips-panel" role="tabpanel" aria-labelledby={`tips-tab-${view}`} className="tips-panel">
+        {view === "tips" &&
+          (deck.length ? <CardStack deck={deck} index={index} setIndex={setIndex} /> : <p className="empty">No tips for this filter yet.</p>)}
+        {view === "tricks" && <TricksSection cats={scope} prefs={prefs} />}
+        {view === "routines" && <RoutinesSection cats={scope} prefs={prefs} />}
+        {view === "foods" && (
+          <div className="tips-section">
+            {FOOD_GUIDES.filter((g) => scope.includes(g.category)).map((g) => (
+              <FoodGuideCard key={g.category} guide={g} audience={prefs.audience} diet={prefs.diet} />
+            ))}
+          </div>
+        )}
+      </div>
 
       <p className="footnote">
         <Info size={14} /> {APP.disclaimer}

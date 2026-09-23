@@ -1,6 +1,7 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig, type Plugin } from "vite";
+import { defineConfig, loadEnv, type Plugin } from "vite";
+import { DEFAULT_ORIGINS, createWellnessHandler, resolveDbFile } from "./server/wellness-db.mjs";
 import { PHASES } from "./src/data/content";
 import { THEMES, themeCss } from "./src/lib/palette";
 
@@ -22,9 +23,24 @@ function phaseTokens(): Plugin {
   };
 }
 
-export default defineConfig({
+/**
+ * Mounts the wellness contact API (server/wellness-db.mjs) on the dev and
+ * preview servers, so the email a person enters is saved to the SQLite
+ * wellness database while running locally. The hosted build calls a separate
+ * server instead (VITE_WELLNESS_API), and simply skips it when none is set.
+ */
+function wellnessApi(env: Record<string, string>): Plugin {
+  const handler = createWellnessHandler({ dbFile: resolveDbFile(process.cwd(), env), allowedOrigins: DEFAULT_ORIGINS });
+  return {
+    name: "vidura-wellness-api",
+    configureServer: (server) => void server.middlewares.use("/api/wellness", handler),
+    configurePreviewServer: (server) => void server.middlewares.use("/api/wellness", handler),
+  };
+}
+
+export default defineConfig(({ mode }) => ({
   base: "./",
-  plugins: [react(), tailwindcss(), phaseTokens()],
+  plugins: [react(), tailwindcss(), phaseTokens(), wellnessApi({ ...loadEnv(mode, process.cwd(), ""), ...process.env } as Record<string, string>)],
   build: {
     assetsDir: "static",
     target: "es2020",
@@ -38,4 +54,4 @@ export default defineConfig({
   },
   server: { host: true },
   preview: { host: true },
-});
+}));

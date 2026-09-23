@@ -187,3 +187,73 @@ export function ChoiceGroup<T extends string>({
     </div>
   );
 }
+
+/**
+ * Segmented control. `tabs` mode switches a panel (tablist / tab / tabpanel,
+ * arrow keys move and select); `radio` mode is a small single choice.
+ */
+export function Segmented<T extends string>({
+  label,
+  options,
+  value,
+  onChange,
+  mode = "radio",
+  idPrefix,
+  className = "",
+}: {
+  label: string;
+  options: readonly { id: T; label: string; emoji?: string }[];
+  value: T;
+  onChange: (v: T) => void;
+  mode?: "tabs" | "radio";
+  idPrefix?: string;
+  className?: string;
+}) {
+  const refs = useRef<(HTMLButtonElement | null)[]>([]);
+  const onKey = (e: KeyboardEvent<HTMLButtonElement>, i: number) => {
+    const dir = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (!dir) return;
+    e.preventDefault();
+    const next = (i + dir + options.length) % options.length;
+    onChange(options[next].id);
+    refs.current[next]?.focus();
+    haptics.select();
+  };
+  const tabs = mode === "tabs";
+  return (
+    <div role={tabs ? "tablist" : "radiogroup"} aria-label={label} className={`segmented ${className}`}>
+      {options.map((o, i) => {
+        const on = o.id === value;
+        return (
+          <button
+            key={o.id}
+            ref={(el) => {
+              refs.current[i] = el;
+            }}
+            type="button"
+            role={tabs ? "tab" : "radio"}
+            id={idPrefix ? `${idPrefix}-tab-${o.id}` : undefined}
+            aria-controls={tabs && idPrefix ? `${idPrefix}-panel` : undefined}
+            {...(tabs ? { "aria-selected": on } : { "aria-checked": on })}
+            tabIndex={on ? 0 : -1}
+            className={`segment ${on ? "segment-on" : ""}`}
+            onClick={() => {
+              if (on) return;
+              haptics.select();
+              onChange(o.id);
+            }}
+            onKeyDown={(e) => onKey(e, i)}
+          >
+            {on && <motion.span layoutId={`seg-${label}`} className="segment-pill" transition={{ type: "spring", stiffness: 480, damping: 36 }} />}
+            {o.emoji && (
+              <span className="segment-emoji" aria-hidden="true">
+                {o.emoji}
+              </span>
+            )}
+            <span className="segment-label">{o.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}

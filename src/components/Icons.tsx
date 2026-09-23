@@ -110,3 +110,9 @@ export const Info = ({ size, ...p }: P) => (
     <path d="M12 11v5M12 7.8v.2" />
   </svg>
 );
+export const Book = ({ size, ...p }: P) => (
+  <svg {...base(size)} {...p}>
+    <path d="M12 6.5C10.2 5.2 7.7 4.6 4.5 4.8v13c3.2-.2 5.7.4 7.5 1.7 1.8-1.3 4.3-1.9 7.5-1.7v-13c-3.2-.2-5.7.4-7.5 1.7z" />
+    <path d="M12 6.5v13" />
+  </svg>
+);

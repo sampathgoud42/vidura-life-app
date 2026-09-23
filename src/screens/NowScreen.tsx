@@ -2,31 +2,34 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { MagneticButton } from "../components/Controls";
 import { DayDial } from "../components/DayDial";
-import { Check, Clock, Info, Play } from "../components/Icons";
+import { ArrowRight, Check, Clock, Info, Play } from "../components/Icons";
 import { useLightBurst } from "../components/LightBurst";
 import { SmartImage } from "../components/SmartImage";
 import { useToast } from "../components/Toast";
-import { APP, CATEGORIES, MEAL_SLOTS, WEEKDAYS } from "../data/content";
+import { APP, CATEGORIES, type MealSlot } from "../data/content";
 import { haptics } from "../lib/device";
-import { dayPlan, planNow, upNext, type PlanContext, type Resolved } from "../lib/plan";
+import { dayPlan, planNow, todayPlan, upNext, type PlanContext, type Resolved } from "../lib/plan";
 import { Display } from "../components/Typography";
 import { formatClock, formatDateLong, formatMinutes, formatPhaseRange, greetingFor, timeZoneLabel, timeZoneShort, weekdayIndex } from "../lib/time";
 import { useApp } from "../state/AppState";
+import { MealSwapSheet, ProteinChip } from "./MealSwapSheet";
+import { TodayPlate } from "./TodayPlate";
 
 const catOf = (id: string) => CATEGORIES.find((c) => c.id === id)!;
 
-export function NowScreen({ onStart }: { onStart: (r: Resolved) => void }) {
+export function NowScreen({ onStart, onOpenGuide }: { onStart: (r: Resolved) => void; onOpenGuide: () => void }) {
   const app = useApp();
-  const { profile, prefs, now, nowMinutes, doneToday, complete, undo } = app;
+  const { profile, prefs, now, nowMinutes, doneToday, complete, undo, day, swapMeal } = app;
+  const [swapSlot, setSwapSlot] = useState<MealSlot | null>(null);
   const burst = useLightBurst();
   const toast = useToast();
   const [pinned, setPinned] = useState<string | null>(null);
   const categories = profile?.categories ?? [];
 
   const baseCtx = useMemo<Omit<PlanContext, "minutes">>(
-    () => ({ categories, prefs, date: now, doneToday }),
+    () => ({ categories, prefs, date: now, doneToday, swaps: day.swaps, extras: day.extras, lighter: day.lighter }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [categories.join(), prefs, now, doneToday],
+    [categories.join(), prefs, now, doneToday, day],
   );
   const ctx: PlanContext = { ...baseCtx, minutes: nowMinutes };
   const plan = planNow(ctx, pinned && !doneToday.has(pinned) ? pinned : null);
@@ -36,7 +39,21 @@ export function NowScreen({ onStart }: { onStart: (r: Resolved) => void }) {
   useEffect(() => setPinned(null), [phaseId]);
   const timeline = upNext(ctx);
   const weekday = weekdayIndex(now);
-  const today = dayPlan(prefs, weekday);
+  const planned = dayPlan(prefs, weekday);
+  const today = todayPlan(prefs, weekday, day.swaps);
+  const slotLabel = (slot: MealSlot) => slot.replace("midMorning", "mid-morning bite").replace("snack", "snack");
+
+  const pickSwap = (meal: typeof today.lunch | null) => {
+    const slot = swapSlot;
+    if (!slot) return;
+    const prev = day.swaps[slot] ?? null;
+    swapMeal(slot, meal);
+    setSwapSlot(null);
+    toast(meal ? `Changed to ${meal.title}` : `${slotLabel(slot).replace(/^./, (c) => c.toUpperCase())} is back to the plan`, {
+      label: "Undo",
+      onClick: () => swapMeal(slot, prev),
+    });
+  };
 
   const markDone = (r: Resolved, origin?: { x: number; y: number }) => {
     const entry = complete(r.activity.id, r.activity.categories.length ? r.matched : categories, r.phase);
@@ -78,7 +95,7 @@ export function NowScreen({ onStart }: { onStart: (r: Resolved) => void }) {
             {plan.allDone ? (
               <AllDoneCard key="all-done" phaseLabel={plan.phase.label} next={timeline[0]?.headline} />
             ) : (
-              <NowCard key={plan.now.activity.id} item={plan.now} onStart={() => onStart(plan.now)} onDone={markDone} />
+              <NowCard key={plan.now.activity.id} item={plan.now} onStart={() => onStart(plan.now)} onDone={markDone} onChangeMeal={setSwapSlot} />
             )}
           </AnimatePresence>
 
@@ -104,6 +121,7 @@ export function NowScreen({ onStart }: { onStart: (r: Resolved) => void }) {
                         <span className="also-title">{a.headline}</span>
                         <span className="also-meta">
                           {a.done ? "Done today" : `${a.minutes} min`}
+                          {a.protein ? ` · ≈ ${a.protein} g protein` : ""}
                           {a.matched[0] ? ` · ${catOf(a.matched[0]).short}` : ""}
                         </span>
                       </span>
@@ -113,6 +131,19 @@ export function NowScreen({ onStart }: { onStart: (r: Resolved) => void }) {
                 ))}
               </ul>
             </section>
+          )}
+
+          {categories.includes("fertility") && (
+            <button type="button" className="guide-link glass" onClick={onOpenGuide}>
+              <span className="guide-link-emoji" aria-hidden="true">
+                🧬
+              </span>
+              <span className="guide-link-text">
+                <span className="guide-link-title">Your fertility guide</span>
+                <span className="guide-link-sub">Cycle and fertile window, timing, what helps, myths and supplements</span>
+              </span>
+              <ArrowRight size={18} />
+            </button>
           )}
         </div>
 
@@ -137,7 +168,7 @@ export function NowScreen({ onStart }: { onStart: (r: Resolved) => void }) {
                       </p>
                       <p className="timeline-title">{t.headline.headline}</p>
                       <p className="timeline-meta">
-                        {t.headline.minutes} min · {t.count - 1} more ideas
+                        {t.headline.protein ? `≈ ${t.headline.protein} g protein` : `${t.headline.minutes} min`} · {t.count - 1} more ideas
                       </p>
                     </div>
                   </div>
@@ -155,33 +186,25 @@ export function NowScreen({ onStart }: { onStart: (r: Resolved) => void }) {
             </div>
             <p className="day-sub">Drag around the dial to see what's planned at any hour.</p>
             <DayDial ctx={baseCtx} />
-            <details className="plate">
-              <summary>
-                <span>
-                  Today's plate · {WEEKDAYS[weekday]} · {today.theme} {today.emoji}
-                </span>
-              </summary>
-              <ul className="plate-list">
-                {MEAL_SLOTS.map((s) => (
-                  <li key={s.id}>
-                    <span className="plate-slot">
-                      <span aria-hidden="true">{s.emoji}</span> {s.label}
-                    </span>
-                    <span className="plate-meal">
-                      <strong>{today[s.id].title}</strong>
-                      <span>{today[s.id].detail}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </details>
           </section>
+
+          <TodayPlate weekday={weekday} onChange={setSwapSlot} />
         </div>
       </div>
 
       <p className="footnote">
         <Info size={14} /> {APP.disclaimer}
       </p>
+
+      <MealSwapSheet
+        slot={swapSlot}
+        current={swapSlot ? today[swapSlot] : null}
+        planned={swapSlot ? planned[swapSlot] : null}
+        prefs={prefs}
+        categories={categories}
+        onPick={pickSwap}
+        onClose={() => setSwapSlot(null)}
+      />
     </div>
   );
 }
@@ -206,7 +229,17 @@ function PreviewReset() {
   );
 }
 
-function NowCard({ item, onStart, onDone }: { item: Resolved; onStart: () => void; onDone: (r: Resolved, origin?: { x: number; y: number }) => void }) {
+function NowCard({
+  item,
+  onStart,
+  onDone,
+  onChangeMeal,
+}: {
+  item: Resolved;
+  onStart: () => void;
+  onDone: (r: Resolved, origin?: { x: number; y: number }) => void;
+  onChangeMeal: (slot: MealSlot) => void;
+}) {
   const reduced = useReducedMotion();
   const doneRef = useRef<HTMLButtonElement>(null);
   const cats = item.matched.map(catOf);
@@ -236,6 +269,8 @@ function NowCard({ item, onStart, onDone }: { item: Resolved; onStart: () => voi
           <span>
             <Clock size={16} /> {item.minutes} min
           </span>
+          {item.protein ? <ProteinChip grams={item.protein} /> : null}
+          {item.swapped && <span className="now-cat">Changed today</span>}
           {cats.map((c) => (
             <span key={c.id} className="now-cat">
               {c.emoji} {c.short}
@@ -258,6 +293,11 @@ function NowCard({ item, onStart, onDone }: { item: Resolved; onStart: () => voi
             <Check size={18} /> Done
           </MagneticButton>
         </div>
+        {item.slot && (
+          <button type="button" className="link-btn now-change" onClick={() => onChangeMeal(item.slot!)}>
+            Not feeling it? Change this meal
+          </button>
+        )}
         {(item.extra || item.focusNote || item.notes.length > 0) && (
           <div className="now-notes">
             {item.extra && <p className="now-extra">{item.extra}</p>}

@@ -1,35 +1,39 @@
 #!/usr/bin/env node
 /**
- * Automated QA pass in a real browser (installed Edge or Chrome via playwright-core).
+ * Automated QA pass in a real browser: the Chrome headless shell that
+ * `npm run qa:setup` installs inside this project (node_modules/playwright-core/.local-browsers).
  * Builds nothing: run `npm run build` first. Screenshots → qa/screens, report → qa/report.json.
  *
  *   node scripts/qa.mjs            # all scenarios
- *   QA_BROWSER="C:\\path\\to\\chrome.exe" node scripts/qa.mjs
  */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromium } from "playwright-core";
 import { preview } from "vite";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SHOTS = path.join(root, "qa", "screens");
 fs.mkdirSync(SHOTS, { recursive: true });
 
-const CANDIDATES = [
-  process.env.QA_BROWSER,
-  "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-  "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
-  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  "/usr/bin/google-chrome",
-].filter(Boolean);
-const executablePath = CANDIDATES.find((p) => fs.existsSync(p));
-if (!executablePath) throw new Error("No Chromium-based browser found; set QA_BROWSER.");
+// Browsers live inside the project (must be set before playwright-core loads its registry).
+process.env.PLAYWRIGHT_BROWSERS_PATH = "0";
+const { chromium } = await import("playwright-core");
+
+// During QA the wellness API writes to a throwaway database, never the real one.
+const QA_DB = path.join(root, "qa", "wellness-qa.db");
+for (const ext of ["", "-wal", "-shm"]) fs.rmSync(QA_DB + ext, { force: true });
+process.env.WELLNESS_DB = QA_DB;
 
 const server = await preview({ root, preview: { port: 4179, strictPort: true, open: false }, logLevel: "silent" });
 const BASE = "http://localhost:4179/";
-const browser = await chromium.launch({ executablePath, headless: true });
+let browser;
+try {
+  browser = await chromium.launch({ headless: true });
+} catch (e) {
+  console.error("✖ QA browser missing: run `npm run qa:setup` once (it installs inside this project).");
+  await new Promise((r) => server.httpServer.close(r));
+  throw e;
+}
 
 const results = [];
 const errors = [];
@@ -65,6 +69,18 @@ const shot = (page, name, fullPage = false) => page.screenshot({ path: path.join
 // viewport when content overflows, so innerWidth alone can't catch horizontal scroll.
 const overflow = async (page) => (await page.evaluate(() => document.documentElement.scrollWidth)) - page.viewportSize().width;
 const phase = (page) => page.evaluate(() => document.documentElement.dataset.phase);
+const { DatabaseSync } = await import("node:sqlite");
+const dbRows = () => {
+  try {
+    const db = new DatabaseSync(QA_DB);
+    const rows = db.prepare("SELECT email, name, saves FROM contacts ORDER BY id").all();
+    db.close();
+    return rows;
+  } catch {
+    return [];
+  }
+};
+const localKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
 try {
   // ── A · First run: onboarding → focus → kitchen → Now → Tips → Insights → Settings
@@ -116,6 +132,8 @@ try {
     await wait(2000);
     await shot(page, "A06-welcome");
     pass("Welcome reveal uses the name", (await page.locator(".welcome-title").innerText()).includes("Welcome to Vidura Life, Priya"));
+    await wait(400);
+    pass("Email saved to the wellness DB as soon as it's entered", dbRows().some((r) => r.email === "priya@example.com" && r.name === "Priya"), JSON.stringify(dbRows()));
     const stored = await page.evaluate(() => JSON.parse(localStorage.getItem("vidura.profile")));
     pass(
       "Profile stored under vidura.profile with the expected shape",
@@ -199,7 +217,11 @@ try {
     await page.getByRole("button", { name: "Settings", exact: true }).click();
     await wait(900);
     await shot(page, "A17-settings");
-    pass("Settings sheet has the privacy note", (await page.locator(".privacy-note").innerText()).includes("stay on this device"));
+    pass("Settings sheet has the privacy note", (await page.locator(".privacy-note").innerText()).includes("stays on this device"));
+    await page.locator("#s-email").fill("priya.s@example.com");
+    await wait(1400);
+    const rows = dbRows();
+    pass("Changing the email updates the same DB record", rows.length === 1 && rows[0].email === "priya.s@example.com" && rows[0].saves >= 2, JSON.stringify(rows));
     await page.keyboard.press("Escape");
     await wait(600);
 
@@ -347,6 +369,211 @@ try {
     await wait(5600);
     await shot(page, "G-desktop-now");
     pass("Desktop fits without horizontal scroll", (await overflow(page)) <= 0);
+    await ctx.close();
+  }
+  // ── H · Change a meal + balance suggestions (Telugu vegetarian, lunchtime)
+  {
+    const { ctx, page } = await newPage({}, seed);
+    await page.goto(`${BASE}?at=12:50`);
+    await wait(5200);
+    const plate = page.locator(".plate-card");
+    await plate.scrollIntoViewIfNeeded();
+    await wait(400);
+    await shot(page, "H01-plate");
+    pass("Today's plate shows a protein total", /≈ \d+ g/.test(await page.locator(".protein-meter-num").innerText()));
+    pass("Every meal on the plate shows its protein", (await page.locator(".plate-row .protein-chip").count()) >= 5);
+    pass("The lunchtime Now card shows protein", (await page.locator(".now-card .protein-chip").count()) === 1);
+    const before = await page.locator(".protein-meter-num").innerText();
+    await page.getByRole("button", { name: /^Change lunch/ }).click();
+    await wait(900);
+    await shot(page, "H02-swap-sheet");
+    const options = page.locator(".swap-option");
+    pass("Change opens alternatives for lunch", (await options.count()) >= 4, `${await options.count()} shown`);
+    const texts = (await options.allInnerTexts()).join(" ");
+    pass("A vegetarian never sees meat, fish or eggs", !/\b(chicken|fish|egg|eggs|mutton|prawn|meen|kodi|kozhi|royyala)\b/i.test(texts));
+    pass("Options show protein", (await page.locator(".swap-option .protein-chip").count()) >= 4);
+    // Pick the lightest option on protein, so the plate needs balancing afterwards.
+    const grams = await options.evaluateAll((els) => els.map((el) => Number(el.querySelector(".protein-chip")?.textContent?.match(/\d+/)?.[0] ?? 99)));
+    const lightest = grams.indexOf(Math.min(...grams));
+    const pickTitle = await options.nth(lightest).locator(".swap-option-title").innerText();
+    await options.nth(lightest).click();
+    await wait(900);
+    await shot(page, "H03-swapped");
+    const lunchRow = page.locator(".plate-row", { hasText: "Lunch" });
+    pass("The swapped meal is on today's plate", (await lunchRow.innerText()).includes(pickTitle) && (await lunchRow.locator(".plate-badge").count()) === 1, pickTitle);
+    const day = await page.evaluate(() => JSON.parse(localStorage.getItem("vidura.day")));
+    pass("Today's swap is saved under vidura.day", !!day?.swaps?.lunch && typeof day.date === "string");
+    console.log(`  protein ${before} → ${await page.locator(".protein-meter-num").innerText()}`);
+    console.log(`  suggestions: ${(await page.locator(".balance-item").allInnerTexts()).map((t) => t.split("\n")[0]).join(" | ") || "none (plate balanced)"}`);
+    pass("Plate fits 380px", (await overflow(page)) <= 0);
+    await page.getByRole("button", { name: /^Change lunch/ }).click();
+    await wait(800);
+    await page.getByRole("button", { name: /Back to the plan/ }).click();
+    await wait(800);
+    pass("Back to the plan restores the planned lunch", (await page.locator(".plate-row", { hasText: "Lunch" }).locator(".plate-badge").count()) === 0);
+    await ctx.close();
+  }
+
+  // ── H2 · A light day: balance suggestions, add and dismiss
+  {
+    const { ctx, page } = await newPage({}, seed);
+    await page.addInitScript((key) => {
+      localStorage.setItem(
+        "vidura.day",
+        JSON.stringify({
+          version: 1,
+          date: key,
+          swaps: {
+            lunch: { title: "Curd Rice", detail: "Thayir sadam with mustard and curry leaves", protein: 3 },
+            dinner: { title: "Lauki Soup + Roti", detail: "Bottle gourd soup + 1 roti", protein: 4 },
+          },
+          extras: [],
+          lighter: {},
+          dismissed: [],
+        }),
+      );
+    }, localKey(new Date()));
+    await page.goto(`${BASE}?at=11:30`);
+    await wait(5200);
+    await page.locator(".plate-card").scrollIntoViewIfNeeded();
+    await wait(400);
+    const sugg = page.locator(".balance-item");
+    const texts = await page.locator(".balance-item .balance-text strong").allInnerTexts();
+    pass("A light day gets balance suggestions", (await sugg.count()) >= 1, texts.join(" | "));
+    pass("…led by a protein add-on for the diet", /chana|sprouts|peanuts|dal|paneer|curd|milk|tofu/i.test(texts[0] ?? ""), texts[0]);
+    await shot(page, "H05-light-day");
+    await page.locator(".balance-item .btn-primary").first().click();
+    await wait(700);
+    pass("A suggestion can be added to today", (await page.locator(".plate-added").count()) >= 1);
+    const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("vidura.day")));
+    pass("The addition is saved for today", saved?.extras?.length >= 1);
+    const firstTitle = await page.locator(".balance-item .balance-text strong").first().innerText();
+    await page.locator(".balance-dismiss").first().click();
+    await wait(700);
+    const after = await page.locator(".balance-item .balance-text strong").allInnerTexts();
+    const dismissed = await page.evaluate(() => JSON.parse(localStorage.getItem("vidura.day"))?.dismissed ?? []);
+    pass("A suggestion can be dismissed for today", !after.includes(firstTitle) && dismissed.length === 1, `${firstTitle} → [${after.join(" | ")}]`);
+    await shot(page, "H06-balanced");
+    pass("Light day fits 380px", (await overflow(page)) <= 0);
+    await ctx.close();
+  }
+
+  // ── I · Tips views + fertility guide (men, non-vegetarian)
+  {
+    const men = { ...PROFILE, categories: ["cholesterol", "fertility"], prefs: { region: "tamil", diet: "non-vegetarian", approach: "both", audience: "men" } };
+    const { ctx, page } = await newPage({}, { fn: (p) => localStorage.setItem("vidura.profile", JSON.stringify(p)), arg: men });
+    await page.goto(`${BASE}?at=10:00`);
+    await wait(5200);
+    await page.getByRole("button", { name: "Tips", exact: true }).click();
+    await wait(900);
+    await page.getByRole("tab", { name: "Tricks" }).click();
+    await wait(700);
+    await shot(page, "I01-tricks", true);
+    const tricks = (await page.locator(".trick").allInnerTexts()).join(" ");
+    pass("Tricks show for the chosen focus areas", (await page.locator(".trick").count()) >= 8);
+    pass("Men's notes: men's tricks in, women's out", /Ashwagandha/.test(tricks) && !/Shatavari/.test(tricks));
+    await page.getByRole("tab", { name: "Routines" }).click();
+    await wait(700);
+    await shot(page, "I02-routines", true);
+    pass("Routines: daily ritual + one card per focus", (await page.locator(".routine-card").count()) === 3);
+    await page.getByRole("tab", { name: "Foods" }).click();
+    await wait(900);
+    await page.locator(".food-guide").last().scrollIntoViewIfNeeded();
+    await wait(1400);
+    await shot(page, "I03-foods", true);
+    pass("Foods: enjoy + go easy on, per focus", (await page.locator(".food-guide").count()) === 2 && (await page.locator(".food-col").count()) === 4);
+    pass("Food art loads", (await page.locator(".food-guide .smart-img[data-loaded]").count()) >= 2);
+    pass("Protein per serving on foods", (await page.locator(".food-guide .protein-chip").count()) >= 4);
+    await page.locator(".guide-link").first().click();
+    await wait(1200);
+    await shot(page, "I04-guide");
+    pass("Fertility guide opens for men", (await page.getByRole("radio", { name: /For men/ }).getAttribute("aria-checked")) === "true");
+    const guide = await page.locator(".guide-screen").innerText();
+    pass("Guide covers sperm health, timing, myths, supplements", /Sperm health/.test(guide) && /best time to try/i.test(guide) && /Myth/.test(guide) && /Over-the-counter supplements/.test(guide));
+    pass("Supplements carry honest verdicts", /Avoid/.test(guide) && /Limited evidence/.test(guide) && /MOXI/.test(guide));
+    pass("Boy-or-girl myth answered, PCPNDT noted", /choose a boy or a girl/i.test(guide) && /PCPNDT/.test(guide));
+    const start = new Date(Date.now() - 9 * 864e5);
+    await page.locator('.cycle-tool input[type="date"]').fill(localKey(start));
+    await wait(900);
+    await shot(page, "I05-cycle");
+    pass("Cycle tool estimates the fertile window", (await page.locator(".cycle-ring").count()) === 1 && /Fertile window/.test(await page.locator(".cycle-dl").innerText()));
+    await page.locator(".remember input").check();
+    await wait(300);
+    pass("Cycle dates saved only after opting in", !!(await page.evaluate(() => localStorage.getItem("vidura.cycle"))));
+    await page.locator(".remember input").uncheck();
+    await wait(300);
+    pass("Switching it off forgets them", (await page.evaluate(() => localStorage.getItem("vidura.cycle"))) === null);
+    await page.getByRole("radio", { name: /For women/ }).click();
+    await wait(600);
+    pass("Women's view: egg health + folic acid", /Egg health/.test(await page.locator(".guide-screen").innerText()) && /Folic acid/.test(await page.locator(".supp-list").innerText()));
+    await shot(page, "I06-guide-women", true);
+    pass("Guide fits 380px", (await overflow(page)) <= 0);
+    await page.locator(".guide-back").first().click();
+    await wait(800);
+    pass("Back returns to Tips", (await page.locator(".tips-screen").count()) === 1);
+    await ctx.close();
+  }
+
+  // ── J · Clear my data removes everything, including today's plate and cycle
+  {
+    const { ctx, page } = await newPage({}, seed);
+    await page.goto(`${BASE}?at=16:10`);
+    await wait(5000);
+    await page.evaluate((key) => {
+      localStorage.setItem("vidura.day", JSON.stringify({ version: 1, date: key, swaps: {}, extras: [], lighter: {}, dismissed: [] }));
+      localStorage.setItem("vidura.cycle", JSON.stringify({ lastStart: key, cycleLength: 28, periodLength: 5 }));
+    }, localKey(new Date()));
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await wait(800);
+    await page.getByRole("button", { name: "Clear my data" }).click();
+    await wait(400);
+    await page.getByRole("button", { name: "Yes, clear it" }).click();
+    await wait(1200);
+    const left = await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith("vidura.")));
+    pass("Clear my data removes every vidura.* key", left.length === 0, left.join(","));
+    await ctx.close();
+  }
+
+  // ── K · Desktop: fertility guide + Now with plate
+  {
+    const fert = { ...PROFILE, categories: ["fertility", "gut"], prefs: { region: "kerala", diet: "vegan", approach: "modern", audience: "women" } };
+    const { ctx, page } = await newPage(
+      { viewport: { width: 1280, height: 860 }, isMobile: false, hasTouch: false, deviceScaleFactor: 1 },
+      { fn: (p) => localStorage.setItem("vidura.profile", JSON.stringify(p)), arg: fert },
+    );
+    await page.goto(`${BASE}?at=19:00`);
+    await wait(5600);
+    await shot(page, "K01-desktop-now", true);
+    await page.locator(".guide-link").first().click();
+    await wait(1600);
+    await shot(page, "K02-desktop-guide", true);
+    pass("Desktop guide fits", (await overflow(page)) <= 0);
+    await ctx.close();
+  }
+  // ── L · Extras: book summaries for everyone
+  {
+    const { ctx, page } = await newPage({}, seed);
+    await page.goto(`${BASE}?at=20:30`);
+    await wait(5000);
+    await page.getByRole("button", { name: "Extras", exact: true }).click();
+    await wait(1000);
+    await shot(page, "L01-extras", true);
+    pass("Extras lists all nine books", (await page.locator(".book-card").count()) === 9);
+    pass("Extras fits 380px", (await overflow(page)) <= 0);
+    await page.locator(".book-card", { hasText: "Ikigai" }).click();
+    await wait(900);
+    await shot(page, "L02-book-japanese");
+    pass("The Japanese ideas entry covers all four", (await page.locator(".book-part").count()) === 4);
+    pass("Each summary has key ideas and something to try", (await page.locator(".book-ideas li").count()) >= 3 && (await page.locator(".book-try li").count()) >= 2);
+    await page.keyboard.press("Escape");
+    await wait(700);
+    await page.getByRole("button", { name: "Relationships", exact: true }).click();
+    await wait(600);
+    pass("Theme filter narrows the list", (await page.locator(".book-card").count()) === 1);
+    await page.locator(".book-card").first().click();
+    await wait(900);
+    pass("Love Languages carries its evidence note", /proven science/.test(await page.locator(".book-note").innerText()));
+    await page.keyboard.press("Escape");
     await ctx.close();
   }
 } finally {

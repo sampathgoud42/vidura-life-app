@@ -1,7 +1,9 @@
 # Vidura Life — architecture
 
-React 19 + Vite 7 + Framer Motion 12 + Tailwind CSS 4. No backend, no runtime network calls.
-All content lives in **`src/data/content.ts`** (one typed file). Colour lives in **`src/lib/palette.ts`**.
+React 19 + Vite 7 + Framer Motion 12 + Tailwind CSS 4. Local-first: everything runs in the browser.
+The single exception is a best-effort save of the name and email to the SQLite wellness database
+(see *Wellness database*). All content lives in **`src/data/content.ts`** (one typed file). Colour
+lives in **`src/lib/palette.ts`**. Nothing in the project refers to files outside its own folder.
 
 ## Where the content came from
 
@@ -13,12 +15,16 @@ Everything was extracted from the original *Wellness app* artifact (`reference/w
 | Morning ritual, 7-day exercise plan, 6 daily meal slots, evening pranayama, "dinner by 7:30", "sleep before 10:30" | 25 time-phase activities across Dawn → Night |
 | `BASE_MEALS` + `REGION_MEALS` (5 regions × 3 diets × 7 days), protein snacks, air-fry swaps | `MEAL_PLANS` (126 day plans, injected by `scripts/extract-artifact.mjs`) |
 | Region / diet / approach (Modern · Ayurvedic · Both) / gender-specific notes | Optional "Make it yours" step + Settings |
-| Tips + foods to eat / avoid per goal | 48 claim-free tip cards |
+| Tips + foods to eat / avoid per goal | 63 claim-free tip cards (incl. women's / men's notes) |
+| The earlier Vidura World wellness site (`reference/old-app/`): remedies by approach × gender, morning additions, foods | `TRICKS` (~120), `DAILY_RITUAL`, `MORNING_ADDS`, `FOOD_GUIDES` (enjoy / go easy on, with illustrations) |
+| (new) | Fertility guide, protein per meal, meal swaps + balance suggestions, Extras (book summaries) |
 | 15 affirmations | 32 welcome messages (15 original + 17 new) |
 
 Per the brief, medical and physiological claims were removed (e.g. "lowers LDL 10–15 %",
-"equivalent to mild statins", the "testosterone secrets" section). Traditional herbs carry
-a check-with-your-doctor note. The untouched original stays in `reference/` for traceability.
+"equivalent to mild statins", the "testosterone secrets" section, which now appears as a myth
+in the fertility guide). Items with safety concerns (shilajit, guggul, kapikacchu, daily neem,
+giloy) were left out. Traditional herbs carry a check-with-your-doctor note. The untouched
+originals stay in `reference/` for traceability.
 
 ## Component tree
 
@@ -45,10 +51,14 @@ main.tsx
                   │  │  ├─ NowCard         flat illustration fading into a frosted body · Start · Done → LightBurst + log
                   │  │  ├─ "Also good right now"   swap into the Now card
                   │  │  ├─ Up next today   horizontal timeline (next 5 phases, scroll-snap)
-                  │  │  └─ Your day        DayDial (24 h scrub → sky follows) · Today's plate
-                  │  ├─ TipsScreen      filter Chips · CardStack (drag to dismiss / spring back) · footnote
-                  │  └─ InsightsScreen  StreakRing · RadialStat per category · phase bars · favourite
-                  ├─ TabBar            Now · Tips · Insights (shared layoutId pill)
+                  │  │  ├─ Your day        DayDial (24 h scrub → sky follows)
+                  │  │  ├─ TodayPlate      protein per meal + ProteinMeter · Change → MealSwapSheet · Balance your day
+                  │  │  └─ guide link      (Fertility focus) → FertilityGuide
+                  │  ├─ TipsScreen      Segmented tabs: Tips (CardStack) · Tricks · Routines · Foods (FoodGuideCard) · focus Chips
+                  │  ├─ InsightsScreen  StreakRing · RadialStat per category · phase bars · favourite
+                  │  ├─ ExtrasScreen    theme Chips · book cards → BookSheet (summary, parts, key ideas, try this)
+                  │  └─ FertilityGuide  women / men · CycleTool + CycleRing · timing · pros & cons · egg / sperm health · foods · myths · supplements · doctor · sources
+                  ├─ TabBar            Now · Tips · Insights · Extras (shared layoutId pill)
                   ├─ Preview pill      "Previewing 7:30 pm · Back to now"
                   ├─ SettingsSheet     BottomSheet: name, email, focus, kitchen, Clear my data
                   └─ GuidedMode        portal: orb + circular progress timer · steps · pause · wake lock
@@ -73,7 +83,23 @@ interface LogEntry {
   id: string; activityId: string; categories: CategoryId[];
   phase: PhaseId; at: string /* ISO */; date: string /* local YYYY-MM-DD */; minute: number;
 }
+
+// localStorage "vidura.day": today's plate; a stored state from another day is ignored
+interface DayState {
+  version: 1; date: string;                       // local YYYY-MM-DD
+  swaps: Partial<Record<MealSlot, Meal>>;          // Meal = { title, detail, protein }
+  extras: DayExtra[];                              // added for balance: a food (with protein) or a walk
+  lighter: Partial<Record<MealSlot, string>>;      // "Half the rice, with extra sabzi or salad"
+  dismissed: string[];                             // suggestion ids, today only
+}
+
+// localStorage "vidura.cycle": only while "Remember these dates" is on
+interface SavedCycle { lastStart: string; cycleLength: number /* 21–40 */; periodLength: number /* 2–8 */ }
+
+// localStorage "vidura.contact": which email was last saved to the wellness database
 ```
+
+Clear my data removes every `vidura.*` key.
 
 | State | Owner | Notes |
 | --- | --- | --- |
@@ -97,9 +123,48 @@ For the phase at the current minute, each eligible activity (approach filter) is
 ```
 
 The best becomes the Now card, the next three are "Also good right now". Meal activities
-pull today's dish from `dayPlan(prefs, weekday)`, which applies the artifact's own protein
-rules (protein snack every day; air-fry dinners daily and lunches Tue/Thu/Sat for
-non-vegetarians). `upNext` scores each upcoming phase at a representative anchor time.
+pull today's dish from `todayPlan(prefs, weekday, swaps)`: `dayPlan` applies the artifact's own
+protein rules (protein snack every day; air-fry dinners daily and lunches Tue/Thu/Sat for
+non-vegetarians), then today's swaps are laid on top. An activity added by a balance suggestion
+scores +8 in its window. `upNext` scores each upcoming phase at a representative anchor time
+(tomorrow's phases ignore today's swaps).
+
+### Protein estimates (`scripts/lib/protein.mjs`)
+
+Run at extraction time, so every `Meal` carries `protein` (grams). Each description is split into
+components ("2 bajra rotis", "150g chicken", "½ cup brown rice") and matched against a table of
+typical home servings (IFCT 2017 / USDA ballpark), scaled by counts, weights, cups or tablespoons.
+One-dish phrases merge ("moong dal + brown rice khichdi"), negations drop out ("no curd"), meat
+and fish weights read as raw, and thali meat portions shrink. The UI shows "≈ N g".
+
+### Today's plate: swaps and balance (`lib/meals.ts`, `lib/balance.ts`)
+
+- **Swaps**: alternatives for one slot come from your kitchen's other days, other regional
+  kitchens and the protein picks. Diet is a hard filter (vegetarian = vegetarian + vegan plans;
+  vegan = vegan only). Options are ranked with focus weights over tags read from the text
+  (millet, legume, greens, fermented, fish, fried, sweet …), plus protein. Near-duplicates merge.
+- **Balance**: up to three suggestions. Add a protein food when the plate is under the ~0.8 g/kg
+  guide (46 / 50 / 54 g) or a swap took 6 g or more out. After a heavier swap: a walk and a lighter
+  next meal. Late in the day with no movement logged: an evening stroll. Plenty of protein: drop
+  an added portion. All optional, undoable and dismissible for the day.
+
+### Fertility guide (`screens/FertilityGuide.tsx`, `lib/cycle.ts`)
+
+Calendar-day maths: ovulation ≈ 14 days before the next period, fertile window = the 5 days
+before plus ovulation day, cycles 21–40 days, projected forward over whole cycles. Content follows
+WHO, NICE CG156, ASRM and NHS guidance. Supplements carry evidence verdicts (FAZST and MOXI for
+men). There's no method to choose a baby's sex, so the guide answers that myth and notes the PCPNDT Act.
+
+### Wellness database (`server/wellness-db.mjs`)
+
+SQLite through Node's built-in `node:sqlite` (no dependency). `data/wellness.db` (git-ignored) is
+created on first save. `PUT /api/wellness/contact {name, email, previousEmail?}` upserts on the
+email (case-insensitive): a new email is inserted, a known one is updated, and a changed email
+renames the existing row. Only the name and email are sent. The Vite dev and preview servers mount
+the endpoint; `npm run wellness-api` runs it standalone (port 8791, CORS allow-list, rate limit).
+The client (`lib/remote.ts`) calls it as soon as the email is entered and after edits in Settings,
+with a timeout, and **silently gives up** on any failure. The hosted build only calls it when built
+with `VITE_WELLNESS_API`.
 
 ### Living light
 

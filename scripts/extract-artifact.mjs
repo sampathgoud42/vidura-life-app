@@ -12,6 +12,9 @@
  * - Strips explicit physiological / medical claims from meal descriptions
  *   (e.g. "— nature's statin"), keeping the food itself. Every change is
  *   printed so it can be reviewed.
+ * - Adds an approximate protein figure (grams) to every meal, estimated from
+ *   its description by scripts/lib/protein.mjs. The artifact's own inline
+ *   "~47g protein" labels are dropped in favour of that one consistent estimate.
  *
  * Usage: node scripts/extract-artifact.mjs [--dry]
  */
@@ -19,6 +22,7 @@ import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
 import { fileURLToPath } from "node:url";
+import { estimateProtein } from "./lib/protein.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(root, "reference", "wellness-app.original.jsx");
@@ -53,10 +57,20 @@ fs.writeFileSync(OUT_JSON, JSON.stringify(data, null, 2) + "\n", "utf8");
 
 // ── Claim cleanup ─────────────────────────────────────────────────────────────
 const CLAIM =
-  /statin|anti-?inflam|anti-?LDL|\bLDL\b|\bHDL\b|enzyme|papain|bromelain|polyphenol|metabolism|insulin|heart-healthy|gut-friendly|omega-3|probiotic|zinc|\bGI\b|glyc|detox|immun|hormon/i;
+  /statin|anti-?inflam|anti-?LDL|\bLDL\b|\bHDL\b|enzyme|papain|bromelain|polyphenol|metabolism|insulin|heart-healthy|gut-friendly|omega-3|probiotic|zinc|\bGI\b|glyc|detox|immun|hormon|healing|cholesterol|blood sugar|diabetic|for sugar|superfood|digestive|cooling|protein|iron-rich|filling/i;
 const changes = [];
+
+/** The artifact's inline protein labels ("· ~47g protein ·"): replaced by our own estimate. */
+const stripProtein = (text) =>
+  text
+    .replace(/\s*·\s*~\d+\s*g protein\s*(?=·|\+)/g, " ")
+    .replace(/\s*·?\s*~\d+\s*g protein\s*$/g, "")
+    .replace(/\s*·\s*\+\s*/g, " + ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
 function clean(text) {
-  let out = text;
+  let out = stripProtein(text);
   // "food — claim, keep. claim" → "food — keep": drop only the claim fragments of a suffix
   const parts = out.split(" — ");
   if (parts.length > 1) {
@@ -98,7 +112,13 @@ const splitTheme = (theme) => {
   const m = theme.match(/^(.*?)\s*(\p{Extended_Pictographic}[️‍\p{Extended_Pictographic}]*)?\s*$/u);
   return { name: (m?.[1] ?? theme).trim(), emoji: safeEmoji(m?.[2] ?? "") };
 };
-const meal = (x) => ({ title: safeEmoji(x.t.trim()), detail: safeEmoji(clean(x.d.trim())) });
+const TYPOS = { Murukkku: "Murukku", "bassar —": "bassaru —" };
+const fixTypos = (s) => Object.entries(TYPOS).reduce((out, [a, b]) => out.split(a).join(b), s);
+const meal = (x) => {
+  const title = fixTypos(safeEmoji(x.t.trim()));
+  const raw = fixTypos(x.d.trim());
+  return { title, detail: safeEmoji(clean(raw)), protein: estimateProtein(title, raw) };
+};
 const day = (d) => {
   const { name, emoji } = splitTheme(d.theme);
   const out = { theme: name, emoji };
@@ -120,7 +140,7 @@ for (const r of Object.values(plans))
   }
 
 const q = (s) => JSON.stringify(s);
-const emitMeal = (m) => `{ title: ${q(m.title)}, detail: ${q(m.detail)} }`;
+const emitMeal = (m) => `{ title: ${q(m.title)}, detail: ${q(m.detail)}, protein: ${m.protein} }`;
 const emitDay = (d, pad) =>
   `${pad}{\n${pad}  theme: ${q(d.theme)}, emoji: ${q(d.emoji)},\n` +
   Object.values(SLOT_KEYS)
@@ -129,7 +149,7 @@ const emitDay = (d, pad) =>
   `\n${pad}},`;
 const emitSimpleList = (name, list) =>
   `export const ${name}: readonly Meal[] = [\n` +
-  list.map((x) => `  ${emitMeal({ title: x.t, detail: clean(x.d) })},`).join("\n") +
+  list.map((x) => `  ${emitMeal(meal(x))},`).join("\n") +
   `\n];`;
 
 const ts = [
@@ -154,11 +174,6 @@ const ts = [
   ``,
   `/** Non-vegetarian air-fry lunches — used on alternate days (Tue, Thu, Sat). */`,
   emitSimpleList("AIR_FRY_LUNCHES", data.AIR_FRY_LUNCHES),
-  ``,
-  `/** Approximate daily protein (g) per diet, Monday → Sunday. */`,
-  `export const PROTEIN_ESTIMATE: Record<DietId, readonly number[]> = {`,
-  ...Object.entries(DIET_IDS).map(([src, id]) => `  ${q(id)}: ${q(data.PROTEIN_EST[src])},`),
-  `};`,
 ].join("\n");
 
 if (DRY) {

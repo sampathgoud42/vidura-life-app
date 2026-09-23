@@ -8,7 +8,7 @@ description + a composition hint for its aspect ratio + the shared style block:
 `{phase}` is filled with the slot's tone (e.g. *dawn — soft peach and lilac*). Files land in
 `public/assets/{phase|focus}/{slug}.webp` (+ `-sm.webp`), lazy-loaded with a blurred placeholder.
 
-Total: **37 images** (≈ $4.96 at 2K).
+Total: **51 images** (≈ $6.83 at 2K).
 
 ## Category tiles (1:1)
 
@@ -310,4 +310,120 @@ A small brass bowl of triphala powder and a glass of warm water on a wooden tray
 
 ```text
 A serene bedroom at night with rumpled linen bedding, moonlight through a window and a small jasmine sprig on the bedside, deep indigo. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of indigo, deep teal, midnight navy, soft lavender and pale moonlight yellow, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+## Food guides (1:1)
+
+### Cholesterol · enjoy
+
+`assets/food/cholesterol-enjoy.webp` · 16:9 · tone: morning
+
+```text
+A calm still life of foods to enjoy: a clay bowl of oats topped with walnuts, a small heap of red kidney beans, a halved pomegranate, a garlic bulb, a sprig of ginger and a small bottle of mustard oil, arranged loosely on a table. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Cholesterol · go easy on
+
+`assets/food/cholesterol-limit.webp` · 16:9 · tone: morning
+
+```text
+A South Asian hand gently pushing away a plate of fried samosas and pakoras, a tin of vanaspati and a bowl of creamy curry set a little apart, calm and non-judgemental. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Blood Sugar · enjoy
+
+`assets/food/sugar-enjoy.webp` · 16:9 · tone: midday
+
+```text
+A calm still life of foods to enjoy: a stack of jowar rotis, a bowl of dal, a whole bitter gourd, a few guavas, a sprig of methi leaves and a cinnamon stick, arranged loosely on a table. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of clear sky blue, sunny yellow, off-white, turquoise and deep navy, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Blood Sugar · go easy on
+
+`assets/food/sugar-limit.webp` · 16:9 · tone: midday
+
+```text
+A South Asian hand gently pushing away a plate of mithai, with a glass of packaged juice and a slice of white bread set a little apart, calm and non-judgemental. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of clear sky blue, sunny yellow, off-white, turquoise and deep navy, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Fertility · enjoy
+
+`assets/food/fertility-enjoy.webp` · 16:9 · tone: evening
+
+```text
+A calm still life of foods to enjoy: a halved pomegranate, a small bowl of walnuts, a scatter of pumpkin seeds, a bowl of yellow dal, a bunch of spinach and two tomatoes, arranged loosely on a table. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of amber, terracotta, dusty rose, deep plum and warm cream, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Fertility · go easy on
+
+`assets/food/fertility-limit.webp` · 16:9 · tone: evening
+
+```text
+A South Asian hand gently setting aside a glass of beer and a large cup of coffee, a packet of chips and a plastic takeaway box set a little apart, calm and non-judgemental. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of amber, terracotta, dusty rose, deep plum and warm cream, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Hormonal Balance · enjoy
+
+`assets/food/hormonal-enjoy.webp` · 16:9 · tone: dawn
+
+```text
+A calm still life of foods to enjoy: three small bowls of flax, sesame and pumpkin seeds, a sweet potato, a head of broccoli, a few berries and a glass cup of mint tea, arranged loosely on a table. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of soft peach, blush pink, lilac, warm cream and a touch of deep plum, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Hormonal Balance · go easy on
+
+`assets/food/hormonal-limit.webp` · 16:9 · tone: dawn
+
+```text
+A South Asian hand gently pushing away a sugary pastry and a third cup of coffee, with a plastic lunch box set a little apart, calm and non-judgemental. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of soft peach, blush pink, lilac, warm cream and a touch of deep plum, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Gut Health · enjoy
+
+`assets/food/gut-enjoy.webp` · 16:9 · tone: afternoon
+
+```text
+A calm still life of foods to enjoy: a plate of soft idli, a clay bowl of curd, a glass of buttermilk, a small dish of fennel seeds, a garlic bulb and a banana, arranged loosely on a table. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Gut Health · go easy on
+
+`assets/food/gut-limit.webp` · 16:9 · tone: afternoon
+
+```text
+A South Asian hand gently pushing away a can of fizzy drink and a bag of chips, a glass of iced soda set a little apart, calm and non-judgemental. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Inflammation · enjoy
+
+`assets/food/inflammation-enjoy.webp` · 16:9 · tone: morning
+
+```text
+A calm still life of foods to enjoy: fresh turmeric root, a knob of ginger, a small bowl of berries, walnuts, a bunch of leafy greens and a beetroot, arranged loosely on a table. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Inflammation · go easy on
+
+`assets/food/inflammation-limit.webp` · 16:9 · tone: morning
+
+```text
+A South Asian hand gently pushing away a plate of deep-fried snacks and a sugary dessert, a tin of vanaspati set a little apart, calm and non-judgemental. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+## Fertility guide (16:9)
+
+### Fertility guide · women
+
+`assets/fertility/women.webp` · 16:9 · tone: dawn
+
+```text
+A South Asian woman sitting relaxed by a sunny window with a cup of tea, a simple wall calendar beside her with a few days softly circled, a potted plant, hopeful and calm. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of soft peach, blush pink, lilac, warm cream and a touch of deep plum, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Fertility guide · men
+
+`assets/fertility/men.webp` · 16:9 · tone: afternoon
+
+```text
+A South Asian man calmly preparing a colourful meal at a kitchen counter: sliced tomatoes, a bowl of walnuts and pumpkin seeds, leafy greens and a glass of water, relaxed posture. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```

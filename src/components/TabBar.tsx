@@ -1,13 +1,14 @@
 import { motion } from "framer-motion";
 import { haptics } from "../lib/device";
-import { Cards, Chart, Sun } from "./Icons";
+import { Book, Cards, Chart, Sun } from "./Icons";
 
-export type TabId = "now" | "tips" | "insights";
+export type TabId = "now" | "tips" | "insights" | "extras";
 
 const TABS: { id: TabId; label: string; Icon: typeof Sun }[] = [
   { id: "now", label: "Now", Icon: Sun },
   { id: "tips", label: "Tips", Icon: Cards },
   { id: "insights", label: "Insights", Icon: Chart },
+  { id: "extras", label: "Extras", Icon: Book },
 ];
 
 export function TabBar({ tab, onChange }: { tab: TabId; onChange: (t: TabId) => void }) {
