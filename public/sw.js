@@ -1,5 +1,5 @@
 /* Vidura Life service worker — offline app shell, cached assets, fresh HTML when online. */
-const VERSION = "vidura-v4"; // bump on releases that replace assets: old caches are dropped on activate
+const VERSION = "vidura-v5"; // bump on releases that replace assets: old caches are dropped on activate
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/favicon.svg"];
 
 self.addEventListener("install", (event) => {

@@ -8,7 +8,7 @@ description + a composition hint for its aspect ratio + the shared style block:
 `{phase}` is filled with the slot's tone (e.g. *dawn — soft peach and lilac*). Files land in
 `public/assets/{phase|focus}/{slug}.webp` (+ `-sm.webp`), lazy-loaded with a blurred placeholder.
 
-Total: **51 images** (≈ $6.83 at 2K).
+Total: **56 images** (≈ $7.50 at 2K).
 
 ## Category tiles (1:1)
 
@@ -26,6 +26,14 @@ A clay bowl of oats topped with walnuts, almonds and pomegranate seeds beside a 
 
 ```text
 Overhead view of a steel thali with jowar roti, dal, cucumber slices and leafy greens, a small bowl of fenugreek seeds and a cinnamon stick on a stone counter. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of clear sky blue, sunny yellow, off-white, turquoise and deep navy, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Blood Pressure
+
+`assets/focus/bp.webp` · 1:1 · tone: afternoon
+
+```text
+A South Asian woman sitting relaxed at a small table checking her blood pressure with a home cuff on her upper arm, a bowl of bananas and oranges and a glass of water beside her, calm posture. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Fertility
@@ -152,6 +160,14 @@ A South Asian man sitting cross-legged on a rooftop at sunrise with eyes closed 
 A South Asian woman standing on a balcony holding a cup of tea, face turned towards warm morning sun, potted marigolds on the ledge. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
+### Morning · Check your blood pressure
+
+`assets/morning/bp-check.webp` · 4:5 · tone: morning
+
+```text
+A South Asian man seated upright at a wooden table measuring his blood pressure with a home cuff on his upper arm, a glass of water and a small notebook beside him, calm morning light. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
 ### Morning · Breakfast
 
 `assets/morning/breakfast.webp` · 4:5 · tone: morning
@@ -230,6 +246,14 @@ A glass cup of herbal tea with fresh tulsi leaves and a cinnamon stick on a wood
 
 ```text
 A South Asian man doing slow bodyweight squats in a bright living room with plants, relaxed focus, clear afternoon light. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Afternoon · Wall sits, four short holds
+
+`assets/afternoon/wall-sit.webp` · 4:5 · tone: afternoon
+
+```text
+A South Asian woman doing a wall sit exercise against a pale wall at home, back flat, knees bent, relaxed face, a water bottle on the floor beside her, clear afternoon light. Vertical 4:5 frame; subject in the upper two-thirds, the bottom third a calm, simple flat area with very few shapes. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Afternoon · Refill your water
@@ -344,6 +368,22 @@ A calm still life of foods to enjoy: a stack of jowar rotis, a bowl of dal, a wh
 
 ```text
 A South Asian hand gently pushing away a plate of mithai, with a glass of packaged juice and a slice of white bread set a little apart, calm and non-judgemental. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of clear sky blue, sunny yellow, off-white, turquoise and deep navy, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Blood Pressure · enjoy
+
+`assets/food/bp-enjoy.webp` · 16:9 · tone: afternoon
+
+```text
+A calm still life of foods to enjoy: a bunch of bananas, a tender green coconut with a straw, a bowl of spinach, a halved beetroot, a bowl of yellow dal and a lemon, arranged loosely on a table. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Blood Pressure · go easy on
+
+`assets/food/bp-limit.webp` · 16:9 · tone: afternoon
+
+```text
+A South Asian hand gently pushing away a jar of pickle, a stack of papad and a packet of salty namkeen, with a salt shaker set a little apart, calm and non-judgemental. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ### Fertility · enjoy

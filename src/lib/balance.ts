@@ -66,10 +66,10 @@ const PROTEIN_ADDS: readonly ProteinAdd[] = [
   { id: "milk", icon: "🥛", title: "A glass of milk", detail: "200 ml, warm or cold", protein: 7, diets: DAIRY, slots: ["breakfast", "midMorning", "snack"] },
   { id: "sprouts", icon: "🌱", title: "Moong sprouts", detail: "1 cup, with lemon and onion", protein: 7, diets: ALL, slots: ["midMorning", "snack"] },
   { id: "dal", icon: "🥣", title: "An extra katori of dal", detail: "with your meal", protein: 7, diets: ALL, slots: ["lunch", "dinner"] },
-  { id: "peanuts", icon: "🥜", title: "Roasted peanuts", detail: "¼ cup, a small handful", protein: 8, diets: ALL, slots: ["midMorning", "snack"] },
+  { id: "peanuts", icon: "🥜", title: "Roasted peanuts", detail: "¼ cup, unsalted", protein: 8, diets: ALL, slots: ["midMorning", "snack"] },
   { id: "tofu", icon: "🍲", title: "Tofu", detail: "100 g, in a bhurji or curry", protein: 9, diets: ALL, slots: ["breakfast", "lunch", "dinner"] },
   { id: "paneer", icon: "🧀", title: "Paneer", detail: "50 g, grilled or in a bhurji", protein: 9, diets: DAIRY, slots: ["breakfast", "lunch", "dinner"] },
-  { id: "chana", icon: "🥜", title: "Roasted chana", detail: "½ cup", protein: 10, diets: ALL, slots: ["midMorning", "snack"] },
+  { id: "chana", icon: "🥜", title: "Roasted chana", detail: "½ cup, unsalted", protein: 10, diets: ALL, slots: ["midMorning", "snack"] },
   { id: "eggs", icon: "🥚", title: "Two boiled eggs", detail: "with a pinch of pepper", protein: 13, diets: ["non-vegetarian"], slots: ["breakfast", "snack"] },
   { id: "chicken", icon: "🍗", title: "Grilled chicken", detail: "100 g", protein: 23, diets: ["non-vegetarian"], slots: ["lunch", "dinner"] },
 ];
@@ -163,6 +163,8 @@ export function balanceSuggestions(input: BalanceInput): Suggestion[] {
       out.push({ id: "tip-sugar-order", kind: "tip", icon: "🥗", title: "Vegetables first", body: "Start that meal with salad or sabzi, then dal, and finish with the rice or roti." });
     if (categories.includes("cholesterol") && (tags.has("fried") || tags.has("ghee") || tags.has("coconut")))
       out.push({ id: "tip-chol-oil", kind: "tip", icon: "🥄", title: "Go easy on oil later", body: "Keep the next meal's tadka to a teaspoon of oil." });
+    if (categories.includes("bp") && tags.has("salty"))
+      out.push({ id: "tip-bp-salt", kind: "tip", icon: "🧂", title: "Easy on salt for the rest of the day", body: "Skip the pickle and papad at the next meal, and have a fruit or some tender coconut water later." });
     if (categories.includes("gut") && slot === "dinner")
       out.push({ id: "tip-gut-saunf", kind: "tip", icon: "🌿", title: "Saunf after dinner", body: "A teaspoon of fennel seeds after a fuller dinner, and a gentle stroll." });
   }

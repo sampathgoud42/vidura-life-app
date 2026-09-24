@@ -13,6 +13,10 @@ and the earlier Vidura World wellness site (remedies, routines, foods).
 - **Fertility guide** (with the Fertility focus): cycle and fertile-window estimates, the best time to
   try, tracking pros and cons, egg / sperm health, myths and facts, OTC supplements with evidence verdicts.
 - **Extras** for everyone: short summaries of nine books and ideas, from Ikigai to the I Ching.
+- **Seven focus areas**: cholesterol, blood sugar, blood pressure, gut, inflammation, hormonal balance and fertility.
+  Blood pressure follows WHO (under 5 g salt a day, potassium salt substitutes), ESH 2023 (135/85 at home,
+  140/90 in clinic), the 2025 AHA/ACC guideline (DASH, less sodium, more potassium, activity, less alcohol)
+  and the 2023 BJSM exercise review (isometric wall sits), with a morning home-BP check and wall-sit sessions.
 
 Local-first: no accounts. Plans, history, swaps and cycle details stay on the device. The only thing
 that leaves it is the **name and email** entered at sign-up, saved to the SQLite wellness database
@@ -37,7 +41,7 @@ Try any time of day with `?at=HH:MM`, e.g. `http://localhost:5173/?at=19:15` (th
 | `npm run qa` | Drives the built app: onboarding and validation edge cases, the wellness DB upsert, storage blocked, every phase, 4:59 → 5:00 and midnight boundaries, reduced motion, meal swaps and balance, Tips views, the fertility guide, Extras, 380 px and desktop layouts. Screenshots go to `qa/screens/`. |
 | `npm run wellness-api` | Runs the wellness contact API on its own (port 8791), for a hosted site. |
 | `npm run contrast` | WCAG AA audit of every phase palette (worst-case over the mesh and glass). |
-| `npm run images:prompts` | Writes `docs/IMAGE_PROMPTS.md` (all 51 Nano Banana Pro prompts). |
+| `npm run images:prompts` | Writes `docs/IMAGE_PROMPTS.md` (all 56 Nano Banana Pro prompts). |
 | `npm run images:dry` | Lists missing images and estimates the cost. |
 | `npm run images` | Generates missing images with Nano Banana Pro, writes WebP + `-sm` variants, rebuilds blurred placeholders. |
 | `npm run extract` | Re-extracts the meal plans from `reference/wellness-app.original.jsx` into `src/data/content.ts`, with ≈ protein per meal (`scripts/lib/protein.mjs`). |
@@ -46,7 +50,7 @@ Try any time of day with `?at=HH:MM`, e.g. `http://localhost:5173/?at=19:15` (th
 ## Images (Nano Banana Pro)
 
 1. Copy `.env.example` to `.env.local` and set `GEMINI_API_KEY` (Google AI Studio key with Gemini 3 Pro Image access).
-2. `npm run images:dry` shows the cost estimate. All 51 images at 2K come to about **$6.80** (1K and 2K cost the same; 4K costs more).
+2. `npm run images:dry` shows the cost estimate. All 56 images at 2K come to about **$7.50** (1K and 2K cost the same; 4K costs more).
 3. `npm run images` generates them. Existing files are skipped; use `--force` to redo them or `--only=night` to filter.
 
 Art direction: content-themed **modern minimalist flat illustration**. Bold geometric shapes, clean

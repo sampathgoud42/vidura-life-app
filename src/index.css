@@ -982,10 +982,13 @@ html.phase-shift *::after {
    transforms on the tile itself never collide with the float). */
 .float-field {
   --tile: 44vw;
-  display: grid;
-  grid-template-columns: repeat(var(--cols, 2), var(--tile));
+  --gap: 14px;
+  display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 14px;
+  gap: var(--gap);
+  max-width: calc(var(--cols, 2) * var(--tile) + (var(--cols, 2) - 1) * var(--gap));
+  margin-inline: auto;
   padding: 12px 0 18px;
 }
 .float-slot {
@@ -1099,6 +1102,30 @@ html.phase-shift *::after {
 .tile-on .tile-check {
   background: var(--accent);
   border-color: transparent;
+}
+/* Phone-sized tiles (three across): a smaller caption that can hyphenate long words. */
+@container (max-width: 139px) {
+  .tile-text {
+    padding: 1.1rem 0.55rem 0.55rem;
+  }
+  .tile-label {
+    font-size: 0.84rem;
+    line-height: 1.15;
+    hyphens: manual;
+  }
+  .tile-emoji {
+    top: 8px;
+    left: 8px;
+    width: 30px;
+    height: 30px;
+    font-size: 0.95rem;
+  }
+  .tile-check {
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+  }
 }
 /* Floating action bars: frosted so content scrolling underneath stays out of the way. */
 .focus-footer,
@@ -3613,7 +3640,7 @@ html.phase-shift *::after {
 }
 @media (min-width: 768px) {
   .float-field {
-    gap: 28px;
+    --gap: 28px;
     padding-block: 16px 22px;
   }
   .focus .screen-head {

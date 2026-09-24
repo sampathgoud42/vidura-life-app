@@ -74,6 +74,13 @@ Handy for manual passes: append `?at=HH:MM` to start the app's clock at any time
 - [ ] **[auto]** Routines: daily ritual + one card per focus (morning add-ons, the day's rhythm).
 - [ ] **[auto]** Foods: enjoy / go easy on per focus, with art and ≈ protein per serving; diet-filtered.
 
+## 6a · Blood pressure
+- [ ] **[auto]** Focus shows 7 tiles, all visible above the action bar at 380 × 820 (3 + 3 + 1) and on desktop (4 + 3).
+- [ ] **[auto]** With the BP focus, the morning offers the home BP check; tips, tricks, routine (readings + wall sits) and foods appear.
+- [ ] **[auto]** Meal swaps rank BP-friendly dishes first (low salt, potassium-rich).
+- [ ] A salty swap (papad, pickle) prompts the go-easy-on-salt tip.
+- [ ] Tricks with potassium or breathing cautions show them (kidney disease, low BP, pregnancy).
+
 ## 6b · Fertility guide
 - [ ] **[auto]** Opens from Tips (and Now) with the Fertility focus; defaults to men / women from the notes setting.
 - [ ] **[auto]** Covers timing, pros & cons, sperm / egg health, foods, myths, supplements with verdicts, when to see a doctor, sources.

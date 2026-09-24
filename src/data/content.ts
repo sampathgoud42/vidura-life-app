@@ -17,7 +17,7 @@
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export type PhaseId = "dawn" | "morning" | "midday" | "afternoon" | "evening" | "night";
-export type CategoryId = "cholesterol" | "sugar" | "fertility" | "hormonal" | "gut" | "inflammation";
+export type CategoryId = "cholesterol" | "sugar" | "bp" | "fertility" | "hormonal" | "gut" | "inflammation";
 export type RegionId = "pan-indian" | "north-indian" | "telugu" | "tamil" | "kerala" | "bangalore";
 export type DietId = "vegetarian" | "non-vegetarian" | "vegan";
 export type ApproachId = "both" | "modern" | "ayurvedic";
@@ -72,6 +72,8 @@ export interface Category {
   /** The goal name used in the original artifact. */
   artifactId: string;
   label: string;
+  /** The label with soft hyphens, for small focus tiles (breaks only when it must). */
+  tileLabel?: string;
   short: string;
   emoji: string;
   blurb: string;
@@ -291,6 +293,7 @@ export const CATEGORIES: readonly Category[] = [
     id: "cholesterol",
     artifactId: "Cholesterol",
     label: "Cholesterol",
+    tileLabel: "Choles\u00ADterol",
     short: "Heart",
     emoji: "❤️",
     blurb: "Kinder fats, fibre-rich plates and daily walks.",
@@ -315,6 +318,21 @@ export const CATEGORIES: readonly Category[] = [
       "midday",
       "A millet roti thali with dal, cucumber and leafy greens",
       "Overhead view of a steel thali with jowar roti, dal, cucumber slices and leafy greens, a small bowl of fenugreek seeds and a cinnamon stick on a stone counter",
+    ),
+  },
+  {
+    id: "bp",
+    artifactId: "Blood Pressure (added)",
+    label: "Blood Pressure",
+    short: "BP",
+    emoji: "🩺",
+    blurb: "Less salt, more greens and fruit, daily walks and slow breathing.",
+    image: img(
+      "assets/focus/bp.webp",
+      "1:1",
+      "afternoon",
+      "A woman checking her blood pressure at home beside a bowl of fruit",
+      "A South Asian woman sitting relaxed at a small table checking her blood pressure with a home cuff on her upper arm, a bowl of bananas and oranges and a glass of water beside her, calm posture",
     ),
   },
   {
@@ -366,6 +384,7 @@ export const CATEGORIES: readonly Category[] = [
     id: "inflammation",
     artifactId: "Inflammation",
     label: "Inflammation",
+    tileLabel: "Inflam\u00ADmation",
     short: "Calm",
     emoji: "🔥",
     blurb: "Turmeric, greens, good sleep and gentle movement.",
@@ -465,6 +484,7 @@ export const ACTIVITIES: readonly Activity[] = [
       inflammation: "A pinch of turmeric and black pepper turns it golden.",
       hormonal: "Soaked flaxseeds pair nicely with this.",
       fertility: "Follow it with a few soaked almonds and walnuts.",
+      bp: "Plain warm water or jeera water. Skip salty drinks first thing.",
     },
     image: img(
       "assets/dawn/warm-water.webp",
@@ -508,7 +528,7 @@ export const ACTIVITIES: readonly Activity[] = [
     summary: "Five soaked almonds, two walnuts and a spoon of pumpkin seeds, eaten slowly.",
     minutes: 3,
     window: [MIN(6), MIN(7)],
-    categories: ["cholesterol", "fertility", "inflammation", "sugar"],
+    categories: ["cholesterol", "fertility", "inflammation", "sugar", "bp"],
     steps: [
       "Slip the skins off the soaked almonds if you like.",
       "Eat slowly and chew well.",
@@ -530,7 +550,7 @@ export const ACTIVITIES: readonly Activity[] = [
     summary: "Six slow breaths a minute while the sky changes colour.",
     minutes: 5,
     window: [MIN(5), MIN(7)],
-    categories: ["hormonal", "inflammation", "fertility"],
+    categories: ["hormonal", "inflammation", "fertility", "bp"],
     breath: { inhale: 5, exhale: 5 },
     steps: [
       "Sit tall with your hands resting on your knees.",
@@ -572,6 +592,31 @@ export const ACTIVITIES: readonly Activity[] = [
     ),
   },
   {
+    id: "morning-bp-check",
+    phase: "morning",
+    kind: "ritual",
+    title: "Check your blood pressure",
+    summary: "Two calm readings at home, seated, before tea or coffee.",
+    minutes: 7,
+    window: [MIN(7), MIN(9)],
+    categories: ["bp"],
+    steps: [
+      "Empty your bladder, then sit for five minutes: back supported, feet flat, legs uncrossed.",
+      "Cuff on your bare upper arm, at heart level, with the arm resting on a table.",
+      "Stay still and quiet during the reading. No talking.",
+      "Take two readings a minute apart and note both.",
+      "Measure at the same time each day, before tea, coffee, a cigarette or exercise.",
+    ],
+    note: "Home readings that average 135/85 or more are worth showing your doctor. A reading of 180/120 or more with chest pain, breathlessness, a severe headache, weakness or changes in vision needs urgent care.",
+    image: img(
+      "assets/morning/bp-check.webp",
+      "4:5",
+      "morning",
+      "A man measuring his blood pressure at home with a cuff on his upper arm",
+      "A South Asian man seated upright at a wooden table measuring his blood pressure with a home cuff on his upper arm, a glass of water and a small notebook beside him, calm morning light",
+    ),
+  },
+  {
     id: "morning-breakfast",
     phase: "morning",
     kind: "meal",
@@ -595,6 +640,7 @@ export const ACTIVITIES: readonly Activity[] = [
       hormonal: "Add a spoon of ground flaxseed if you enjoy it.",
       fertility: "A few pumpkin seeds make a good topping.",
       inflammation: "A pinch of turmeric and black pepper in the tadka.",
+      bp: "Go easy on salt, pickle and chutney powders. Add a fruit or a bowl of curd.",
     },
     image: img(
       "assets/morning/breakfast.webp",
@@ -678,6 +724,7 @@ export const ACTIVITIES: readonly Activity[] = [
       inflammation: "Finish with a squeeze of lemon and fresh coriander.",
       hormonal: "Stir sesame or ground flaxseed into the raita.",
       fertility: "Aim for colourful vegetables and a good portion of protein.",
+      bp: "Taste before you salt, and keep pickle and papad for special days.",
     },
     image: img(
       "assets/midday/lunch.webp",
@@ -718,7 +765,7 @@ export const ACTIVITIES: readonly Activity[] = [
     summary: "A short, easy walk once you've eaten. Stairs count too.",
     minutes: 10,
     window: [MIN(13), MIN(14)],
-    categories: ["sugar", "cholesterol", "gut"],
+    categories: ["sugar", "cholesterol", "gut", "bp"],
     steps: [
       "Head out within 15 minutes of finishing your meal.",
       "Keep it easy. This isn't a workout.",
@@ -805,6 +852,7 @@ export const ACTIVITIES: readonly Activity[] = [
       gut: "Fennel (saunf) tea is a gentle favourite.",
       inflammation: "Tulsi and ginger kadha, lightly spiced.",
       fertility: "Tulsi tea with a little fresh ginger.",
+      bp: "Hibiscus or tulsi tea. Skip blends with mulethi (liquorice).",
     },
     image: img(
       "assets/afternoon/tea.webp",
@@ -822,7 +870,7 @@ export const ACTIVITIES: readonly Activity[] = [
     summary: "Stand up and move. Try not to sit for more than 30 minutes.",
     minutes: 5,
     window: [MIN(14), MIN(17)],
-    categories: ["sugar", "inflammation", "cholesterol"],
+    categories: ["sugar", "inflammation", "cholesterol", "bp"],
     steps: [
       "Stand up and walk to the farthest window.",
       "Ten slow sit-to-stands from your chair.",
@@ -835,6 +883,31 @@ export const ACTIVITIES: readonly Activity[] = [
       "afternoon",
       "A man doing bodyweight squats in a bright living room",
       "A South Asian man doing slow bodyweight squats in a bright living room with plants, relaxed focus, clear afternoon light",
+    ),
+  },
+  {
+    id: "afternoon-wall-sit",
+    phase: "afternoon",
+    kind: "move",
+    title: "Wall sits, four short holds",
+    summary: "Back against a wall, knees bent, hold for up to two minutes. Rest, and repeat.",
+    minutes: 14,
+    window: [MIN(15), MIN(17)],
+    categories: ["bp"],
+    steps: [
+      "Stand with your back flat against a wall, feet hip-width apart and about half a metre out.",
+      "Slide down until your knees bend to a comfortable angle, never past your toes.",
+      "Hold for up to two minutes, breathing normally. Never hold your breath.",
+      "Stand up and rest for two minutes. Four holds in all.",
+      "Start with shallow bends and shorter holds, and build up over the weeks.",
+    ],
+    note: "Isometric holds like these, three times a week, did especially well for blood pressure in a large 2023 review of exercise trials. If your BP is very high, or you have heart or knee problems, ask your doctor first.",
+    image: img(
+      "assets/afternoon/wall-sit.webp",
+      "4:5",
+      "afternoon",
+      "A woman doing a wall sit against a pale wall at home",
+      "A South Asian woman doing a wall sit exercise against a pale wall at home, back flat, knees bent, relaxed face, a water bottle on the floor beside her, clear afternoon light",
     ),
   },
   {
@@ -907,6 +980,7 @@ export const ACTIVITIES: readonly Activity[] = [
       inflammation: "Plenty of vegetables, lightly spiced with turmeric.",
       hormonal: "A steady dinner time helps the evening feel settled.",
       fertility: "Include a good portion of dal, paneer, tofu, eggs or fish.",
+      bp: "Keep dinner light on salt: lemon, herbs and roasted spices carry the flavour.",
     },
     image: img(
       "assets/evening/dinner.webp",
@@ -924,7 +998,7 @@ export const ACTIVITIES: readonly Activity[] = [
     summary: "Five minutes of soft humming on every exhale.",
     minutes: 5,
     window: [MIN(18), MIN(20)],
-    categories: ["hormonal", "fertility", "inflammation"],
+    categories: ["hormonal", "fertility", "inflammation", "bp"],
     breath: { inhale: 4, exhale: 6 },
     steps: [
       "Sit comfortably and close your eyes.",
@@ -949,7 +1023,7 @@ export const ACTIVITIES: readonly Activity[] = [
     summary: "Ten gentle minutes on your feet after eating.",
     minutes: 10,
     window: [MIN(19), MIN(20)],
-    categories: ["sugar", "gut"],
+    categories: ["sugar", "gut", "bp"],
     steps: [
       "Walk at an easy, chatting pace.",
       "Leave the phone in your pocket.",
@@ -1027,7 +1101,7 @@ export const ACTIVITIES: readonly Activity[] = [
     summary: "Lie down and let a slow body scan carry you towards sleep.",
     minutes: 20,
     window: [MIN(21), MIN(22, 30)],
-    categories: ["hormonal", "inflammation", "fertility"],
+    categories: ["hormonal", "inflammation", "fertility", "bp"],
     breath: { inhale: 5, exhale: 5 },
     steps: [
       "Lie on your back and let your feet fall open.",
@@ -1117,6 +1191,21 @@ export const TIPS: readonly Tip[] = [
   { id: "sugar-regular", category: "sugar", kind: "habit", icon: "⏰", title: "Don't skip meals", body: "Regular, moderate meals are easier to manage than long gaps followed by one big meal." },
   { id: "sugar-muscle", category: "sugar", kind: "move", icon: "💪", title: "Build a little muscle", body: "Two or three short strength sessions a week (squats, lunges, push-ups) are well worth the effort." },
   { id: "sugar-sleep", category: "sugar", kind: "rest", icon: "😴", title: "Sleep is part of the plan", body: "Seven to eight hours of sleep belongs in the plan, not as a reward at the end of it." },
+
+  // Blood pressure
+  { id: "bp-salt", category: "bp", kind: "food", icon: "🧂", title: "Under a teaspoon of salt", body: "WHO suggests less than 5 g of salt a day, about one level teaspoon from every source together. Most Indian adults eat around 8 g." },
+  { id: "bp-hidden", category: "bp", kind: "food", icon: "🥫", title: "Salt hides in plain sight", body: "Pickles, papad, namkeen, chutney powders, instant noodles, sauces, bread and bakery biscuits carry a lot of it. Rock salt, black salt and chaat masala count too." },
+  { id: "bp-potassium", category: "bp", kind: "food", icon: "🍌", title: "Plenty of potassium from food", body: "Vegetables, leafy greens, fruit, dal and curd are rich in potassium. With kidney disease, or on some BP medicines, ask your doctor first." },
+  { id: "bp-measure", category: "bp", kind: "care", icon: "🩺", title: "Measure at home, the right way", body: "Sit quietly for five minutes, back supported, feet flat, arm at heart level. Take two readings a minute apart, morning and evening, for a week." },
+  { id: "bp-numbers", category: "bp", kind: "care", icon: "📊", title: "Know your numbers", body: "Home readings averaging 135/85 or more, or clinic readings of 140/90 or more, are worth a doctor's visit. 180/120 with chest pain, breathlessness or a severe headache needs urgent care." },
+  { id: "bp-move", category: "bp", kind: "move", icon: "🚶", title: "Move most days", body: "Aim for 150 minutes of brisk walking a week, and add wall sits or other strength work two or three times a week." },
+  { id: "bp-alcohol", category: "bp", kind: "habit", icon: "🚭", title: "Less alcohol, no tobacco", body: "Keep alcohol low or skip it, and stop smoking or chewing tobacco. Your doctor can help with both." },
+  { id: "bp-sleep", category: "bp", kind: "rest", icon: "😴", title: "Sleep, and mind the snoring", body: "Aim for seven to eight hours. Loud snoring with daytime sleepiness is worth mentioning to your doctor." },
+  { id: "bp-medicines", category: "bp", kind: "care", icon: "💊", title: "Check the medicine cabinet", body: "Painkillers such as ibuprofen or diclofenac, cold remedies with decongestants, and liquorice (mulethi) can push blood pressure up. Ask your pharmacist." },
+  { id: "bp-keep-taking", category: "bp", kind: "care", icon: "🗓️", title: "Keep taking your tablets", body: "Healthy habits work alongside BP medicines, not instead of them. Never stop or change a dose without your doctor." },
+  { id: "bp-pregnancy", category: "bp", audience: "women", kind: "care", icon: "🤰", title: "Blood pressure in pregnancy", body: "Have it checked at every antenatal visit. A severe headache, blurred vision, pain under the ribs or sudden swelling needs urgent care." },
+  { id: "bp-pill", category: "bp", audience: "women", kind: "care", icon: "🌸", title: "The pill and menopause", body: "If you take the combined pill, have your blood pressure checked at least once a year. It also tends to rise around menopause, so keep up regular checks." },
+  { id: "bp-men-early", category: "bp", audience: "men", kind: "care", icon: "📏", title: "It often starts early", body: "High blood pressure often starts earlier in men and can go unnoticed for years. Check it every year from 40, and every few years before that." },
 
   // Fertility
   { id: "fert-colour", category: "fertility", kind: "food", icon: "🥬", title: "Colourful plates", body: "Leafy greens, lentils, seeds, pomegranate and seasonal fruit keep meals varied and nourishing." },
@@ -1259,6 +1348,35 @@ export const TRICKS: readonly Trick[] = [
     { id: "sugar-a-shatavari", audience: "women", icon: "🌸", title: "Shatavari with methi", body: "In Ayurveda, shatavari is often paired with methi for women.", herb: true, dietNote: VEGAN_MILK },
     { id: "sugar-a-tulsi-spearmint", audience: "women", icon: "🌿", title: "Tulsi and spearmint tea", body: "Tulsi and spearmint brewed together make a calming afternoon cup." },
     { id: "sugar-a-lodhra", audience: "women", icon: "🌺", title: "Lodhra and ashoka", body: "A classical Ayurvedic pairing for women's health.", herb: true },
+  ]),
+
+  // Blood pressure
+  ...tricks("bp", "both", [
+    { id: "bp-b-garlic", icon: "🧄", title: "A garlic clove a day", body: "Crushed into dal or chutney, or taken with warm water in the morning." },
+    { id: "bp-b-hibiscus", icon: "🌺", title: "Hibiscus tea", body: "A cup of hibiscus (gudhal) tea in the afternoon, a caffeine-free favourite.", caution: NOT_PREGNANT },
+    { id: "bp-b-flax", icon: "🌰", title: "Ground flaxseed", body: "A tablespoon or two a day, in roti dough, curd or a smoothie." },
+    { id: "bp-b-beetroot", icon: "🥗", title: "Beetroot, grated or juiced", body: "Grated beetroot in salads, or a small glass of beetroot juice a few times a week." },
+    { id: "bp-b-sheetali", icon: "🌬️", title: "Sheetali, the cooling breath", body: "Curl your tongue, or breathe in through closed teeth, slowly. Breathe out through the nose. Ten rounds.", caution: "Skip it if your blood pressure runs low, or you have a cold or asthma." },
+    { id: "bp-b-coconut", icon: "🥥", title: "Tender coconut water", body: "A glass now and then on hot days, instead of a salty or sugary drink.", caution: "Not with kidney disease, or medicines that raise potassium." },
+    { id: "bp-b-arjuna", icon: "🌸", title: "Arjuna bark tea", body: "A traditional Ayurvedic heart tonic, simmered in water.", herb: true },
+  ]),
+  ...tricks("bp", "modern", [
+    { id: "bp-m-dash", icon: "🥗", title: "The DASH plate", body: "Plenty of vegetables and fruit, whole grains, dal, low-fat curd and a few nuts. Less salt, sugar and red meat." },
+    { id: "bp-m-spoon", icon: "🥄", title: "Measure the salt", body: "Keep a measuring spoon in the salt jar, and salt at the end of cooking, when it tastes stronger." },
+    { id: "bp-m-flavour", icon: "🍋", title: "Flavour without salt", body: "Lemon, amchur, kokum, tamarind, garlic, ginger, fresh herbs and dry-roasted spices." },
+    { id: "bp-m-substitute", icon: "🧂", title: "Try a potassium salt", body: "Salt substitutes that swap part of the sodium for potassium are now suggested by WHO for most adults.", caution: "Not with kidney disease, in pregnancy, or on medicines that raise potassium (some BP and heart medicines). Check with your doctor." },
+    { id: "bp-m-labels", icon: "🏷️", title: "Read the label", body: "More than 600 mg of sodium per 100 g is a lot. Under 120 mg is low." },
+    { id: "bp-m-wall-sit", icon: "🧱", title: "Wall sits", body: "Four two-minute holds with rest in between, three times a week." },
+    { id: "bp-m-breathing", icon: "🌬️", title: "Slow breathing, ten minutes", body: "About six breaths a minute: in for five, out for five. Once or twice a day." },
+  ]),
+  ...tricks("bp", "ayurvedic", [
+    { id: "bp-a-arjuna", icon: "🌸", title: "Arjuna ksheerapaka", body: "Arjuna bark boiled in milk and water, a classic Ayurvedic heart tonic.", herb: true, dietNote: VEGAN_MILK },
+    { id: "bp-a-brahmi", icon: "🍃", title: "Brahmi for calm", body: "A traditional herb for a settled mind, often taken as a tea.", herb: true },
+    { id: "bp-a-shavasana", icon: "🧘", title: "Shavasana, ten minutes", body: "Lie still, let the breath slow, and relax each part of the body in turn." },
+    { id: "bp-a-cooling", icon: "🌬️", title: "Cooling breaths", body: "Sheetali, sheetkari or chandra bhedana: breathe in through a curled tongue, the teeth or the left nostril, and out through the nose.", caution: "Skip them if your blood pressure runs low." },
+    { id: "bp-a-lauki", icon: "🥒", title: "Lauki, cooked", body: "Bottle gourd as a sabzi or soup, a classic light food.", caution: "If you make lauki juice, taste it first and throw away any that's bitter." },
+    { id: "bp-a-amla", icon: "🍃", title: "Amla and garlic", body: "A fresh amla and a garlic clove in the morning." },
+    { id: "bp-a-no-mulethi", icon: "🚫", title: "Leave out mulethi", body: "Liquorice (mulethi) is common in kadhas and throat remedies, but it can push blood pressure up." },
   ]),
 
   // Fertility
@@ -1418,6 +1536,12 @@ export const MORNING_ADDS: Record<CategoryId, readonly RoutineStep[]> = {
     { icon: "🥒", text: "A small glass of diluted karela juice, a few mornings a week (not in pregnancy)." },
     { icon: "🌿", text: "A cup of spearmint tea.", audience: "women" },
   ],
+  bp: [
+    { icon: "💧", text: "Two glasses of plain warm water. No salty drinks." },
+    { icon: "🩺", text: "Two blood-pressure readings before tea or coffee." },
+    { icon: "🧄", text: "A crushed garlic clove in warm water or with breakfast." },
+    { icon: "🍌", text: "A banana, an orange or a guava with breakfast." },
+  ],
   fertility: [
     { icon: "🎃", text: "A tablespoon of pumpkin seeds." },
     { icon: "🌰", text: "A few walnuts with your soaked almonds." },
@@ -1561,6 +1685,50 @@ export const FOOD_GUIDES: readonly FoodGuide[] = [
       "midday",
       "A hand gently pushing away a plate of mithai and a sugary drink",
       "A South Asian hand gently pushing away a plate of mithai, with a glass of packaged juice and a slice of white bread set a little apart, calm and non-judgemental",
+    ),
+  },
+  {
+    category: "bp",
+    intro: "Less salt, more potassium-rich plants, and plenty of fibre.",
+    enjoy: [
+      { name: "Leafy greens", note: "Palak, methi, amaranth: rich in potassium" },
+      { name: "Bananas, oranges, papaya and guava" },
+      { name: "Tender coconut water", note: "Now and then; not with kidney disease" },
+      { name: "Dal, rajma and chana", serving: "1 katori", protein: 8 },
+      { name: "Oats, millets and brown rice", serving: "1 bowl oats", protein: 5 },
+      { name: "Low-fat curd and milk", serving: "1 katori curd", protein: 4, diets: DAIRY },
+      { name: "Unsalted nuts and seeds", note: "Flax, pumpkin, almonds, walnuts", serving: "1 tbsp seeds", protein: 2 },
+      { name: "Beetroot, tomatoes and sweet potato" },
+      { name: "Garlic, ginger, lemon and herbs", note: "Flavour without salt" },
+      { name: "Tofu and soy", serving: "100 g tofu", protein: 9 },
+      { name: "Fish, grilled or steamed", serving: "100 g", protein: 19, diets: NONVEG },
+      { name: "Hibiscus tea", note: "Caffeine-free; not in pregnancy" },
+    ],
+    limit: [
+      { name: "Salt in cooking and at the table", note: "Rock salt, black salt and chaat masala count too" },
+      { name: "Pickles and papad", note: "Keep them for special days" },
+      { name: "Namkeen, chips and salted nuts" },
+      { name: "Instant noodles, soups and ready meals" },
+      { name: "Sauces, ketchup and soy sauce" },
+      { name: "Bread, bakery biscuits and cheese", note: "Plenty of hidden salt" },
+      { name: "Processed meats", note: "Sausages, salami, ham, bacon", diets: NONVEG },
+      { name: "Alcohol" },
+      { name: "Energy drinks and lots of coffee" },
+      { name: "Liquorice (mulethi) teas and sweets" },
+    ],
+    enjoyImage: img(
+      "assets/food/bp-enjoy.webp",
+      "16:9",
+      "afternoon",
+      "Bananas, tender coconut, spinach, beetroot, dal and lemon",
+      "A calm still life of foods to enjoy: a bunch of bananas, a tender green coconut with a straw, a bowl of spinach, a halved beetroot, a bowl of yellow dal and a lemon, arranged loosely on a table",
+    ),
+    limitImage: img(
+      "assets/food/bp-limit.webp",
+      "16:9",
+      "afternoon",
+      "A hand gently pushing away pickle, papad and a salt shaker",
+      "A South Asian hand gently pushing away a jar of pickle, a stack of papad and a packet of salty namkeen, with a salt shaker set a little apart, calm and non-judgemental",
     ),
   },
   {

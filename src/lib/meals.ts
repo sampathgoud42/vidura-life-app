@@ -41,7 +41,9 @@ export type MealTag =
   | "fruit"
   | "soy"
   | "light"
-  | "heavy";
+  | "heavy"
+  | "salty"
+  | "potassium";
 
 const TAG_RULES: [MealTag, RegExp][] = [
   ["millet", /\b(?:ragi|jowar|jonna|jolada|bajra|kambu|samai|millet|makki|koozh|ambali|mudde|sankati)\b/],
@@ -64,6 +66,8 @@ const TAG_RULES: [MealTag, RegExp][] = [
   ["soy", /\b(?:tofu|soy)\b/],
   ["light", /\b(?:soup|broth|rasam|saaru|shorba|kanji|light|steamed|clear|thin)\b/],
   ["heavy", /\b(?:thali|sadhya|biryani|full)\b/],
+  ["salty", /\b(?:papad|pickles?|achar|namkeen|salted|bhujia|podi|chutney powder|instant noodles|sausages?|salami|ham|bacon|cheese|soy sauce|ketchup|chaat masala)\b|\bchips\b/],
+  ["potassium", /\b(?:banana|nendran|coconut water|spinach|palak|keerai|soppu|sweet potato|beetroot|tomato|rajma|beans|curd|dahi|perugu|thayir|mosaru|pomegranate|orange|guava|papaya|lauki|bottle gourd|methi leaves)\b/],
 ];
 
 /** Drop negations ("no ghee", "(no cream)", "unsweetened") before tagging. */
@@ -107,6 +111,7 @@ const FOCUS_WEIGHTS: Record<CategoryId, Partial<Record<MealTag, number>>> = {
   hormonal: { seeds: 2.5, greens: 2, legume: 1.5, millet: 1.5, soy: 1, fruit: 1, sweet: -3, fried: -3 },
   gut: { fermented: 3, legume: 1, greens: 1, light: 1.5, oats: 1, fruit: 0.5, fried: -3, heavy: -1.5, sweet: -1.5 },
   inflammation: { greens: 2, fish: 2, nuts: 1.5, seeds: 1.5, fruit: 1.5, millet: 1, legume: 1, fried: -3, sweet: -2.5, meat: -0.5 },
+  bp: { potassium: 2, greens: 2, legume: 2, fruit: 1.5, millet: 1.5, oats: 1.5, seeds: 1.5, fish: 1.5, nuts: 1, light: 1, dairy: 0.5, salty: -4, fried: -3, heavy: -1.5, sweet: -1, meat: -0.5 },
 };
 
 export function focusScore(m: Meal, cat: CategoryId): number {

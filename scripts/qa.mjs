@@ -142,8 +142,14 @@ try {
 
     await wait(3600);
     await shot(page, "A07-focus");
-    pass("Focus screen shows 6 category tiles", (await page.locator(".tile").count()) === 6);
+    pass("Focus screen shows 7 category tiles", (await page.locator(".tile").count()) === 7);
     pass("Focus screen fits 380px (no horizontal scroll)", (await overflow(page)) <= 0);
+    const vfit = await page.evaluate(() => {
+      const foot = document.querySelector(".focus-footer").getBoundingClientRect();
+      const last = Math.max(...[...document.querySelectorAll(".tile")].map((t) => t.getBoundingClientRect().bottom));
+      return { last: Math.round(last), foot: Math.round(foot.top), scroll: document.documentElement.scrollHeight - innerHeight };
+    });
+    pass("All 7 tiles visible above the action bar at 380×820", vfit.last <= vfit.foot && vfit.scroll <= 4, JSON.stringify(vfit));
 
     await page.getByRole("button", { name: "Continue" }).click();
     await wait(400);
@@ -372,6 +378,28 @@ try {
     pass("Desktop fits without horizontal scroll", (await overflow(page)) <= 0);
     await ctx.close();
   }
+  // ── G2 · Desktop focus screen: seven tiles, all visible
+  for (const [w, h] of [
+    [1280, 800],
+    [1440, 900],
+  ]) {
+    const empty = { ...PROFILE, categories: [] };
+    const { ctx, page } = await newPage(
+      { viewport: { width: w, height: h }, isMobile: false, hasTouch: false, deviceScaleFactor: 1 },
+      { fn: (p) => localStorage.setItem("vidura.profile", JSON.stringify(p)), arg: empty },
+    );
+    await page.goto(`${BASE}?at=10:30`);
+    await wait(6200);
+    await shot(page, `G2-focus-${w}`);
+    const fit = await page.evaluate(() => {
+      const foot = document.querySelector(".focus-footer")?.getBoundingClientRect();
+      const tiles = [...document.querySelectorAll(".tile")].map((t) => t.getBoundingClientRect());
+      return { n: tiles.length, last: Math.round(Math.max(...tiles.map((r) => r.bottom))), foot: Math.round(foot?.top ?? 0), scroll: document.documentElement.scrollHeight - innerHeight, size: Math.round(tiles[0]?.width ?? 0) };
+    });
+    pass(`Desktop ${w}×${h}: 7 tiles visible without scrolling`, fit.n === 7 && fit.last <= fit.foot && fit.scroll <= 4, JSON.stringify(fit));
+    await ctx.close();
+  }
+
   // ── H · Change a meal + balance suggestions (Telugu vegetarian, lunchtime)
   {
     const { ctx, page } = await newPage({}, seed);
@@ -551,6 +579,44 @@ try {
     pass("Desktop guide fits", (await overflow(page)) <= 0);
     await ctx.close();
   }
+  // ── M · Blood pressure focus
+  {
+    const bp = { ...PROFILE, categories: ["bp"], prefs: { region: "north-indian", diet: "vegetarian", approach: "both", audience: "women" } };
+    const { ctx, page } = await newPage({}, { fn: (p) => localStorage.setItem("vidura.profile", JSON.stringify(p)), arg: bp });
+    await page.goto(`${BASE}?at=07:40`);
+    await wait(5200);
+    const nowTexts = [await page.locator("#now-title").innerText(), ...(await page.locator(".also-title").allInnerTexts())].join(" | ");
+    pass("BP focus: the home BP check is offered in the morning", /Check your blood pressure/.test(nowTexts), nowTexts);
+    await page.getByRole("button", { name: "Tips", exact: true }).click();
+    await wait(900);
+    await page.getByRole("button", { name: /Blood Pressure/ }).first().click();
+    await wait(700);
+    pass("BP tips in the deck", /Blood Pressure/.test(await page.locator(".tip-top .tip-cat").innerText()), await page.locator(".tip-top .tip-title").innerText());
+    await page.getByRole("button", { name: "All", exact: true }).click();
+    await wait(400);
+    await page.getByRole("tab", { name: "Tricks" }).click();
+    await wait(600);
+    const tricks = (await page.locator(".trick-title").allInnerTexts()).join(" | ");
+    pass("BP tricks for the approach", /Hibiscus tea/.test(tricks) && /Tender coconut water/.test(tricks), tricks);
+    await page.getByRole("tab", { name: "Routines" }).click();
+    await wait(600);
+    pass("BP routine: morning readings + wall sits", /blood-pressure readings/.test(await page.locator(".routine-card").last().innerText()) && /Wall sits/.test(await page.locator(".routine-card").last().innerText()));
+    await page.getByRole("tab", { name: "Foods" }).click();
+    await wait(900);
+    const foods = await page.locator(".food-guide").innerText();
+    pass("BP foods: enjoy potassium-rich plants, go easy on salt", /Leafy greens/.test(foods) && /Pickles and papad/.test(foods) && /Rock salt/.test(foods));
+    await shot(page, "M01-bp-foods", true);
+    await page.getByRole("button", { name: "Now", exact: true }).click();
+    await wait(900);
+    await page.getByRole("button", { name: /^Change dinner/ }).click();
+    await wait(900);
+    const firstFits = await page.locator(".swap-option").first().innerText();
+    pass("Swap options rank BP-friendly dishes first", /BP/.test(firstFits), firstFits.split("\n")[0]);
+    await page.keyboard.press("Escape");
+    pass("BP screens fit 380px", (await overflow(page)) <= 0);
+    await ctx.close();
+  }
+
   // ── L · Extras: book summaries for everyone
   {
     const { ctx, page } = await newPage({}, seed);

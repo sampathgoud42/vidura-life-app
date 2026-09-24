@@ -11,8 +11,8 @@ Everything was extracted from the original *Wellness app* artifact (`reference/w
 
 | Artifact | Vidura Life |
 | --- | --- |
-| 6 health goals (`GOALS_MALE` / `GOALS_FEMALE`) | 6 focus categories (bento tiles) |
-| Morning ritual, 7-day exercise plan, 6 daily meal slots, evening pranayama, "dinner by 7:30", "sleep before 10:30" | 25 time-phase activities across Dawn → Night |
+| 6 health goals (`GOALS_MALE` / `GOALS_FEMALE`) | 7 focus categories (floating tiles), with Blood Pressure added |
+| Morning ritual, 7-day exercise plan, 6 daily meal slots, evening pranayama, "dinner by 7:30", "sleep before 10:30" | 27 time-phase activities across Dawn → Night (incl. the home BP check and wall sits) |
 | `BASE_MEALS` + `REGION_MEALS` (5 regions × 3 diets × 7 days), protein snacks, air-fry swaps | `MEAL_PLANS` (126 day plans, injected by `scripts/extract-artifact.mjs`) |
 | Region / diet / approach (Modern · Ayurvedic · Both) / gender-specific notes | Optional "Make it yours" step + Settings |
 | Tips + foods to eat / avoid per goal | 63 claim-free tip cards (incl. women's / men's notes) |
@@ -147,6 +147,15 @@ and fish weights read as raw, and thali meat portions shrink. The UI shows "≈ 
   guide (46 / 50 / 54 g) or a swap took 6 g or more out. After a heavier swap: a walk and a lighter
   next meal. Late in the day with no movement logged: an evening stroll. Plenty of protein: drop
   an added portion. All optional, undoable and dismissible for the day.
+
+### Blood pressure
+
+A seventh focus with its own tile, tips (incl. pregnancy, the pill and menopause, and men starting early), tricks for each
+approach, morning add-ons, a food guide and two activities: a guided home BP check (morning) and
+isometric wall sits (afternoon). Existing walking, slow-breathing and yoga-nidra activities count
+for it too. Meal ranking adds `salty` (papad, pickle, namkeen …) and `potassium` tags; a salty swap
+prompts a go-easy-on-salt tip. Sources: WHO sodium and salt-substitute guidance, ICMR-NCDIR (≈8 g/day
+average intake in India), ESH 2023, 2025 AHA/ACC, Edwards et al. BJSM 2023.
 
 ### Fertility guide (`screens/FertilityGuide.tsx`, `lib/cycle.ts`)
 

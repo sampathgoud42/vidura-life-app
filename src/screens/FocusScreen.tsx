@@ -10,13 +10,14 @@ import { haptics } from "../lib/device";
 import { useApp } from "../state/AppState";
 
 /** Display order: the artifact's headline goals first. */
-const ORDER: CategoryId[] = ["cholesterol", "sugar", "gut", "inflammation", "hormonal", "fertility"];
+const ORDER: CategoryId[] = ["cholesterol", "sugar", "bp", "gut", "inflammation", "hormonal", "fertility"];
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
 /**
  * Sizes the floating tiles so that every one of them fits between the header and
- * the action bar: 3 × 2 on wide screens, 2 × 3 on phones.
+ * the action bar. It tries 3 or 4 columns on wide screens and 2 or 3 on phones,
+ * and keeps whichever gives the largest tiles (seven tiles: 4 + 3, or 3 + 3 + 1).
  */
 function useFitTiles(gridRef: RefObject<HTMLDivElement | null>, footRef: RefObject<HTMLElement | null>) {
   const [fit, setFit] = useState({ tile: 0, cols: 2 });
@@ -25,14 +26,18 @@ function useFitTiles(gridRef: RefObject<HTMLDivElement | null>, footRef: RefObje
       const grid = gridRef.current;
       if (!grid) return;
       const wide = window.innerWidth >= 768;
-      const cols = wide ? 3 : 2;
-      const rows = wide ? 2 : 3;
       const gap = wide ? 28 : 14;
       const top = grid.getBoundingClientRect().top + window.scrollY;
       const below = (footRef.current?.offsetHeight ?? 64) + 20 + 44 + 18; // action bar + margin + page padding + safety
-      const byHeight = (window.innerHeight - top - below - 34 - (rows - 1) * gap) / rows; // 34 = field padding + float room
-      const byWidth = (grid.clientWidth - (cols - 1) * gap) / cols;
-      const tile = Math.floor(Math.max(128, Math.min(byWidth, byHeight, wide ? 300 : 230)));
+      const size = (cols: number) => {
+        const rows = Math.ceil(ORDER.length / cols);
+        const byHeight = (window.innerHeight - top - below - 34 - (rows - 1) * gap) / rows; // 34 = field padding + float room
+        const byWidth = (grid.clientWidth - (cols - 1) * gap) / cols;
+        return Math.min(byWidth, byHeight, wide ? 300 : 230);
+      };
+      const [a, b] = wide ? [3, 4] : [2, 3];
+      const cols = size(b) > size(a) ? b : a;
+      const tile = Math.floor(Math.max(wide ? 128 : 96, size(cols)));
       setFit((f) => (f.tile === tile && f.cols === cols ? f : { tile, cols }));
     };
     measure();
@@ -168,7 +173,7 @@ function FocusTile({ cat, index, selected, onToggle }: { cat: Category; index: n
         {cat.emoji}
       </span>
       <span className="tile-text">
-        <span className="tile-label">{cat.label}</span>
+        <span className="tile-label">{cat.tileLabel ?? cat.label}</span>
         <span className="tile-blurb">{cat.blurb}</span>
       </span>
       <span className="tile-check" aria-hidden="true">
