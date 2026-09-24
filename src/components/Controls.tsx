@@ -202,7 +202,7 @@ export function Segmented<T extends string>({
   className = "",
 }: {
   label: string;
-  options: readonly { id: T; label: string; emoji?: string }[];
+  options: readonly { id: T; label: string; emoji?: string; sub?: string }[];
   value: T;
   onChange: (v: T) => void;
   mode?: "tabs" | "radio";
@@ -236,7 +236,7 @@ export function Segmented<T extends string>({
             aria-controls={tabs && idPrefix ? `${idPrefix}-panel` : undefined}
             {...(tabs ? { "aria-selected": on } : { "aria-checked": on })}
             tabIndex={on ? 0 : -1}
-            className={`segment ${on ? "segment-on" : ""}`}
+            className={`segment ${on ? "segment-on" : ""} ${o.sub ? "has-sub" : ""}`}
             onClick={() => {
               if (on) return;
               haptics.select();
@@ -251,6 +251,7 @@ export function Segmented<T extends string>({
               </span>
             )}
             <span className="segment-label">{o.label}</span>
+            {o.sub && <span className="segment-sub">{o.sub}</span>}
           </button>
         );
       })}

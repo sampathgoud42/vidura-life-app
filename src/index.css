@@ -2526,6 +2526,112 @@ html.phase-shift *::after {
   font-size: 0.76rem;
   color: var(--ink-soft);
 }
+/* The next six days, one at a time (read-only). */
+.week-ahead {
+  margin-top: 1rem;
+  border-top: 1px solid var(--hairline);
+}
+.week-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 56px;
+  padding: 0.75rem 0.1rem 0.55rem;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+.week-toggle > span:first-child {
+  display: grid;
+  gap: 0.1rem;
+}
+.week-toggle-title {
+  font-weight: 680;
+}
+.week-toggle-sub {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+.week-chevron {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  margin-right: 0.4rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 0.3s var(--ease-calm);
+}
+.week-chevron.is-open {
+  transform: rotate(-135deg);
+}
+.week-body {
+  overflow: hidden;
+}
+.week-days {
+  display: flex;
+  width: 100%;
+  margin-top: 0.3rem;
+}
+.week-days {
+  overflow: visible;
+}
+.week-days .segment {
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: center;
+  padding: 0 0.2rem;
+  font-size: 0.8rem;
+}
+.segment.has-sub {
+  flex-direction: column;
+  gap: 0;
+  min-height: 50px;
+  line-height: 1.15;
+}
+.segment-sub {
+  position: relative;
+  z-index: 1;
+  font-size: 1rem;
+  font-weight: 720;
+  font-variant-numeric: tabular-nums;
+}
+.week-panel {
+  padding-top: 0.8rem;
+}
+.week-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem 0.8rem;
+}
+.week-date {
+  display: grid;
+  margin: 0;
+  font-weight: 680;
+}
+.week-date span {
+  font-size: 0.82rem;
+  font-weight: 560;
+  color: var(--ink-soft);
+}
+.week-total.is-met {
+  background: color-mix(in oklab, var(--accent) 22%, transparent);
+}
+.week-rows {
+  margin-top: 0.6rem;
+}
+.plate-row.is-preview {
+  grid-template-columns: 6.6rem minmax(0, 1fr);
+}
+.week-note {
+  margin: 0.6rem 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
 .balance {
   margin-top: 1rem;
   padding: 1rem;
@@ -3621,6 +3727,12 @@ html.phase-shift *::after {
   }
   .plate-meal {
     grid-column: 1;
+  }
+  .plate-row.is-preview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .plate-row.is-preview .plate-meal {
+    grid-column: 1 / -1;
   }
 }
 

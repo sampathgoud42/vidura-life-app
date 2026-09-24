@@ -435,6 +435,25 @@ try {
     console.log(`  protein ${before} → ${await page.locator(".protein-meter-num").innerText()}`);
     console.log(`  suggestions: ${(await page.locator(".balance-item").allInnerTexts()).map((t) => t.split("\n")[0]).join(" | ") || "none (plate balanced)"}`);
     pass("Plate fits 380px", (await overflow(page)) <= 0);
+    // Next 6 days, day by day
+    await page.getByRole("button", { name: /Next 6 days/ }).click();
+    await wait(800);
+    const dayTabs = page.getByRole("tab").filter({ hasText: /\d/ });
+    pass("Next 6 days: six day tabs", (await page.locator(".week-days .segment").count()) === 6);
+    const tomorrow = new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(new Date(Date.now() + 864e5));
+    pass("The first tab is tomorrow", (await page.locator(".week-days .segment").first().innerText()).includes(tomorrow), await page.locator(".week-days .segment").first().innerText());
+    pass("Each day shows six meals with protein and a day total", (await page.locator(".week-rows .plate-row").count()) === 6 && /≈ \d+ g protein/.test(await page.locator(".week-total").innerText()));
+    const firstMeal = await page.locator(".week-rows .plate-meal-title").first().innerText();
+    await page.locator(".week-days .segment").nth(3).click();
+    await wait(700);
+    pass("Picking another day shows that day's plan", (await page.locator(".week-date").innerText()) !== "" && (await page.locator(".week-rows .plate-row").count()) === 6, `${firstMeal} → ${await page.locator(".week-rows .plate-meal-title").first().innerText()}`);
+    await page.locator(".week-days .segment").nth(3).focus();
+    await page.keyboard.press("ArrowRight");
+    await wait(500);
+    pass("Day tabs work with arrow keys", (await page.locator(".week-days .segment").nth(4).getAttribute("aria-selected")) === "true");
+    await shot(page, "H07-week-ahead");
+    pass("Week view fits 380px", (await overflow(page)) <= 0);
+    void dayTabs;
     await page.getByRole("button", { name: /^Change lunch/ }).click();
     await wait(800);
     await page.getByRole("button", { name: /Back to the plan/ }).click();

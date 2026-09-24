@@ -8,6 +8,7 @@ import { dayPlan, todayPlan } from "../lib/plan";
 import { formatMinutes } from "../lib/time";
 import { useApp } from "../state/AppState";
 import { ProteinChip } from "./MealSwapSheet";
+import { WeekAhead } from "./WeekAhead";
 
 const slotMinutes = (time: string) => {
   const [h, m] = time.split(":").map(Number);
@@ -32,7 +33,7 @@ export function ProteinMeter({ total, target }: { total: number; target: number 
  * was added for balance, and up to three "balance your day" suggestions.
  */
 export function TodayPlate({ weekday, onChange }: { weekday: number; onChange: (slot: MealSlot) => void }) {
-  const { profile, prefs, day, nowMinutes, doneToday, addExtra, removeExtra, setLighter, dismissSuggestion } = useApp();
+  const { profile, prefs, day, now, nowMinutes, doneToday, addExtra, removeExtra, setLighter, dismissSuggestion } = useApp();
   const toast = useToast();
   const categories = profile?.categories ?? [];
   const base = dayPlan(prefs, weekday);
@@ -179,6 +180,8 @@ export function TodayPlate({ weekday, onChange }: { weekday: number; onChange: (
           </ul>
         </div>
       )}
+
+      <WeekAhead prefs={prefs} today={now} />
 
       <p className="plate-note">Protein is a rough estimate for typical home portions (meat and fish weights raw). The guide is about 0.8 g per kg of body weight a day.</p>
     </section>
