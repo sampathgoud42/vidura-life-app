@@ -168,6 +168,7 @@ try {
     await shot(page, "A11-now-full", true);
     pass("Now card is visible", await page.locator(".now-card").first().isVisible());
     pass("Now screen fits 380px", (await overflow(page)) <= 0);
+    pass("Footer credit on the main screens", (await page.locator(".site-credit").innerText()).includes("Designed by Sampath · © 2026"));
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("vidura.profile")));
     pass("Categories + prefs persisted", saved.categories.join() === "cholesterol,sugar" && saved.prefs?.region === "telugu");
 

@@ -259,10 +259,23 @@ html.phase-shift *::after {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  overflow: hidden;
   box-shadow:
     0 26px 60px -22px color-mix(in oklab, var(--orb-3) 70%, transparent),
     0 8px 22px -10px color-mix(in oklab, var(--orb-3) 45%, transparent);
+}
+/* The layers get a true circular clip of their own. Safari/WebKit clips blurred, blended,
+   animated children to the square box when relying on overflow + border-radius alone, so
+   clip-path and a mask back it up, and isolation keeps the blend modes from touching the sky. */
+.orb-clip {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  isolation: isolate;
+  clip-path: circle(50% at 50% 50%);
+  -webkit-mask-image: radial-gradient(closest-side circle at 50% 50%, #000 98.5%, transparent 100%);
+  mask-image: radial-gradient(closest-side circle at 50% 50%, #000 98.5%, transparent 100%);
+  transform: translateZ(0);
 }
 .orb-core {
   position: absolute;
@@ -1191,6 +1204,20 @@ html.phase-shift *::after {
 /* ── Main shell ───────────────────────────────────────────────────────────── */
 .main-screen {
   padding-bottom: calc(var(--safe-bottom) + var(--tabbar-h) + 44px);
+}
+.site-credit {
+  margin: 2.2rem auto 0;
+  padding-top: 1rem;
+  max-width: 44rem;
+  border-top: 1px solid var(--hairline);
+  text-align: center;
+}
+.site-credit p {
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: 560;
+  letter-spacing: 0.02em;
+  color: var(--ink-soft);
 }
 .topbar {
   display: flex;

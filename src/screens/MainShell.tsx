@@ -6,6 +6,7 @@ import { StreakRing } from "../components/Rings";
 import { Settings } from "../components/Icons";
 import { TabBar, type TabId } from "../components/TabBar";
 import { useToast } from "../components/Toast";
+import { APP } from "../data/content";
 import { withViewTransition } from "../lib/device";
 import { currentStreak, lastSevenDays } from "../lib/insights";
 import type { Resolved } from "../lib/plan";
@@ -74,6 +75,10 @@ export function MainShell() {
             </>
           )}
         </div>
+
+        <footer className="site-credit">
+          <p>{APP.credit}</p>
+        </footer>
       </main>
 
       <TabBar tab={tab} onChange={changeTab} />

@@ -122,10 +122,14 @@ export function BreathingOrb({
         animate={bloom ? { scale: 1.3 } : live ? { scale: [0.94, 1.06, 1.06, 0.94] } : { scale: 1 }}
         transition={bloom ? { type: "spring", stiffness: 70, damping: 11 } : live ? cycle : { duration: 0.6 }}
       >
-        <div className="orb-core" />
-        <div className="orb-aurora" />
-        <div className="orb-caustic" />
-        <motion.div className="orb-spec" style={{ x: specX, y: specY, rotate: -24 }} />
+        {/* Own circular clip + isolation: WebKit ignores border-radius clipping for blurred,
+            blended, animated children, which showed their square corners around the orb. */}
+        <div className="orb-clip">
+          <div className="orb-core" />
+          <div className="orb-aurora" />
+          <div className="orb-caustic" />
+          <motion.div className="orb-spec" style={{ x: specX, y: specY, rotate: -24 }} />
+        </div>
         <div className="orb-rim" />
       </motion.div>
     </motion.div>

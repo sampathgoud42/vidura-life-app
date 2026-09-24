@@ -143,6 +143,7 @@ export interface Choice<T extends string> {
 export const APP = {
   name: "Vidura Life",
   tagline: "A calm companion for your day, tuned to the light outside.",
+  credit: "Designed by Sampath · © 2026",
   privacyNote: "Your name and email are saved to Vidura's wellness records. Everything else stays on this device.",
   disclaimer:
     "General wellness ideas, not medical advice. Please talk to your doctor before changing your diet, starting supplements or herbs, or if you're pregnant, take medication or manage a health condition.",
