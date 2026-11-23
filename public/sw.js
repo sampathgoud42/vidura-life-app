@@ -1,5 +1,5 @@
 /* Vidura Life service worker — offline app shell, cached assets, fresh HTML when online. */
-const VERSION = "vidura-v7"; // bump on releases that replace assets: old caches are dropped on activate
+const VERSION = "vidura-v8"; // bump on releases that replace assets: old caches are dropped on activate
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/favicon.svg"];
 
 self.addEventListener("install", (event) => {
@@ -25,6 +25,8 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
+  // Streamed media (range requests): leave to the browser and HTTP cache.
+  if (req.headers.has("range") || url.pathname.includes("/assets/audio/music/")) return;
 
   // Pages: network first (always the latest build), cached shell when offline.
   if (req.mode === "navigate") {

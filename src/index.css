@@ -1861,6 +1861,11 @@ html.phase-shift *::after {
   justify-content: space-between;
   gap: 1rem;
 }
+.guided-head-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
 .guided-eyebrow {
   color: rgb(255 255 255 / 0.85);
 }

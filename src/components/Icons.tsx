@@ -116,3 +116,17 @@ export const Book = ({ size, ...p }: P) => (
     <path d="M12 6.5v13" />
   </svg>
 );
+export const Voice = ({ size, off, ...p }: P & { off?: boolean }) => (
+  <svg {...base(size)} {...p}>
+    <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />
+    {off ? <path d="M16 9.5l5 5M21 9.5l-5 5" /> : <path d="M15.5 9a4 4 0 010 6M18 6.5a7.5 7.5 0 010 11" />}
+  </svg>
+);
+export const Music = ({ size, off, ...p }: P & { off?: boolean }) => (
+  <svg {...base(size)} {...p}>
+    <path d="M9 17.5V6l10-2v11.5" />
+    <circle cx="6.5" cy="17.5" r="2.5" />
+    <circle cx="16.5" cy="15.5" r="2.5" />
+    {off && <path d="M4 4l16 16" />}
+  </svg>
+);
