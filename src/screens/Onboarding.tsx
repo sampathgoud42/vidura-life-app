@@ -8,11 +8,21 @@ import { useLightBurst } from "../components/LightBurst";
 import { Display, TypeIn } from "../components/Typography";
 import { APP, MESSAGES } from "../data/content";
 import { haptics } from "../lib/device";
+import {
+  EMAIL_LINK_ENABLED,
+  LINK_ERROR_TEXT,
+  clearLinkFromUrl,
+  clearPending,
+  completeSignIn,
+  loadPending,
+  savePending,
+  sendSignInLink,
+} from "../lib/emailLink";
 import { saveContact } from "../lib/remote";
 import { EMAIL_HINTS, NAME_HINTS, NAME_MAX, graphemeLength, validateEmail, validateName } from "../lib/validation";
 import { useApp } from "../state/AppState";
 
-type Step = "name" | "email" | "welcome";
+type Step = "name" | "email" | "sent" | "welcome";
 
 const SHAKE = { x: [0, -9, 8, -6, 4, -2, 0], transition: { duration: 0.45 } };
 
@@ -25,11 +35,37 @@ function useDebounced<T>(value: T, ms: number): T {
   return v;
 }
 
-export function Onboarding({ onDone }: { onDone: () => void }) {
+/**
+ * First-run sign-up: name → email → (with email-link sign-in) "check your inbox" → welcome.
+ *
+ * - `returning`: an existing profile that hasn't confirmed its email yet. Starts at the
+ *   email step; their saved history, focus areas and preferences are left untouched.
+ * - `verifiedEmail`: the email was just confirmed from a link opened on a new device, so
+ *   only the name is still needed.
+ */
+export function Onboarding({
+  onDone,
+  returning = false,
+  initialName = "",
+  initialEmail = "",
+  verifiedEmail,
+}: {
+  onDone: () => void;
+  returning?: boolean;
+  initialName?: string;
+  initialEmail?: string;
+  verifiedEmail?: string;
+}) {
   const { createProfile } = useApp();
-  const [step, setStep] = useState<Step>("name");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [step, setStep] = useState<Step>(returning ? "email" : "name");
+  const [name, setName] = useState(initialName);
+  const [email, setEmail] = useState(initialEmail);
+
+  const requestLink = async (to: string): Promise<string | void> => {
+    const r = await sendSignInLink(to);
+    if (!r.ok) return LINK_ERROR_TEXT[r.error];
+    savePending({ name, email: to });
+  };
 
   return (
     <LayoutGroup>
@@ -41,7 +77,10 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
                 initial={name}
                 onNext={(v) => {
                   setName(v);
-                  setStep("email");
+                  if (verifiedEmail) {
+                    createProfile(v, verifiedEmail, true);
+                    setStep("welcome");
+                  } else setStep("email");
                 }}
               />
             </motion.div>
@@ -51,13 +90,30 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
               <EmailStep
                 name={name}
                 initial={email}
+                returning={returning}
                 onBack={() => setStep("name")}
-                onNext={(v) => {
+                onNext={async (v) => {
                   setEmail(v);
+                  if (EMAIL_LINK_ENABLED) {
+                    const err = await requestLink(v);
+                    if (err) return err;
+                    setStep("sent");
+                    return;
+                  }
                   createProfile(name, v);
                   void saveContact({ name, email: v }); // optional: silent if it can't be saved
                   setStep("welcome");
                 }}
+              />
+            </motion.div>
+          )}
+          {step === "sent" && (
+            <motion.div key="sent" className="onb-stage" exit={{ opacity: 0, transition: { duration: 0.3 } }}>
+              <SentStep
+                email={email}
+                onResend={() => requestLink(email)}
+                onChangeEmail={() => setStep("email")}
+                onVerified={() => (returning ? onDone() : setStep("welcome"))}
               />
             </motion.div>
           )}
@@ -172,10 +228,25 @@ function NameStep({ initial, onNext }: { initial: string; onNext: (name: string)
 }
 
 // ── 2 · Email ─────────────────────────────────────────────────────────────────
-function EmailStep({ name, initial, onBack, onNext }: { name: string; initial: string; onBack: () => void; onNext: (email: string) => void }) {
+function EmailStep({
+  name,
+  initial,
+  returning,
+  onBack,
+  onNext,
+}: {
+  name: string;
+  initial: string;
+  returning: boolean;
+  onBack: () => void;
+  /** Resolves to an error message to show, or nothing on success. */
+  onNext: (email: string) => Promise<string | void> | void;
+}) {
   const [value, setValue] = useState(initial);
   const [focused, setFocused] = useState(false);
   const [attempted, setAttempted] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [sendError, setSendError] = useState("");
   const shake = useAnimationControls();
   const reduced = useReducedMotion();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -201,9 +272,14 @@ function EmailStep({ name, initial, onBack, onNext }: { name: string; initial: s
     state = "invalid";
     hint = EMAIL_HINTS.empty;
   }
+  if (sendError) {
+    state = "invalid";
+    hint = sendError;
+  }
 
-  const submit = (e?: FormEvent) => {
+  const submit = async (e?: FormEvent) => {
     e?.preventDefault();
+    if (busy) return;
     setAttempted(true);
     if (!now.ok) {
       haptics.warn();
@@ -211,9 +287,23 @@ function EmailStep({ name, initial, onBack, onNext }: { name: string; initial: s
       inputRef.current?.focus();
       return;
     }
+    setBusy(true);
+    const err = await onNext(now.value);
+    setBusy(false);
+    if (err) {
+      setSendError(err);
+      haptics.warn();
+      return;
+    }
     haptics.success();
-    onNext(now.value);
   };
+
+  const question = returning ? `Confirm your email, ${name}` : "And your email?";
+  const sub = EMAIL_LINK_ENABLED
+    ? returning
+      ? "Vidura now checks each email once. I'll send you a link; tap it and everything you've saved stays just as it is."
+      : `I'll send you a link to confirm it's yours. ${APP.privacyNote}`
+    : `So I can recognise you next time. ${APP.privacyNote}`;
 
   return (
     <motion.section className="onb-step onb-step-email" initial={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }} aria-labelledby="email-q">
@@ -235,8 +325,8 @@ function EmailStep({ name, initial, onBack, onNext }: { name: string; initial: s
         animate={{ y: 0, opacity: 1 }}
         transition={reduced ? { duration: 0.3 } : { type: "spring", stiffness: 150, damping: 20, delay: 0.18 }}
       >
-        <TypeIn id="email-q" as="h1" text="And your email?" className="display onb-question" delay={500} />
-        <p className="onb-sub">So I can recognise you next time. {APP.privacyNote}</p>
+        <TypeIn id="email-q" as="h1" text={question} className="display onb-question" delay={500} />
+        <p className="onb-sub">{sub}</p>
         <motion.form className="onb-form" onSubmit={submit} animate={shake} noValidate>
           <label htmlFor="email-input" className="sr-only">
             Email address
@@ -254,19 +344,29 @@ function EmailStep({ name, initial, onBack, onNext }: { name: string; initial: s
               enterKeyHint="go"
               placeholder="name@example.com"
               value={value}
-              onChange={(e) => setValue(e.target.value)}
+              onChange={(e) => {
+                setValue(e.target.value);
+                if (sendError) setSendError("");
+              }}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
+              readOnly={busy}
               aria-describedby="email-hint"
               aria-invalid={state === "invalid"}
             />
             <InputLine state={state} />
-            <MagneticButton type="submit" variant={state === "valid" ? "primary" : "soft"} className="onb-next" aria-label="Continue">
+            <MagneticButton
+              type="submit"
+              variant={state === "valid" ? "primary" : "soft"}
+              className="onb-next"
+              aria-label={EMAIL_LINK_ENABLED ? "Send confirmation link" : "Continue"}
+              disabled={busy}
+            >
               <ArrowRight />
             </MagneticButton>
           </div>
           <p id="email-hint" className="onb-hint" role="status" aria-live="polite">
-            {hint || (state === "valid" ? "Lovely, that works." : " ")}
+            {busy ? "Sending your link…" : hint || (state === "valid" ? "Lovely, that works." :" ")}
           </p>
         </motion.form>
         <button type="button" className="link-btn onb-back" onClick={onBack}>
@@ -274,6 +374,187 @@ function EmailStep({ name, initial, onBack, onNext }: { name: string; initial: s
         </button>
       </motion.div>
     </motion.section>
+  );
+}
+
+// ── 2b · Check your inbox ─────────────────────────────────────────────────────
+const RESEND_AFTER = 30; // seconds
+
+function SentStep({
+  email,
+  onResend,
+  onChangeEmail,
+  onVerified,
+}: {
+  email: string;
+  onResend: () => Promise<string | void>;
+  onChangeEmail: () => void;
+  onVerified: () => void;
+}) {
+  const { profile } = useApp();
+  const [wait, setWait] = useState(RESEND_AFTER);
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  // The link usually opens in a new tab; when that tab confirms the email it saves the
+  // profile, the shared storage event updates it here, and this screen moves on.
+  useEffect(() => {
+    if (profile?.emailVerified && profile.email.toLowerCase() === email.toLowerCase()) onVerified();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.emailVerified, profile?.email, email]);
+
+  useEffect(() => {
+    if (wait <= 0) return;
+    const t = window.setTimeout(() => setWait((w) => w - 1), 1000);
+    return () => window.clearTimeout(t);
+  }, [wait]);
+
+  const resend = async () => {
+    if (busy || wait > 0) return;
+    setBusy(true);
+    const err = await onResend();
+    setBusy(false);
+    setNote(err || "Sent again. It can take a minute to arrive.");
+    if (!err) setWait(RESEND_AFTER);
+  };
+
+  return (
+    <motion.section className="onb-step onb-step-email" initial={{ opacity: 0 }} animate={{ opacity: 1 }} aria-labelledby="sent-q">
+      <BreathingOrb layoutId="orb" size="clamp(120px, 32vw, 180px)" className="onb-orb" />
+      <TypeIn id="sent-q" as="h1" text="Check your inbox" className="display onb-question" />
+      <p className="onb-sub">
+        I sent a link to <strong>{email}</strong>. Tap it to confirm it's you, ideally on this device. Can't see it? Check your spam or promotions folder.
+      </p>
+      <div className="onb-sent-actions">
+        <MagneticButton variant="soft" onClick={resend} disabled={busy || wait > 0}>
+          {busy ? "Sending…" : wait > 0 ? `Resend in ${wait}s` : "Resend link"}
+        </MagneticButton>
+      </div>
+      <p className="onb-hint" role="status" aria-live="polite">
+        {note || " "}
+      </p>
+      <button type="button" className="link-btn onb-back" onClick={onChangeEmail}>
+        <ArrowLeft size={16} /> Use a different email
+      </button>
+    </motion.section>
+  );
+}
+
+// ── Link landing: finish the email check ─────────────────────────────────────
+/**
+ * Shown when the app is opened from the emailed link. On the device that asked for the
+ * link the email is remembered and this finishes on its own; on another device or
+ * browser it asks for the email again (Firebase requires it, so a forwarded link alone
+ * can't be used by someone else).
+ */
+export function VerifyLink({
+  code,
+  onVerified,
+  onRestart,
+}: {
+  code: string;
+  onVerified: (r: { email: string; name: string | null }) => void;
+  onRestart: () => void;
+}) {
+  const [pending] = useState(loadPending);
+  const [value, setValue] = useState("");
+  const [status, setStatus] = useState<"checking" | "ask" | "expired">(pending ? "checking" : "ask");
+  const [hint, setHint] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const finish = async (email: string, name: string | null) => {
+    setStatus("checking");
+    const r = await completeSignIn(email, code);
+    if (r.ok) {
+      clearPending();
+      clearLinkFromUrl();
+      haptics.success();
+      onVerified({ email: r.email, name });
+      return;
+    }
+    haptics.warn();
+    if (r.error === "expired") {
+      clearLinkFromUrl();
+      setStatus("expired");
+    } else {
+      setHint(LINK_ERROR_TEXT[r.error]);
+      setStatus("ask");
+    }
+  };
+
+  useEffect(() => {
+    if (pending) void finish(pending.email, pending.name);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (status === "ask") inputRef.current?.focus({ preventScroll: true });
+  }, [status]);
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    const r = validateEmail(value);
+    if (!r.ok) {
+      setHint(EMAIL_HINTS[r.reason]);
+      return;
+    }
+    void finish(r.value, null);
+  };
+
+  return (
+    <main className="screen onboarding" id="app-main">
+      <section className="onb-step onb-step-email" aria-labelledby="verify-q">
+        <BreathingOrb layoutId="orb" size="clamp(120px, 32vw, 180px)" className="onb-orb" />
+        {status === "checking" && <h1 id="verify-q" className="display onb-question">Confirming your email…</h1>}
+        {status === "expired" && (
+          <>
+            <h1 id="verify-q" className="display onb-question">That link has expired</h1>
+            <p className="onb-sub">Links work once and only for a while. Let's send you a fresh one.</p>
+            <div className="onb-sent-actions">
+              <MagneticButton onClick={onRestart}>Send a new link</MagneticButton>
+            </div>
+          </>
+        )}
+        {status === "ask" && (
+          <>
+            <h1 id="verify-q" className="display onb-question">Confirm your email</h1>
+            <p className="onb-sub">You opened the link on a different device or browser. Type the email it was sent to, to finish.</p>
+            <form className="onb-form" onSubmit={submit} noValidate>
+              <label htmlFor="verify-email" className="sr-only">
+                Email address
+              </label>
+              <div className="onb-field">
+                <input
+                  ref={inputRef}
+                  id="verify-email"
+                  className="onb-input onb-input-email"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  placeholder="name@example.com"
+                  value={value}
+                  onChange={(e) => {
+                    setValue(e.target.value);
+                    if (hint) setHint("");
+                  }}
+                  aria-describedby="verify-hint"
+                  aria-invalid={!!hint}
+                />
+                <InputLine state={hint ? "invalid" : value ? "focus" : "idle"} />
+                <MagneticButton type="submit" variant="soft" className="onb-next" aria-label="Confirm email">
+                  <ArrowRight />
+                </MagneticButton>
+              </div>
+              <p id="verify-hint" className="onb-hint" role="status" aria-live="polite">
+                {hint || " "}
+              </p>
+            </form>
+          </>
+        )}
+      </section>
+    </main>
   );
 }
 

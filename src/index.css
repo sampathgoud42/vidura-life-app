@@ -925,6 +925,11 @@ html.phase-shift *::after {
 .onb-back {
   margin-top: 0.5rem;
 }
+.onb-sent-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
 .welcome {
   cursor: pointer;
   position: relative;

@@ -57,6 +57,8 @@ export interface Profile {
   version: 1;
   /** Optional "Make it yours" settings (region, diet, approach, audience). */
   prefs?: Prefs;
+  /** True once the person has opened the sign-in link emailed to this address. */
+  emailVerified?: boolean;
 }
 
 export interface LogEntry {
@@ -173,6 +175,7 @@ export function sanitizeProfile(x: unknown): Profile | null {
     updatedAt: iso(o.updatedAt),
     version: 1,
     ...(o.prefs ? { prefs: sanitizePrefs(o.prefs) } : {}),
+    ...(o.emailVerified === true ? { emailVerified: true } : {}),
   };
 }
 

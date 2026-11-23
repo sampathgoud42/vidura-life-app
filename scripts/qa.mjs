@@ -142,14 +142,14 @@ try {
 
     await wait(3600);
     await shot(page, "A07-focus");
-    pass("Focus screen shows 7 category tiles", (await page.locator(".tile").count()) === 7);
+    pass("Focus screen shows 8 category tiles", (await page.locator(".tile").count()) === 8);
     pass("Focus screen fits 380px (no horizontal scroll)", (await overflow(page)) <= 0);
     const vfit = await page.evaluate(() => {
       const foot = document.querySelector(".focus-footer").getBoundingClientRect();
       const last = Math.max(...[...document.querySelectorAll(".tile")].map((t) => t.getBoundingClientRect().bottom));
       return { last: Math.round(last), foot: Math.round(foot.top), scroll: document.documentElement.scrollHeight - innerHeight };
     });
-    pass("All 7 tiles visible above the action bar at 380×820", vfit.last <= vfit.foot && vfit.scroll <= 4, JSON.stringify(vfit));
+    pass("All 8 tiles visible above the action bar at 380×820", vfit.last <= vfit.foot && vfit.scroll <= 4, JSON.stringify(vfit));
 
     await page.getByRole("button", { name: "Continue" }).click();
     await wait(400);
@@ -396,7 +396,7 @@ try {
       const tiles = [...document.querySelectorAll(".tile")].map((t) => t.getBoundingClientRect());
       return { n: tiles.length, last: Math.round(Math.max(...tiles.map((r) => r.bottom))), foot: Math.round(foot?.top ?? 0), scroll: document.documentElement.scrollHeight - innerHeight, size: Math.round(tiles[0]?.width ?? 0) };
     });
-    pass(`Desktop ${w}×${h}: 7 tiles visible without scrolling`, fit.n === 7 && fit.last <= fit.foot && fit.scroll <= 4, JSON.stringify(fit));
+    pass(`Desktop ${w}×${h}: 8 tiles visible without scrolling`, fit.n === 8 && fit.last <= fit.foot && fit.scroll <= 4, JSON.stringify(fit));
     await ctx.close();
   }
 
@@ -532,7 +532,8 @@ try {
     pass("Foods: enjoy + go easy on, per focus", (await page.locator(".food-guide").count()) === 2 && (await page.locator(".food-col").count()) === 4);
     pass("Food art loads", (await page.locator(".food-guide .smart-img[data-loaded]").count()) >= 2);
     pass("Protein per serving on foods", (await page.locator(".food-guide .protein-chip").count()) >= 4);
-    await page.locator(".guide-link").first().click();
+    // The fertility tracker guide, not the evidence guides listed alongside it.
+    await page.locator(".guide-link").filter({ has: page.locator(".guide-link-title", { hasText: /^Fertility guide$/ }) }).click();
     await wait(1200);
     await shot(page, "I04-guide");
     pass("Fertility guide opens for men", (await page.getByRole("radio", { name: /For men/ }).getAttribute("aria-checked")) === "true");
