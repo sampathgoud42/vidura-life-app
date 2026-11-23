@@ -12,6 +12,8 @@
  *   node scripts/generate-images.mjs --only=night  # only paths containing "night" (comma-separate several)
  *   node scripts/generate-images.mjs --force       # regenerate even if the file exists
  *   node scripts/generate-images.mjs --skip=a,b    # leave paths containing a or b alone
+ *   node scripts/generate-images.mjs --from-raw    # no API: encode PNGs already saved in assets-src/
+ *                                                  # (e.g. made with another tool) for missing slots
  *
  * Env (.env.local is loaded automatically):
  *   GEMINI_API_KEY      required for generation
@@ -24,6 +26,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { ACTIVITIES, CATEGORIES, FERTILITY, FOOD_GUIDES, PHASES, STYLE_BLOCK, buildImagePrompt } from "../src/data/content.ts";
+import { CONDITION_GUIDES } from "../src/data/conditionGuides.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = new Set(process.argv.slice(2));
@@ -33,6 +36,7 @@ const DRY = args.has("--dry");
 const FORCE = args.has("--force");
 const ONLY = flag("only");
 const SKIP = flag("skip");
+const FROM_RAW = args.has("--from-raw");
 
 try {
   process.loadEnvFile(path.join(root, ".env.local"));
@@ -66,6 +70,7 @@ const slots = [
   }),
   { group: "Fertility guide (16:9)", label: "Fertility guide · women", slot: FERTILITY.heroes.women },
   { group: "Fertility guide (16:9)", label: "Fertility guide · men", slot: FERTILITY.heroes.men },
+  ...CONDITION_GUIDES.map((g) => ({ group: "Condition guides, root cause (16:9)", label: `${g.title} · root cause`, slot: g.image })),
 ]
   .filter((s) => !ONLY || ONLY.split(",").some((part) => s.slot.src.includes(part.trim())))
   .filter((s) => !SKIP || !SKIP.split(",").some((part) => s.slot.src.includes(part.trim())));
@@ -114,6 +119,25 @@ if (DRY || !todo.length) {
   todo.forEach((s) => console.log(`  - ${s.slot.src}`));
   process.exit(0);
 }
+const rawPath = (src) => path.join(root, "assets-src", src.replace(/\.webp$/, ".png"));
+
+if (FROM_RAW) {
+  let encoded = 0;
+  for (const s of todo) {
+    const raw = rawPath(s.slot.src);
+    if (!fs.existsSync(raw)) {
+      console.log(`· no raw PNG for ${s.slot.src}, skipped`);
+      continue;
+    }
+    await encode(s.slot, fs.readFileSync(raw));
+    encoded++;
+    console.log(`✔ encoded ${s.slot.src}`);
+  }
+  console.log(`\n${encoded} of ${todo.length} encoded from assets-src.`);
+  await import("./fix-borders.mjs"); // strips any stray white frame, then rebuilds the LQIPs
+  process.exit(0);
+}
+
 if (!KEY) {
   console.error("✖ GEMINI_API_KEY is missing. Add it to .env.local (see .env.example).");
   process.exit(1);
@@ -183,7 +207,7 @@ async function generate(model, slot) {
 }
 
 async function save(slot, buf) {
-  const raw = path.join(root, "assets-src", slot.src.replace(/\.webp$/, ".png"));
+  const raw = rawPath(slot.src);
   fs.mkdirSync(path.dirname(raw), { recursive: true });
   fs.writeFileSync(raw, buf);
   await encode(slot, buf);

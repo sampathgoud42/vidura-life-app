@@ -6,6 +6,7 @@ import { Display } from "../components/Typography";
 import { APP, CATEGORIES, FOOD_GUIDES, TIPS, type CategoryId, type Tip } from "../data/content";
 import { haptics } from "../lib/device";
 import { useApp } from "../state/AppState";
+import { ConditionGuideLinks } from "./ConditionGuide";
 import { FoodGuideCard, RoutinesSection, TricksSection } from "./TipsSections";
 
 export type TipsView = "tips" | "tricks" | "routines" | "foods";
@@ -31,7 +32,7 @@ const KIND_LABEL: Record<Tip["kind"], string> = {
   care: "Care",
 };
 
-export function TipsScreen({ onOpenGuide }: { onOpenGuide: () => void }) {
+export function TipsScreen({ onOpenGuide }: { onOpenGuide: (id: string) => void }) {
   const { profile, prefs } = useApp();
   const cats = profile?.categories ?? [];
   const [view, setView] = useState<TipsView>("tips");
@@ -77,8 +78,10 @@ export function TipsScreen({ onOpenGuide }: { onOpenGuide: () => void }) {
         })}
       </div>
 
+      <ConditionGuideLinks categories={scope} onOpen={onOpenGuide} />
+
       {scope.includes("fertility") && (
-        <button type="button" className="guide-link glass" onClick={onOpenGuide}>
+        <button type="button" className="guide-link glass" onClick={() => onOpenGuide("fertility-tool")}>
           <span className="guide-link-emoji" aria-hidden="true">
             🧬
           </span>

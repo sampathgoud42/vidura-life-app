@@ -7,12 +7,14 @@ import { Settings } from "../components/Icons";
 import { TabBar, type TabId } from "../components/TabBar";
 import { useToast } from "../components/Toast";
 import { APP } from "../data/content";
+import { guideById } from "../data/conditionGuides";
 import { withViewTransition } from "../lib/device";
 import { currentStreak, lastSevenDays } from "../lib/insights";
 import type { Resolved } from "../lib/plan";
 import { formatMinutes } from "../lib/time";
 import { useApp } from "../state/AppState";
 import { ExtrasScreen } from "./ExtrasScreen";
+import { ConditionGuideScreen } from "./ConditionGuide";
 import { FertilityGuide } from "./FertilityGuide";
 import { GuidedMode } from "./GuidedMode";
 import { InsightsScreen } from "./InsightsScreen";
@@ -25,7 +27,8 @@ export function MainShell() {
   const [tab, setTab] = useState<TabId>("now");
   const [settings, setSettings] = useState(false);
   const [guided, setGuided] = useState<Resolved | null>(null);
-  const [guide, setGuide] = useState(false);
+  /** Open guide: "fertility-tool" for the fertility guide, or a condition guide id. */
+  const [guide, setGuide] = useState<string | null>(null);
   const burst = useLightBurst();
   const toast = useToast();
   const days = lastSevenDays(log, now);
@@ -34,15 +37,15 @@ export function MainShell() {
   const closeSettings = useCallback(() => setSettings(false), []);
   const closeGuided = useCallback(() => setGuided(null), []);
 
-  const openGuide = (open: boolean) => {
-    withViewTransition(() => setGuide(open));
+  const openGuide = (id: string | null) => {
+    withViewTransition(() => setGuide(id));
     window.scrollTo({ top: 0 });
   };
 
   const changeTab = (t: TabId) => {
     withViewTransition(() => {
       setTab(t);
-      setGuide(false);
+      setGuide(null);
       setPreviewMinutes(null);
     });
     window.scrollTo({ top: 0 });
@@ -64,12 +67,14 @@ export function MainShell() {
         </header>
 
         <div className="tab-view">
-          {guide ? (
-            <FertilityGuide onBack={() => openGuide(false)} />
+          {guide === "fertility-tool" ? (
+            <FertilityGuide onBack={() => openGuide(null)} />
+          ) : guide && guideById(guide) ? (
+            <ConditionGuideScreen guide={guideById(guide)!} onBack={() => openGuide(null)} />
           ) : (
             <>
-              {tab === "now" && <NowScreen onStart={setGuided} onOpenGuide={() => openGuide(true)} />}
-              {tab === "tips" && <TipsScreen onOpenGuide={() => openGuide(true)} />}
+              {tab === "now" && <NowScreen onStart={setGuided} onOpenGuide={openGuide} />}
+              {tab === "tips" && <TipsScreen onOpenGuide={openGuide} />}
               {tab === "insights" && <InsightsScreen />}
               {tab === "extras" && <ExtrasScreen />}
             </>

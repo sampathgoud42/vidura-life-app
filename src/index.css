@@ -3898,3 +3898,208 @@ html.phase-shift *::after {
     transition-duration: 0.4s !important;
   }
 }
+
+/* ── Condition guides ─────────────────────────────────────────────────────── */
+.guide-links {
+  display: grid;
+  gap: 0.6rem;
+}
+.guide-links .guide-link {
+  margin-top: 0;
+}
+.guide-links + .guide-link {
+  margin-top: 0.6rem;
+}
+.cond-hero {
+  margin: 0.4rem 0 0.8rem;
+  border-radius: 22px;
+}
+.cause-diagram {
+  margin: 1rem 0 0.5rem;
+  display: grid;
+  gap: 0.2rem;
+}
+.cause-kicker,
+.cause-acts-k {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.cause-drivers ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.cause-driver {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  background: color-mix(in oklab, #f2b233 26%, transparent);
+  border: 1px solid color-mix(in oklab, #f2b233 50%, transparent);
+}
+.cause-chain {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+}
+.cause-arrow {
+  display: block;
+  text-align: center;
+  width: min(100%, 22rem);
+  font-size: 1.1rem;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+.cause-row {
+  display: grid;
+  grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+  gap: 0.6rem 0.9rem;
+  align-items: center;
+}
+.cause-box {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.6rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 16px;
+  background: var(--glass-strong);
+  border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
+}
+.cause-num {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 750;
+  background: var(--accent-soft);
+}
+.cause-label {
+  font-weight: 680;
+  font-size: 0.92rem;
+}
+.cause-detail {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+.is-outcome .cause-box {
+  border-color: color-mix(in oklab, #e0607a 60%, transparent);
+  background: color-mix(in oklab, #e0607a 16%, var(--glass-strong));
+}
+.is-outcome .cause-num {
+  background: color-mix(in oklab, #e0607a 40%, transparent);
+}
+.cause-acts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+.cause-tag {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 620;
+  background: color-mix(in oklab, #2ea99f 26%, transparent);
+  border: 1px solid color-mix(in oklab, #2ea99f 50%, transparent);
+}
+.cause-tag::before {
+  content: "✓ ";
+}
+@media (max-width: 640px) {
+  .cause-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cause-arrow {
+    width: 100%;
+  }
+  .cause-acts {
+    padding-left: 2.2rem;
+  }
+}
+.cond-dl {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0.5rem 0 0;
+}
+.cond-dl dt {
+  font-size: 0.72rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+.cond-dl dd {
+  margin: 0;
+  font-size: 0.86rem;
+}
+.cond-exp {
+  margin-top: 0.8rem;
+}
+.cond-table-wrap {
+  overflow-x: auto;
+  margin: 0.6rem 0;
+  border-radius: 14px;
+}
+.cond-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.cond-table th,
+.cond-table td {
+  padding: 0.5rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+.cond-table thead th {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+.cond-table tbody th {
+  font-weight: 620;
+}
+.cond-plan {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.8rem;
+}
+.cond-plan-col {
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-card);
+}
+.cond-list {
+  margin: 0.4rem 0 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.9rem;
+}
+.cond-flags li::marker {
+  color: #e0607a;
+}
+.cond-sources {
+  margin: 0;
+  padding-left: 1.3rem;
+  display: grid;
+  gap: 0.4rem;
+  font-size: 0.86rem;
+}
+.cond-sources a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  overflow-wrap: anywhere;
+}

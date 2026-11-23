@@ -24,7 +24,7 @@ Thumbs.db
 *.log
 
 # Local wellness database (default location)
-data/
+/data/
 *.db
 *.db-wal
 *.db-shm

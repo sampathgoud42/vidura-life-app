@@ -10,7 +10,7 @@ import { haptics } from "../lib/device";
 import { useApp } from "../state/AppState";
 
 /** Display order: the artifact's headline goals first. */
-const ORDER: CategoryId[] = ["cholesterol", "sugar", "bp", "gut", "inflammation", "hormonal", "fertility"];
+const ORDER: CategoryId[] = ["cholesterol", "sugar", "bp", "gut", "inflammation", "hormonal", "fertility", "hair"];
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 

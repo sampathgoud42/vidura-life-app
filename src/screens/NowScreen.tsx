@@ -13,11 +13,12 @@ import { Display } from "../components/Typography";
 import { formatClock, formatDateLong, formatMinutes, formatPhaseRange, greetingFor, timeZoneLabel, timeZoneShort, weekdayIndex } from "../lib/time";
 import { useApp } from "../state/AppState";
 import { MealSwapSheet, ProteinChip } from "./MealSwapSheet";
+import { ConditionGuideLinks } from "./ConditionGuide";
 import { TodayPlate } from "./TodayPlate";
 
 const catOf = (id: string) => CATEGORIES.find((c) => c.id === id)!;
 
-export function NowScreen({ onStart, onOpenGuide }: { onStart: (r: Resolved) => void; onOpenGuide: () => void }) {
+export function NowScreen({ onStart, onOpenGuide }: { onStart: (r: Resolved) => void; onOpenGuide: (id: string) => void }) {
   const app = useApp();
   const { profile, prefs, now, nowMinutes, doneToday, complete, undo, day, swapMeal } = app;
   const [swapSlot, setSwapSlot] = useState<MealSlot | null>(null);
@@ -133,8 +134,10 @@ export function NowScreen({ onStart, onOpenGuide }: { onStart: (r: Resolved) => 
             </section>
           )}
 
+          <ConditionGuideLinks categories={categories} onOpen={onOpenGuide} />
+
           {categories.includes("fertility") && (
-            <button type="button" className="guide-link glass" onClick={onOpenGuide}>
+            <button type="button" className="guide-link glass" onClick={() => onOpenGuide("fertility-tool")}>
               <span className="guide-link-emoji" aria-hidden="true">
                 🧬
               </span>

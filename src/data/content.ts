@@ -17,7 +17,7 @@
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export type PhaseId = "dawn" | "morning" | "midday" | "afternoon" | "evening" | "night";
-export type CategoryId = "cholesterol" | "sugar" | "bp" | "fertility" | "hormonal" | "gut" | "inflammation";
+export type CategoryId = "cholesterol" | "sugar" | "bp" | "fertility" | "hormonal" | "gut" | "inflammation" | "hair";
 export type RegionId = "pan-indian" | "north-indian" | "telugu" | "tamil" | "kerala" | "bangalore";
 export type DietId = "vegetarian" | "non-vegetarian" | "vegan";
 export type ApproachId = "both" | "modern" | "ayurvedic";
@@ -387,13 +387,28 @@ export const CATEGORIES: readonly Category[] = [
     tileLabel: "Inflam\u00ADmation",
     short: "Calm",
     emoji: "🔥",
-    blurb: "Turmeric, greens, good sleep and gentle movement.",
+    blurb: "Turmeric, greens, good sleep and gentle movement, plus easing muscle and body aches.",
     image: img(
       "assets/focus/inflammation.webp",
       "1:1",
       "morning",
       "Fresh turmeric, ginger and a cup of golden milk on a wooden board",
       "Fresh turmeric root, ginger, whole black pepper and a cup of golden turmeric milk on a rustic wooden board",
+    ),
+  },
+  {
+    id: "hair",
+    artifactId: "Hair Loss (added)",
+    label: "Hair Loss",
+    short: "Hair",
+    emoji: "💇",
+    blurb: "What really works for thinning hair, and what's a waste of money.",
+    image: img(
+      "assets/focus/hair.webp",
+      "1:1",
+      "morning",
+      "A man gently checking his hairline in a bright bathroom mirror",
+      "A South Asian man in his thirties gently checking his hairline in a bright bathroom mirror, a bowl of eggs, dal and pumpkin seeds on the shelf beside him, calm expression",
     ),
   },
 ];
@@ -1241,6 +1256,8 @@ export const TIPS: readonly Tip[] = [
   { id: "inf-sleep", category: "inflammation", kind: "rest", icon: "😴", title: "Protect your sleep", body: "A consistent seven to eight hours is one of the kindest things you can do for yourself." },
   { id: "inf-moderate", category: "inflammation", kind: "move", icon: "🚶", title: "Moderate is the sweet spot", body: "Walking and yoga most days. Balance harder sessions with easy days." },
   { id: "inf-ease", category: "inflammation", kind: "food", icon: "🍩", title: "Go easy on", body: "Vanaspati and trans fats, refined sugar, maida, processed meats and deep-fried snacks." },
+  { id: "inf-aches", category: "inflammation", kind: "care", icon: "💪", title: "Aches that won't settle", body: "Ongoing muscle or body aches can come from inflammation or from low vitamin D, B12, iron or thyroid. One blood test checks them all, which is cheaper than guessing with supplements." },
+  { id: "inf-protein", category: "inflammation", kind: "food", icon: "🥚", title: "Protein for sore muscles", body: "Include dal, eggs, paneer, fish or soy at each meal so muscles can repair, and drink water around exercise." },
   { id: "inf-nidra", category: "inflammation", kind: "mind", icon: "🧘", title: "Try yoga nidra", body: "A 20–30 minute yoga nidra session is a deeply restful way to end the day." },
 
   // From the original app's per-goal tips (women's / men's notes), rewritten claim-free
@@ -1563,6 +1580,12 @@ export const MORNING_ADDS: Record<CategoryId, readonly RoutineStep[]> = {
     { icon: "🍵", text: "Warm ginger and ajwain water." },
     { icon: "🌿", text: "Fennel seed water, sipped warm." },
     { icon: "🥛", text: "A small bowl of curd with breakfast.", audience: "women" },
+  ],
+  hair: [
+    { icon: "🥚", text: "A protein-rich breakfast: eggs, besan chilla, paneer or sprouts." },
+    { icon: "🎃", text: "A tablespoon of pumpkin seeds." },
+    { icon: "☀️", text: "Twenty minutes of morning daylight for vitamin D." },
+    { icon: "💧", text: "Your scalp treatment, if your doctor prescribed one, at the same time each day." },
   ],
   inflammation: [
     { icon: "🟡", text: "Turmeric and a pinch of black pepper in warm water." },
