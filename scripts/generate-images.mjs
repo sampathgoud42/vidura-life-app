@@ -27,6 +27,7 @@ import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 import { ACTIVITIES, CATEGORIES, FERTILITY, FOOD_GUIDES, PHASES, STYLE_BLOCK, buildImagePrompt } from "../src/data/content.ts";
 import { CONDITION_GUIDES } from "../src/data/conditionGuides.ts";
+import { TECHNIQUES } from "../src/data/breathwork.ts";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const args = new Set(process.argv.slice(2));
@@ -71,6 +72,7 @@ const slots = [
   { group: "Fertility guide (16:9)", label: "Fertility guide · women", slot: FERTILITY.heroes.women },
   { group: "Fertility guide (16:9)", label: "Fertility guide · men", slot: FERTILITY.heroes.men },
   ...CONDITION_GUIDES.map((g) => ({ group: "Condition guides, root cause (16:9)", label: `${g.title} · root cause`, slot: g.image })),
+  ...TECHNIQUES.filter((t) => t.image.src.startsWith("assets/breath/")).map((t) => ({ group: "Breathing techniques (4:5)", label: t.name, slot: t.image })),
 ]
   .filter((s) => !ONLY || ONLY.split(",").some((part) => s.slot.src.includes(part.trim())))
   .filter((s) => !SKIP || !SKIP.split(",").some((part) => s.slot.src.includes(part.trim())));

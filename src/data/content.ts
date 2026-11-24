@@ -17,6 +17,8 @@
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export type PhaseId = "dawn" | "morning" | "midday" | "afternoon" | "evening" | "night";
+import type { TechniqueId } from "./breathwork";
+
 export type CategoryId = "cholesterol" | "sugar" | "bp" | "fertility" | "hormonal" | "gut" | "inflammation" | "hair" | "thyroid";
 export type RegionId = "pan-indian" | "north-indian" | "telugu" | "tamil" | "kerala" | "bangalore";
 export type DietId = "vegetarian" | "non-vegetarian" | "vegan";
@@ -105,6 +107,8 @@ export interface Activity {
   /** Guided-mode prompts. `{meal}` and `{exercise}` are filled in at runtime. */
   steps: string[];
   breath?: BreathPattern;
+  /** Opens this breathing technique's interactive session instead of the generic guide. */
+  technique?: TechniqueId;
   focus?: Partial<Record<CategoryId, string>>;
   audienceNote?: Partial<Record<Exclude<AudienceId, "everyone">, string>>;
   dietNote?: Partial<Record<DietId, string>>;
@@ -582,6 +586,7 @@ export const ACTIVITIES: readonly Activity[] = [
     window: [MIN(5), MIN(7)],
     categories: ["hormonal", "inflammation", "fertility", "bp"],
     breath: { inhale: 5, exhale: 5 },
+    technique: "coherent",
     steps: [
       "Sit tall with your hands resting on your knees.",
       "Breathe in for five, out for five.",
@@ -970,6 +975,7 @@ export const ACTIVITIES: readonly Activity[] = [
     window: [MIN(17, 30), MIN(19)],
     categories: [],
     breath: { inhale: 4, exhale: 6 },
+    technique: "anulom-vilom",
     steps: [
       "Sit tall and rest your left hand on your knee.",
       "Close your right nostril with your thumb and breathe in through the left.",
@@ -1030,6 +1036,7 @@ export const ACTIVITIES: readonly Activity[] = [
     window: [MIN(18), MIN(20)],
     categories: ["hormonal", "fertility", "inflammation", "bp"],
     breath: { inhale: 4, exhale: 6 },
+    technique: "bhramari",
     steps: [
       "Sit comfortably and close your eyes.",
       "Breathe in through your nose.",

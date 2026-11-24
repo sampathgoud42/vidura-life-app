@@ -18,6 +18,7 @@ fs.mkdirSync(SHOTS, { recursive: true });
 // Browsers live inside the project (must be set before playwright-core loads its registry).
 process.env.PLAYWRIGHT_BROWSERS_PATH = "0";
 const { chromium } = await import("playwright-core");
+const breathwork = await import("../src/data/breathwork.ts");
 
 // During QA the wellness API writes to a throwaway database, never the real one.
 const QA_DB = path.join(root, "qa", "wellness-qa.db");
@@ -41,6 +42,26 @@ const pass = (name, ok, detail = "") => {
   results.push({ name, ok, detail });
   console.log(`${ok ? "✔" : "✖"} ${name}${detail ? ` — ${detail}` : ""}`);
 };
+
+// Breathing suggestion rules (no browser needed).
+{
+  const H = (h, m = 0) => h * 60 + m;
+  const phaseOf = (m) => (m < H(7) ? "dawn" : m < H(11) ? "morning" : m < H(14) ? "midday" : m < H(17) ? "afternoon" : m < H(20) ? "evening" : "night");
+  const pick = (m, categories, times) => breathwork.suggestTechnique({ minutes: m, phase: phaseOf(m), categories, doneToday: new Set(), day: 3, times }).id;
+  const fast = (id) => id === "kapalbhati" || id === "bhastrika";
+  let bad = 0;
+  for (let d = 0; d < 7; d++)
+    for (let m = 0; m < 1440; m += 15) {
+      for (const c of [["bp"], ["fertility"], ["bp", "gut"]]) if (fast(breathwork.suggestTechnique({ minutes: m, phase: phaseOf(m), categories: c, doneToday: new Set(), day: d }).id)) bad++;
+      if (m >= H(11) && fast(breathwork.suggestTechnique({ minutes: m, phase: phaseOf(m), categories: ["gut"], doneToday: new Set(), day: d }).id)) bad++;
+    }
+  pass("Breathing: never Kapalbhati/Bhastrika for BP or fertility, or after 11:00", bad === 0, `${bad} bad picks`);
+  pass("Breathing: never a fast technique right after breakfast", !fast(pick(H(8, 30), ["gut"])), pick(H(8, 30), ["gut"]));
+  pass("Breathing: early morning with a gut focus suggests Kapalbhati", pick(H(6, 30), ["gut"]) === "kapalbhati");
+  pass("Breathing: BP focus at night prefers Bhramari or Coherent", ["bhramari", "coherent"].includes(pick(H(21, 30), ["bp"])), pick(H(21, 30), ["bp"]));
+  pass("Breathing: a practice time the user sets is followed", pick(H(7), ["hormonal"], { dirga: H(7) }) === "dirga");
+  pass("Breathing: a fast technique moved to the evening gets a caution", !!breathwork.timeCaution(breathwork.techniqueById("kapalbhati"), H(20)));
+}
 
 const PROFILE = {
   name: "Priya",
@@ -195,10 +216,44 @@ try {
     await wait(700);
     pass("Esc closes guided mode", (await page.locator(".guided").count()) === 0);
 
+    // Breathing: a technique in "Also good right now" opens its interactive session.
+    const breathItem = page.locator(".also-breath");
+    await breathItem.waitFor({ timeout: 5000 });
+    pass("Also good right now suggests a breathing technique", (await breathItem.count()) === 1, await breathItem.getAttribute("data-technique"));
+    await breathItem.click();
+    await wait(900);
+    pass("Tapping it opens the technique setup", await page.locator(".breath-setup").isVisible());
+    await page.locator(".breath-setup .guided-actions button").click({ trial: true }).catch(() => {});
+    const safetyBox = page.locator(".breath-safety input[type=checkbox]");
+    if (await safetyBox.count()) await safetyBox.check();
+    await page.locator(".breath-setup .guided-actions button").click();
+    await wait(1600);
+    await shot(page, "A13b-breath");
+    pass("The breathing session runs with a timer and cue", (await page.locator(".breath-player .guided-time").isVisible()) && (await page.locator(".breath-cue").innerText()).length > 0);
+    await page.keyboard.press("Escape");
+    await wait(700);
+    pass("Esc closes the breathing session", (await page.locator(".breath-player").count()) === 0);
+
+    await page.getByRole("button", { name: /Breathing guide: 8 techniques/ }).click();
+    await wait(1000);
+    await shot(page, "A13c-breath-guide");
+    pass("Breathing guide: comparison of 8 techniques", (await page.locator(".breath-table tbody tr").count()) === 8);
+    pass("Breathing guide: every technique has When NOT to do it", (await page.locator(".breath-avoid").count()) === 8);
+    pass("Breathing guide: every technique has a practice-time picker", (await page.locator(".breath-card .practice-time-input").count()) === 8);
+    await page.locator("#b-kapalbhati .breath-try").click();
+    await wait(900);
+    pass("Kapalbhati asks for the safety check before Start", await page.locator(".breath-setup .guided-actions button").isDisabled());
+    await page.keyboard.press("Escape");
+    await wait(600);
+    await page.locator(".guide-back").first().click();
+    await wait(900);
+
     await page.getByRole("button", { name: "Tips", exact: true }).click();
     await wait(900);
     await shot(page, "A14-tips");
     const first = await page.locator(".tip-top .tip-title").innerText();
+    await page.locator(".tip-top").scrollIntoViewIfNeeded();
+    await wait(300);
     const card = await page.locator(".tip-top").boundingBox();
     await page.mouse.move(card.x + card.width / 2, card.y + card.height / 2);
     await page.mouse.down();

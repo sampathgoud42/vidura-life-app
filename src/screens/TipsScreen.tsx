@@ -7,6 +7,7 @@ import { APP, CATEGORIES, FOOD_GUIDES, TIPS, type CategoryId, type Tip } from ".
 import { haptics } from "../lib/device";
 import { useApp } from "../state/AppState";
 import { ConditionGuideLinks } from "./ConditionGuide";
+import { BreathingGuideLink } from "./NowScreen";
 import { FoodGuideCard, RoutinesSection, TricksSection } from "./TipsSections";
 
 export type TipsView = "tips" | "tricks" | "routines" | "foods";
@@ -77,6 +78,8 @@ export function TipsScreen({ onOpenGuide }: { onOpenGuide: (id: string) => void 
           );
         })}
       </div>
+
+      <BreathingGuideLink onOpen={() => onOpenGuide("breathing")} />
 
       <ConditionGuideLinks categories={scope} onOpen={onOpenGuide} />
 
