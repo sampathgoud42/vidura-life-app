@@ -420,7 +420,7 @@ export const CATEGORIES: readonly Category[] = [
     artifactId: "Hair Loss (added)",
     label: "Hair Loss",
     short: "Hair",
-    emoji: "💇",
+    emoji: "💈",
     blurb: "What really works for thinning hair, and what's a waste of money.",
     image: img(
       "assets/focus/hair.webp",
@@ -1311,6 +1311,15 @@ export const TIPS: readonly Tip[] = [
   { id: "gut-cycle-bloat", category: "gut", audience: "women", kind: "food", icon: "🌿", title: "Bloating that comes and goes", body: "If bloating follows your cycle, warm fennel water and gentle walks are simple comforts." },
   { id: "inf-sun", category: "inflammation", kind: "habit", icon: "🌞", title: "Twenty minutes of sun", body: "Morning daylight is pleasant and helps your body make vitamin D. Ask your doctor about a test if you're mostly indoors." },
   { id: "inf-autoimmune", category: "inflammation", audience: "women", kind: "care", icon: "🩺", title: "Mention the patterns", body: "Autoimmune conditions are more common in women. Tell your doctor about joint pain, tiredness or rashes that keep coming back." },
+  { id: "hair-early", category: "hair", kind: "care", icon: "⏱️", title: "Start early, judge slowly", body: "Shrinking follicles can be rescued; lost ones can't. Whatever you start, give it 4 to 6 months before deciding, and about a year for the full effect." },
+  { id: "hair-minox", category: "hair", kind: "care", icon: "💧", title: "Minoxidil on a dry scalp", body: "Apply it to a dry scalp, on the thinning areas, every day. Consistency matters more than the amount. Extra shedding in the first 2 to 8 weeks is normal and a sign it's working." },
+  { id: "hair-photos", category: "hair", kind: "habit", icon: "📸", title: "A photo a month", body: "Same spot, same light, hair dry and parted the same way. Mirrors and memory can't show slow change; photos can." },
+  { id: "hair-drain", category: "hair", kind: "care", icon: "🚿", title: "Hair in the drain is normal", body: "Losing 50 to 100 hairs a day is normal shedding. Washing more or less often doesn't cause hair loss; you just see the hairs that were already loose." },
+  { id: "hair-crash", category: "hair", kind: "food", icon: "🍽️", title: "No crash diets", body: "A sudden big drop in food or protein triggers heavy shedding 2 to 4 months later. Lose weight slowly, with protein at every meal." },
+  { id: "hair-tests", category: "hair", kind: "care", icon: "🧪", title: "Sudden shedding? Get tested", body: "Diffuse shedding that comes on fast is often not pattern loss. Ask for ferritin (iron), vitamin D, a blood count and a thyroid (TSH) test." },
+  { id: "hair-myths", category: "hair", kind: "care", icon: "🚫", title: "Skip the kitchen cures", body: "Onion juice, rice water and 'DHT-blocking' oils have no good evidence for pattern hair loss. Biotin only helps if you're truly deficient, and it can upset thyroid blood tests." },
+  { id: "hair-stress", category: "hair", kind: "rest", icon: "😴", title: "Sleep and stress count", body: "A major illness, fever or stressful time can cause a wave of shedding months later. It usually settles on its own once things calm down." },
+  { id: "hair-postpartum", category: "hair", audience: "women", kind: "care", icon: "🍼", title: "Shedding after a baby", body: "Heavy shedding 2 to 4 months after giving birth is common and usually recovers by the first birthday. See a doctor if it doesn't, or if it comes with tiredness." },
 ];
 
 // ── Tricks & remedies (the original app's goal remedies, rewritten) ───────────
@@ -1564,6 +1573,26 @@ export const TRICKS: readonly Trick[] = [
     { id: "inf-a-hibiscus-tulsi", audience: "women", icon: "🌺", title: "Hibiscus and tulsi kadha", body: "Hibiscus, tulsi and ginger simmered together.", caution: NOT_PREGNANT },
     { id: "inf-a-shatavari", audience: "women", icon: "🌸", title: "Shatavari with turmeric", body: "A classic Ayurvedic pairing for women.", herb: true, dietNote: VEGAN_MILK },
   ]),
+
+  // Hair loss
+  ...tricks("hair", "both", [
+    { id: "hair-b-keto", icon: "🧴", title: "Ketoconazole shampoo, twice a week", body: "A 2% ketoconazole shampoo two or three times a week, left on for 3 to 5 minutes. A modest, well-tested add-on to your main treatment." },
+    { id: "hair-b-massage", icon: "💆", title: "Four minutes of scalp massage", body: "Firm fingertip circles over the scalp, daily. The evidence is weak but it's free and relaxing.", caution: "It's an extra, not a treatment on its own." },
+    { id: "hair-b-protein", icon: "🥚", title: "Protein at every meal", body: "Eggs, dal, paneer, curd, fish or soy. Hair is protein, and low intake shows up as shedding." },
+    { id: "hair-b-loose", icon: "🎀", title: "Loose styles", body: "Tight ponytails, buns and braids pull on the hairline. Change your parting and keep styles loose." },
+  ]),
+  ...tricks("hair", "modern", [
+    { id: "hair-m-keto", icon: "🧴", title: "Ketoconazole shampoo, twice a week", body: "A 2% ketoconazole shampoo two or three times a week, left on for 3 to 5 minutes. A modest, well-tested add-on to your main treatment." },
+    { id: "hair-m-reminder", icon: "⏰", title: "A daily minoxidil reminder", body: "Same time each day, on a dry scalp. Missing days is the main reason it 'doesn't work'." },
+    { id: "hair-m-photos", icon: "📸", title: "Monthly progress photos", body: "Same spot, same light, same parting. Compare at 6 and 12 months, not week to week." },
+    { id: "hair-m-heat", icon: "🌡️", title: "Low heat", body: "Air-dry when you can, and keep dryers and straighteners on low. Heat damage breaks hair, making it look thinner." },
+  ]),
+  ...tricks("hair", "ayurvedic", [
+    { id: "hair-a-champi", icon: "💆", title: "A gentle champi", body: "A few minutes of fingertip scalp massage, with or without a little coconut oil. Relaxing; the evidence for regrowth is weak.", caution: "No oil, including 'DHT-blocking' or onion oils, treats pattern hair loss." },
+    { id: "hair-a-amla", icon: "🍈", title: "Amla on the plate", body: "Fresh amla or amla chutney adds vitamin C, which helps you absorb iron from dal and greens." },
+    { id: "hair-a-routine", icon: "🌅", title: "A steady dinacharya", body: "Regular sleep, meals and a calm evening support the whole body, and make a daily scalp treatment easy to keep." },
+    { id: "hair-a-herbs", icon: "🌿", title: "Careful with herbal hair pills", body: "Bhringraj and 'hair growth' herbal tablets aren't proven for pattern loss, and some contain heavy metals. Ask your doctor first.", herb: true },
+  ]),
 ];
 
 // ── Routines (the original app's daily ritual + goal-specific morning add-ons) ─
@@ -1589,6 +1618,32 @@ export const DAILY_RITUAL: readonly RoutineStep[] = [
   { icon: "🌱", text: "A teaspoon of soaked flaxseed.", audience: "women" },
   { icon: "🌸", text: "Shatavari in warm milk, the Ayurvedic way.", audience: "women", ayurvedic: true, herb: true },
 ];
+
+/** Extra routine cards for some focuses, shown on the Routines tab. */
+export interface CareRoutine {
+  title: string;
+  icon: string;
+  steps: readonly RoutineStep[];
+  note?: string;
+}
+
+export const CARE_ROUTINES: Partial<Record<CategoryId, CareRoutine>> = {
+  hair: {
+    title: "Washing and conditioning",
+    icon: "🚿",
+    steps: [
+      { icon: "🧴", text: "Ketoconazole 2% shampoo 2 or 3 times a week, left on for 3 to 5 minutes before rinsing." },
+      { icon: "🫧", text: "A mild shampoo on the other days you wash." },
+      { icon: "🌡️", text: "Lukewarm water, not hot." },
+      { icon: "✨", text: "Conditioner on the lengths, not rubbed into the scalp." },
+      { icon: "🧺", text: "Pat dry with a towel; don't rub." },
+      { icon: "🪮", text: "Detangle wet hair gently with a wide-tooth comb." },
+      { icon: "💨", text: "Air-dry, or a dryer on low heat." },
+      { icon: "🎀", text: "No tight ponytails, buns or braids." },
+    ],
+    note: "How often you wash doesn't cause hair loss. Hair in the drain is normal shedding of hairs that were already loose.",
+  },
+};
 
 export const MORNING_ADDS: Record<CategoryId, readonly RoutineStep[]> = {
   cholesterol: [
@@ -1976,6 +2031,44 @@ export const FOOD_GUIDES: readonly FoodGuide[] = [
       "morning",
       "A hand gently pushing away deep-fried snacks and a sugary dessert",
       "A South Asian hand gently pushing away a plate of deep-fried snacks and a sugary dessert, a tin of vanaspati set a little apart, calm and non-judgemental",
+    ),
+  },
+  {
+    category: "hair",
+    intro: "Food fixes shedding from low protein, iron, zinc or vitamin D. It doesn't reverse genetic pattern loss, so pair it with your treatment.",
+    enjoy: [
+      { name: "Eggs", note: "Protein, iron and zinc in one", serving: "2 eggs", protein: 13, diets: NONVEG },
+      { name: "Fish, especially sardines and mackerel", note: "Protein and omega-3", serving: "100 g", protein: 20, diets: NONVEG },
+      { name: "Dal, chickpeas and rajma", note: "Protein and iron", serving: "1 katori", protein: 8 },
+      { name: "Paneer, curd and soy", serving: "50 g paneer", protein: 9 },
+      { name: "Leafy greens with lemon or amla", note: "Vitamin C helps you absorb their iron" },
+      { name: "Pumpkin seeds and cashews", note: "Zinc", serving: "1 tbsp seeds", protein: 3 },
+      { name: "Walnuts and flaxseed", note: "Plant omega-3" },
+      { name: "Sprouts", serving: "1 cup", protein: 7 },
+    ],
+    limit: [
+      { name: "Crash diets and skipped meals", note: "They trigger heavy shedding 2 to 4 months later" },
+      { name: "Sugary drinks and sweets" },
+      { name: "Ultra-processed snacks and instant noodles" },
+      { name: "Alcohol", note: "Keep it occasional" },
+      { name: "High-dose vitamin A or selenium supplements", note: "Too much causes hair loss" },
+      { name: "Biotin pills, unless a test shows you're low", note: "They can also upset thyroid blood tests" },
+      { name: "Bodybuilding products with DHEA, prohormones or steroids" },
+    ],
+    // Shares the fertility and sugar food photos: the same nutrients, the same foods to go easy on.
+    enjoyImage: img(
+      "assets/food/fertility-enjoy.webp",
+      "16:9",
+      "evening",
+      "Pomegranate, walnuts, pumpkin seeds, dal and leafy greens",
+      "A calm still life of foods to enjoy: a halved pomegranate, a small bowl of walnuts, a scatter of pumpkin seeds, a bowl of yellow dal, a bunch of spinach and two tomatoes, arranged loosely on a table",
+    ),
+    limitImage: img(
+      "assets/food/sugar-limit.webp",
+      "16:9",
+      "midday",
+      "A hand gently pushing away a plate of mithai and a sugary drink",
+      "A South Asian hand gently pushing away a plate of mithai, with a glass of packaged juice and a slice of white bread set a little apart, calm and non-judgemental",
     ),
   },
 ];

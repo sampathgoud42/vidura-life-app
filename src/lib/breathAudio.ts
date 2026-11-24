@@ -22,6 +22,7 @@ const CLIPS: ClipName[] = [
   "in", "hold", "out", "hum", "done",
   "n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "n10",
   "inleft", "inright", "outleft", "outright", "belly", "ribs", "chest", "rest", "ready", "kapal", "bellows", "last",
+  "sin", "sout", "shold",
 ];
 const MUSIC_FILE = "music/calm-loop.mp3";
 const VOICE_GAIN = 1;

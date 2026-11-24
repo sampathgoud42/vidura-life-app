@@ -4652,3 +4652,52 @@ html.phase-shift *::after {
 .breath-table th[scope="row"] {
   min-width: 6.5rem;
 }
+
+.breath-guide-hint {
+  margin: -0.2rem 0 0.9rem;
+  font-size: 0.86rem;
+  opacity: 0.85;
+}
+
+/* 3… 2… 1… Start, over the orb */
+.breath-countdown {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.breath-countdown-n {
+  font-family: var(--font-display, inherit);
+  font-size: clamp(3.5rem, 18vw, 6rem);
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.35);
+  animation: breath-count 1s ease-out both;
+}
+@keyframes breath-count {
+  from {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.85;
+    transform: scale(0.96);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .breath-countdown-n {
+    animation: none;
+  }
+}
+
+.routine-note {
+  margin: 0.4rem 0 0;
+  font-size: 0.86rem;
+  color: var(--ink-soft);
+}

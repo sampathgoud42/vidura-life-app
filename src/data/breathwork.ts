@@ -381,7 +381,11 @@ export type VoiceClip =
   | "ready"
   | "kapal"
   | "bellows"
-  | "last";
+  | "last"
+  /** Short cues after the opening guidance: "In…", "Out…", "Hold…". */
+  | "sin"
+  | "sout"
+  | "shold";
 
 export interface Segment {
   kind: SegKind;
@@ -416,12 +420,55 @@ export interface Options {
   reps?: number;
   /** Fast techniques: number of rounds. */
   rounds?: number;
+  /** How much the voice says. Standard (default): full guidance for about 30 s, then short cues. */
+  guide?: GuideLevel;
 }
 
-const repeatUntil = (cycle: Segment[], minutes: number): Segment[] => {
+/**
+ * short: only "In… Out… Hold…" from the first second.
+ * standard: counting, nostril and body cues for about the first 30 s, then short cues.
+ * complete: counting and every cue for the whole session.
+ */
+export type GuideLevel = "short" | "standard" | "complete";
+export const GUIDE_LEVELS: { id: GuideLevel; label: string; hint: string }[] = [
+  { id: "short", label: "Short", hint: "Just “In… Out… Hold…” from the start, no counting." },
+  { id: "standard", label: "Standard", hint: "Counts you in for the first 30 seconds, then just “In… Out… Hold…”." },
+  { id: "complete", label: "Complete", hint: "Counts every breath for the whole session." },
+];
+
+/** Full guidance plays for about the first 30 seconds, then the round in progress finishes. */
+export const GUIDED_SECONDS = 30;
+
+/** After the opening guidance: one short word per phase, no counting. */
+function brief(s: Segment): Segment {
+  const say: VoiceClip = s.kind === "in" ? "sin" : s.kind === "hold" ? "shold" : "sout";
+  return { ...s, say, count: false, cues: undefined };
+}
+
+const GUIDE_KEY = "vidura.breathGuide";
+export function loadGuideLevel(): GuideLevel {
+  try {
+    const v = globalThis.localStorage?.getItem(GUIDE_KEY);
+    return v === "short" || v === "complete" ? v : "standard";
+  } catch {
+    return "standard";
+  }
+}
+export function saveGuideLevel(level: GuideLevel): void {
+  try {
+    globalThis.localStorage?.setItem(GUIDE_KEY, level);
+  } catch {
+    /* private mode: the choice just isn't remembered */
+  }
+}
+
+const repeatUntil = (cycle: Segment[], o: Options): Segment[] => {
   const per = cycle.reduce((s, x) => s + x.secs, 0);
-  const n = Math.max(1, Math.round((minutes * 60) / per));
-  return Array.from({ length: n }, () => cycle).flat();
+  const n = Math.max(1, Math.round((o.minutes * 60) / per));
+  // Rounds that start inside the guidance window are fully spoken; the rest get short cues.
+  const level = o.guide ?? "standard";
+  const full = (k: number) => level === "complete" || (level === "standard" && k * per < GUIDED_SECONDS);
+  return Array.from({ length: n }, (_, k) => (full(k) ? cycle : cycle.map(brief))).flat();
 };
 
 function fastProgram(t: Technique, o: Options): Segment[] {
@@ -453,15 +500,14 @@ function fastProgram(t: Technique, o: Options): Segment[] {
 
 /** The full session, segment by segment. */
 export function program(t: Technique, o: Options): Segment[] {
-  const m = o.minutes;
   switch (t.id) {
     case "coherent":
       return repeatUntil(
         [
-          { kind: "in", secs: 5.5, label: "Breathe in", say: "in", count: true },
-          { kind: "out", secs: 5.5, label: "Breathe out", say: "out", count: true },
+          { kind: "in", secs: 5.5, label: "Inhale", say: "in", count: true },
+          { kind: "out", secs: 5.5, label: "Exhale", say: "out", count: true },
         ],
-        m,
+        o,
       );
     case "nadi-shodhana": {
       const hold: Segment[] = o.hold ? [{ kind: "hold", secs: 4, label: "Gentle hold", say: "hold", count: true }] : [];
@@ -474,7 +520,7 @@ export function program(t: Technique, o: Options): Segment[] {
           ...hold,
           { kind: "out", secs: 7, label: "Out · left nostril", say: "outleft", side: "left", count: true },
         ],
-        m,
+        o,
       );
     }
     case "anulom-vilom":
@@ -485,15 +531,15 @@ export function program(t: Technique, o: Options): Segment[] {
           { kind: "in", secs: 4, label: "In · right nostril", say: "inright", side: "right", count: true },
           { kind: "out", secs: 6, label: "Out · left nostril", say: "outleft", side: "left", count: true },
         ],
-        m,
+        o,
       );
     case "bhramari":
       return repeatUntil(
         [
-          { kind: "in", secs: 4, label: "Breathe in", say: "in", count: true },
+          { kind: "in", secs: 4, label: "Inhale", say: "in", count: true },
           { kind: "out", secs: 8, label: "Hum…", say: "hum", tone: "hum" },
         ],
-        m,
+        o,
       );
     case "ujjayi":
       return repeatUntil(
@@ -501,15 +547,15 @@ export function program(t: Technique, o: Options): Segment[] {
           { kind: "in", secs: 5, label: "In · ocean sound", say: "in", tone: "ocean" },
           { kind: "out", secs: 7, label: "Out · ocean sound", say: "out", tone: "ocean" },
         ],
-        m,
+        o,
       );
     case "dirga":
       return repeatUntil(
         [
-          { kind: "in", secs: 6, label: "Breathe in", say: "belly", cues: [[2, "ribs"], [4, "chest"]], part: "belly" },
-          { kind: "out", secs: 7, label: "Breathe out", say: "out", cues: [[2.5, "ribs"], [5, "belly"]], part: "chest" },
+          { kind: "in", secs: 6, label: "Inhale", say: "belly", cues: [[2, "ribs"], [4, "chest"]], part: "belly" },
+          { kind: "out", secs: 7, label: "Exhale", say: "out", cues: [[2.5, "ribs"], [5, "belly"]], part: "chest" },
         ],
-        m,
+        o,
       );
     case "kapalbhati":
     case "bhastrika":
