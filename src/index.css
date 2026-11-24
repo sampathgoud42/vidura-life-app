@@ -4652,3 +4652,9 @@ html.phase-shift *::after {
 .breath-table th[scope="row"] {
   min-width: 6.5rem;
 }
+
+.breath-guide-hint {
+  margin: -0.2rem 0 0.9rem;
+  font-size: 0.86rem;
+  opacity: 0.85;
+}

@@ -79,23 +79,6 @@ export function TipsScreen({ onOpenGuide }: { onOpenGuide: (id: string) => void 
         })}
       </div>
 
-      <BreathingGuideLink onOpen={() => onOpenGuide("breathing")} />
-
-      <ConditionGuideLinks categories={scope} onOpen={onOpenGuide} />
-
-      {scope.includes("fertility") && (
-        <button type="button" className="guide-link glass" onClick={() => onOpenGuide("fertility-tool")}>
-          <span className="guide-link-emoji" aria-hidden="true">
-            🧬
-          </span>
-          <span className="guide-link-text">
-            <span className="guide-link-title">Fertility guide</span>
-            <span className="guide-link-sub">Cycle and fertile window, best time to try, egg and sperm health, myths, supplements</span>
-          </span>
-          <ArrowRight size={18} />
-        </button>
-      )}
-
       <div id="tips-panel" role="tabpanel" aria-labelledby={`tips-tab-${view}`} className="tips-panel">
         {view === "tips" &&
           (deck.length ? <CardStack deck={deck} index={index} setIndex={setIndex} /> : <p className="empty">No tips for this filter yet.</p>)}
@@ -107,6 +90,26 @@ export function TipsScreen({ onOpenGuide }: { onOpenGuide: (id: string) => void 
               <FoodGuideCard key={g.category} guide={g} audience={prefs.audience} diet={prefs.diet} />
             ))}
           </div>
+        )}
+      </div>
+
+      {/* Guides sit below whichever tab is open, so the tab's own content comes first. */}
+      <div className="tips-guides">
+        <BreathingGuideLink onOpen={() => onOpenGuide("breathing")} />
+
+        <ConditionGuideLinks categories={scope} onOpen={onOpenGuide} />
+
+        {scope.includes("fertility") && (
+          <button type="button" className="guide-link glass" onClick={() => onOpenGuide("fertility-tool")}>
+            <span className="guide-link-emoji" aria-hidden="true">
+              🧬
+            </span>
+            <span className="guide-link-text">
+              <span className="guide-link-title">Fertile window and cycle tracker</span>
+              <span className="guide-link-sub">Cycle and fertile window, best time to try, egg and sperm health, myths, supplements</span>
+            </span>
+            <ArrowRight size={18} />
+          </button>
         )}
       </div>
 

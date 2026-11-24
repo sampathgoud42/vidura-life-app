@@ -420,7 +420,7 @@ export const CATEGORIES: readonly Category[] = [
     artifactId: "Hair Loss (added)",
     label: "Hair Loss",
     short: "Hair",
-    emoji: "💇",
+    emoji: "🧑‍🦲",
     blurb: "What really works for thinning hair, and what's a waste of money.",
     image: img(
       "assets/focus/hair.webp",

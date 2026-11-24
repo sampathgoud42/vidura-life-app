@@ -15,6 +15,9 @@ import {
   program,
   programSeconds,
   type Options,
+  GUIDE_LEVELS,
+  loadGuideLevel,
+  saveGuideLevel,
   type Segment,
   type Technique,
 } from "../data/breathwork";
@@ -85,6 +88,7 @@ export function BreathPlayer({
     hold: false,
     reps: t.id === "kapalbhati" ? 20 : 10,
     rounds: 3,
+    guide: loadGuideLevel(),
   });
   const [safe, setSafe] = useState(false);
   const panel = useRef<HTMLDivElement>(null);
@@ -306,6 +310,31 @@ function Setup({
               {holdBlocked && <em> · Turned off for your blood-pressure or fertility focus</em>}
             </span>
           </label>
+        )}
+
+        {!t.fast && (
+          <>
+            <div className="breath-opt breath-guide-level" role="radiogroup" aria-label="Voice guide">
+              <span className="breath-opt-label">Voice</span>
+              {GUIDE_LEVELS.map((g) => (
+                <button
+                  key={g.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={opts.guide === g.id}
+                  className={`chip chip-light ${opts.guide === g.id ? "chip-on" : ""}`}
+                  onClick={() => {
+                    haptics.select();
+                    saveGuideLevel(g.id);
+                    setOpts((o) => ({ ...o, guide: g.id }));
+                  }}
+                >
+                  {g.label}
+                </button>
+              ))}
+            </div>
+            <p className="breath-guide-hint">{GUIDE_LEVELS.find((g) => g.id === opts.guide)?.hint}</p>
+          </>
         )}
 
         {t.fast && (

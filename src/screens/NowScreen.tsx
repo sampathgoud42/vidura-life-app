@@ -192,7 +192,7 @@ export function NowScreen({
                 🧬
               </span>
               <span className="guide-link-text">
-                <span className="guide-link-title">Your fertility guide</span>
+                <span className="guide-link-title">Fertile window and cycle tracker</span>
                 <span className="guide-link-sub">Cycle and fertile window, timing, what helps, myths and supplements</span>
               </span>
               <ArrowRight size={18} />

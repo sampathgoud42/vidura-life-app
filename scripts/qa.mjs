@@ -60,6 +60,27 @@ const pass = (name, ok, detail = "") => {
   pass("Breathing: early morning with a gut focus suggests Kapalbhati", pick(H(6, 30), ["gut"]) === "kapalbhati");
   pass("Breathing: BP focus at night prefers Bhramari or Coherent", ["bhramari", "coherent"].includes(pick(H(21, 30), ["bp"])), pick(H(21, 30), ["bp"]));
   pass("Breathing: a practice time the user sets is followed", pick(H(7), ["hormonal"], { dirga: H(7) }) === "dirga");
+  {
+    // Guidance: full counting for about the first 30 s (finishing the round), then short cues only.
+    const T = (id) => breathwork.techniqueById(id);
+    const segs = breathwork.program(T("coherent"), { minutes: 5 });
+    let t = 0, fullUntil = 0, lateBad = 0;
+    for (const x of segs) {
+      if (x.count) fullUntil = t + x.secs;
+      else if (!["sin", "sout", "shold"].includes(x.say)) lateBad++;
+      t += x.secs;
+    }
+    pass("Breathing: full counting only for the first ~30 s of a 5-minute session", fullUntil >= 30 && fullUntil <= 45, `${fullUntil}s`);
+    pass("Breathing: after that only In… Out… Hold…, no numbers", lateBad === 0);
+    const nadi = breathwork.program(T("nadi-shodhana"), { minutes: 5, hold: true });
+    pass("Breathing: Hold… is used after the opening guidance", nadi.some((x) => x.say === "shold") && !nadi.some((x, i) => i > 0 && x.say === "inleft" && nadi.slice(0, i).reduce((a, y) => a + y.secs, 0) >= 60));
+    const full = breathwork.program(T("coherent"), { minutes: 5, guide: "complete" });
+    pass("Breathing: Complete guide counts every breath", full.every((x) => x.count));
+    const short = breathwork.program(T("anulom-vilom"), { minutes: 5, guide: "short" });
+    pass("Breathing: Short guide says only In… Out… from the first second", short.every((x) => !x.count && ["sin", "sout", "shold"].includes(x.say)));
+    pass("Breathing: the guide level defaults to Standard", breathwork.loadGuideLevel() === "standard");
+    pass("Breathing: the opening cues say Inhale / Exhale", segs[0].label === "Inhale" && segs[1].label === "Exhale");
+  }
   pass("Breathing: a fast technique moved to the evening gets a caution", !!breathwork.timeCaution(breathwork.techniqueById("kapalbhati"), H(20)));
 }
 
@@ -588,7 +609,7 @@ try {
     pass("Food art loads", (await page.locator(".food-guide .smart-img[data-loaded]").count()) >= 2);
     pass("Protein per serving on foods", (await page.locator(".food-guide .protein-chip").count()) >= 4);
     // The fertility tracker guide, not the evidence guides listed alongside it.
-    await page.locator(".guide-link").filter({ has: page.locator(".guide-link-title", { hasText: /^Fertility guide$/ }) }).click();
+    await page.locator(".guide-link").filter({ has: page.locator(".guide-link-title", { hasText: /^Fertile window and cycle tracker$/ }) }).click();
     await wait(1200);
     await shot(page, "I04-guide");
     pass("Fertility guide opens for men", (await page.getByRole("radio", { name: /For men/ }).getAttribute("aria-checked")) === "true");
