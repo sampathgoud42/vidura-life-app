@@ -54,6 +54,32 @@ interface Clip {
   buf: AudioBuffer;
   start: number;
   dur: number;
+  /** Levels every clip to the same soft loudness. */
+  gain: number;
+}
+
+/** Target loudness (RMS of the spoken part): soft enough to sit just above the music. */
+const VOICE_RMS = 0.08;
+const FADE_IN = 0.06;
+const FADE_OUT = 0.14;
+
+/** Gain that brings a clip's spoken part to VOICE_RMS, within sensible limits. */
+function levelGain(buf: AudioBuffer, start: number, dur: number): number {
+  const data = buf.getChannelData(0);
+  const a = Math.floor(start * buf.sampleRate);
+  const b = Math.min(data.length, a + Math.floor(dur * buf.sampleRate));
+  let sum = 0;
+  let n = 0;
+  for (let i = a; i < b; i += 4) {
+    // Only count frames with speech in them, so pauses don't drag the level down.
+    const v = data[i];
+    if (Math.abs(v) > 0.01) {
+      sum += v * v;
+      n++;
+    }
+  }
+  const rms = n ? Math.sqrt(sum / n) : VOICE_RMS;
+  return Math.max(0.1, Math.min(2.5, VOICE_RMS / rms));
 }
 
 function trimBounds(buf: AudioBuffer, threshold = 0.012): { start: number; dur: number } {
@@ -115,7 +141,8 @@ export class BreathAudio {
         try {
           const res = await fetch(base() + `voice/${name}.mp3`);
           const buf = await ctx.decodeAudioData(await res.arrayBuffer());
-          this.clips.set(name, { buf, ...trimBounds(buf) });
+          const b = trimBounds(buf);
+          this.clips.set(name, { buf, ...b, gain: levelGain(buf, b.start, b.dur) });
         } catch {
           /* a missing clip is skipped */
         }
@@ -148,8 +175,16 @@ export class BreathAudio {
     }
     const src = ctx.createBufferSource();
     src.buffer = clip.buf;
-    src.connect(this.voiceGain);
-    src.start(ctx.currentTime + 0.01, clip.start, clip.dur);
+    // Each clip gets its own soft fade-in and fade-out, at the levelled volume.
+    const env = ctx.createGain();
+    const t0 = ctx.currentTime + 0.01;
+    const end = t0 + clip.dur;
+    env.gain.setValueAtTime(0, t0);
+    env.gain.linearRampToValueAtTime(clip.gain, t0 + Math.min(FADE_IN, clip.dur / 3));
+    env.gain.setValueAtTime(clip.gain, Math.max(t0 + FADE_IN, end - FADE_OUT));
+    env.gain.linearRampToValueAtTime(0, end);
+    src.connect(env).connect(this.voiceGain);
+    src.start(t0, clip.start, clip.dur);
     this.current = src;
     return true;
   }
