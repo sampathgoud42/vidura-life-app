@@ -23,6 +23,7 @@ import {
   type RegionId,
 } from "../data/content";
 import { NAME_MAX, cleanName, graphemeLength, validateEmail } from "./validation";
+import { AGE_BANDS, type AgeBandId } from "../data/labRanges";
 
 export const PROFILE_KEY = "vidura.profile";
 export const LOG_KEY = "vidura.log";
@@ -46,6 +47,8 @@ export interface Prefs {
   diet: DietId;
   approach: ApproachId;
   audience: AudienceId;
+  /** Optional age band, used only to personalise the reference ranges in the guides. */
+  age?: AgeBandId;
 }
 
 export interface Profile {
@@ -57,6 +60,8 @@ export interface Profile {
   version: 1;
   /** Optional "Make it yours" settings (region, diet, approach, audience). */
   prefs?: Prefs;
+  /** True once the person has opened the sign-in link emailed to this address. */
+  emailVerified?: boolean;
 }
 
 export interface LogEntry {
@@ -151,6 +156,7 @@ export function sanitizePrefs(x: unknown): Prefs {
     diet: oneOf(DIETS, o.diet, DEFAULT_PREFS.diet),
     approach: oneOf(APPROACHES, o.approach, DEFAULT_PREFS.approach),
     audience: oneOf(AUDIENCES, o.audience, DEFAULT_PREFS.audience),
+    ...(AGE_BANDS.some((b) => b.id === o.age) ? { age: o.age as AgeBandId } : {}),
   };
 }
 
@@ -173,6 +179,7 @@ export function sanitizeProfile(x: unknown): Profile | null {
     updatedAt: iso(o.updatedAt),
     version: 1,
     ...(o.prefs ? { prefs: sanitizePrefs(o.prefs) } : {}),
+    ...(o.emailVerified === true ? { emailVerified: true } : {}),
   };
 }
 

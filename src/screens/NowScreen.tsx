@@ -13,11 +13,22 @@ import { Display } from "../components/Typography";
 import { formatClock, formatDateLong, formatMinutes, formatPhaseRange, greetingFor, timeZoneLabel, timeZoneShort, weekdayIndex } from "../lib/time";
 import { useApp } from "../state/AppState";
 import { MealSwapSheet, ProteinChip } from "./MealSwapSheet";
+import { ConditionGuideLinks } from "./ConditionGuide";
+import { breathLogId, suggestTechnique, type TechniqueId } from "../data/breathwork";
+import { useBreathTimes } from "../components/PracticeTime";
 import { TodayPlate } from "./TodayPlate";
 
 const catOf = (id: string) => CATEGORIES.find((c) => c.id === id)!;
 
-export function NowScreen({ onStart, onOpenGuide }: { onStart: (r: Resolved) => void; onOpenGuide: () => void }) {
+export function NowScreen({
+  onStart,
+  onOpenGuide,
+  onBreathe,
+}: {
+  onStart: (r: Resolved) => void;
+  onOpenGuide: (id: string) => void;
+  onBreathe: (id: TechniqueId) => void;
+}) {
   const app = useApp();
   const { profile, prefs, now, nowMinutes, doneToday, complete, undo, day, swapMeal } = app;
   const [swapSlot, setSwapSlot] = useState<MealSlot | null>(null);
@@ -63,6 +74,21 @@ export function NowScreen({ onStart, onOpenGuide }: { onStart: (r: Resolved) => 
     toast(`Logged "${r.headline}". Nice work.`, { label: "Undo", onClick: () => undo(entry.id) });
   };
 
+  // One breathing technique that suits this moment and the person's focus areas.
+  const breathTimes = useBreathTimes();
+  const inPlan = [plan.now, ...plan.also].map((r) => r.activity.technique).filter((t): t is TechniqueId => !!t);
+  const breathe = suggestTechnique({
+    minutes: nowMinutes,
+    phase: plan.phase.id,
+    categories,
+    doneToday,
+    exclude: inPlan,
+    day: Math.floor(now.getTime() / 86_400_000),
+    times: breathTimes,
+  });
+  const breatheDone = doneToday.has(breathLogId(breathe.id));
+  const breatheFor = categories.find((c) => breathe.goodFor.includes(c));
+
   const tz = timeZoneShort(now) || timeZoneLabel().replace(/_/g, " ");
 
   return (
@@ -99,13 +125,37 @@ export function NowScreen({ onStart, onOpenGuide }: { onStart: (r: Resolved) => 
             )}
           </AnimatePresence>
 
-          {!plan.allDone && plan.also.length > 0 && (
-            <section className="also" aria-labelledby="also-h">
-              <h2 id="also-h" className="section-title">
-                Also good right now
-              </h2>
-              <ul className="also-list">
-                {plan.also.map((a) => (
+          <section className="also" aria-labelledby="also-h">
+            <h2 id="also-h" className="section-title">
+              Also good right now
+            </h2>
+            <ul className="also-list">
+              <li>
+                <button
+                  type="button"
+                  className={`also-item also-breath glass ${breatheDone ? "is-done" : ""}`}
+                  data-technique={breathe.id}
+                  onClick={() => {
+                    haptics.select();
+                    onBreathe(breathe.id);
+                  }}
+                  aria-label={`Start ${breathe.name}, a guided breathing session${breatheDone ? ", done today" : ""}`}
+                >
+                  <SmartImage slot={breathe.image} className="also-thumb" scrim="none" sizes="64px" />
+                  <span className="also-text">
+                    <span className="also-title">
+                      {breathe.name}: {breathe.primary.charAt(0).toLowerCase() + breathe.primary.slice(1)}
+                    </span>
+                    <span className="also-meta">
+                      {breatheDone ? "Done today" : `Guided breathing · ${breathe.defaultMinutes} min`}
+                      {breatheFor ? ` · ${catOf(breatheFor).short}` : ""}
+                    </span>
+                  </span>
+                  {breatheDone ? <Check size={16} className="also-check" /> : <Play size={16} className="also-check" />}
+                </button>
+              </li>
+              {!plan.allDone &&
+                plan.also.map((a) => (
                   <li key={a.activity.id}>
                     <button
                       type="button"
@@ -129,12 +179,15 @@ export function NowScreen({ onStart, onOpenGuide }: { onStart: (r: Resolved) => 
                     </button>
                   </li>
                 ))}
-              </ul>
-            </section>
-          )}
+            </ul>
+          </section>
+
+          <BreathingGuideLink onOpen={() => onOpenGuide("breathing")} />
+
+          <ConditionGuideLinks categories={categories} onOpen={onOpenGuide} />
 
           {categories.includes("fertility") && (
-            <button type="button" className="guide-link glass" onClick={onOpenGuide}>
+            <button type="button" className="guide-link glass" onClick={() => onOpenGuide("fertility-tool")}>
               <span className="guide-link-emoji" aria-hidden="true">
                 🧬
               </span>
@@ -206,6 +259,22 @@ export function NowScreen({ onStart, onOpenGuide }: { onStart: (r: Resolved) => 
         onClose={() => setSwapSlot(null)}
       />
     </div>
+  );
+}
+
+/** Link to the breathing guide (also used on the Tips screen). */
+export function BreathingGuideLink({ onOpen }: { onOpen: () => void }) {
+  return (
+    <button type="button" className="guide-link glass" onClick={onOpen}>
+      <span className="guide-link-emoji" aria-hidden="true">
+        🌬️
+      </span>
+      <span className="guide-link-text">
+        <span className="guide-link-title">Breathing guide: 8 techniques</span>
+        <span className="guide-link-sub">Benefits, best time, when not to do them, and a guided session for each</span>
+      </span>
+      <ArrowRight size={18} />
+    </button>
   );
 }
 

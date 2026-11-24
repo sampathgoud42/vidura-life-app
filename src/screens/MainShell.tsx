@@ -7,12 +7,17 @@ import { Settings } from "../components/Icons";
 import { TabBar, type TabId } from "../components/TabBar";
 import { useToast } from "../components/Toast";
 import { APP } from "../data/content";
+import { guideById } from "../data/conditionGuides";
+import { breathLogId, techniqueById, type TechniqueId } from "../data/breathwork";
 import { withViewTransition } from "../lib/device";
 import { currentStreak, lastSevenDays } from "../lib/insights";
 import type { Resolved } from "../lib/plan";
 import { formatMinutes } from "../lib/time";
 import { useApp } from "../state/AppState";
+import { BreathPlayer, type BreathLaunch } from "./BreathPlayer";
+import { BreathingGuide } from "./BreathingGuide";
 import { ExtrasScreen } from "./ExtrasScreen";
+import { ConditionGuideScreen } from "./ConditionGuide";
 import { FertilityGuide } from "./FertilityGuide";
 import { GuidedMode } from "./GuidedMode";
 import { InsightsScreen } from "./InsightsScreen";
@@ -21,11 +26,13 @@ import { SettingsSheet } from "./SettingsSheet";
 import { TipsScreen } from "./TipsScreen";
 
 export function MainShell() {
-  const { profile, now, log, previewMinutes, setPreviewMinutes, complete, undo } = useApp();
+  const { profile, now, log, previewMinutes, setPreviewMinutes, complete, undo, phase } = useApp();
   const [tab, setTab] = useState<TabId>("now");
   const [settings, setSettings] = useState(false);
   const [guided, setGuided] = useState<Resolved | null>(null);
-  const [guide, setGuide] = useState(false);
+  const [breath, setBreath] = useState<{ launch: BreathLaunch; activity?: Resolved } | null>(null);
+  /** Open guide: "fertility-tool" for the fertility guide, or a condition guide id. */
+  const [guide, setGuide] = useState<string | null>(null);
   const burst = useLightBurst();
   const toast = useToast();
   const days = lastSevenDays(log, now);
@@ -33,16 +40,28 @@ export function MainShell() {
 
   const closeSettings = useCallback(() => setSettings(false), []);
   const closeGuided = useCallback(() => setGuided(null), []);
+  const closeBreath = useCallback(() => setBreath(null), []);
 
-  const openGuide = (open: boolean) => {
-    withViewTransition(() => setGuide(open));
+  /** Breathing activities open their technique's interactive session; the rest use the guided timer. */
+  const startActivity = (r: Resolved) => {
+    const t = r.activity.technique && techniqueById(r.activity.technique);
+    if (t) setBreath({ launch: { technique: t, skipSetup: true, minutes: r.minutes, eyebrow: r.eyebrow }, activity: r });
+    else setGuided(r);
+  };
+  const openBreath = (id: TechniqueId) => {
+    const t = techniqueById(id);
+    if (t) setBreath({ launch: { technique: t } });
+  };
+
+  const openGuide = (id: string | null) => {
+    withViewTransition(() => setGuide(id));
     window.scrollTo({ top: 0 });
   };
 
   const changeTab = (t: TabId) => {
     withViewTransition(() => {
       setTab(t);
-      setGuide(false);
+      setGuide(null);
       setPreviewMinutes(null);
     });
     window.scrollTo({ top: 0 });
@@ -64,12 +83,16 @@ export function MainShell() {
         </header>
 
         <div className="tab-view">
-          {guide ? (
-            <FertilityGuide onBack={() => openGuide(false)} />
+          {guide === "breathing" ? (
+            <BreathingGuide onBack={() => openGuide(null)} onTry={openBreath} />
+          ) : guide === "fertility-tool" ? (
+            <FertilityGuide onBack={() => openGuide(null)} />
+          ) : guide && guideById(guide) ? (
+            <ConditionGuideScreen guide={guideById(guide)!} onBack={() => openGuide(null)} />
           ) : (
             <>
-              {tab === "now" && <NowScreen onStart={setGuided} onOpenGuide={() => openGuide(true)} />}
-              {tab === "tips" && <TipsScreen onOpenGuide={() => openGuide(true)} />}
+              {tab === "now" && <NowScreen onStart={startActivity} onOpenGuide={openGuide} onBreathe={openBreath} />}
+              {tab === "tips" && <TipsScreen onOpenGuide={openGuide} />}
               {tab === "insights" && <InsightsScreen />}
               {tab === "extras" && <ExtrasScreen />}
             </>
@@ -99,6 +122,36 @@ export function MainShell() {
       </AnimatePresence>
 
       <SettingsSheet open={settings} onClose={closeSettings} />
+
+      <AnimatePresence>
+        {breath && (
+          <BreathPlayer
+            key={breath.launch.technique.id}
+            launch={breath.launch}
+            categories={profile?.categories ?? []}
+            onClose={closeBreath}
+            onOpenGuide={
+              breath.activity
+                ? undefined
+                : () => {
+                    setBreath(null);
+                    openGuide("breathing");
+                  }
+            }
+            onComplete={(origin) => {
+              const b = breath;
+              const t = b.launch.technique;
+              const mine = profile?.categories ?? [];
+              const entry = b.activity
+                ? complete(b.activity.activity.id, b.activity.activity.categories.length ? b.activity.matched : mine, b.activity.phase)
+                : complete(breathLogId(t.id), mine.filter((c) => t.goodFor.includes(c)), phase.id);
+              setBreath(null);
+              if (origin) window.setTimeout(() => burst({ ...origin, mode: "rise" }), 60);
+              toast(`Logged "${b.activity?.headline ?? t.name}". Beautifully done.`, { label: "Undo", onClick: () => undo(entry.id) });
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {guided && (

@@ -8,7 +8,7 @@ description + a composition hint for its aspect ratio + the shared style block:
 `{phase}` is filled with the slot's tone (e.g. *dawn — soft peach and lilac*). Files land in
 `public/assets/{phase|focus}/{slug}.webp` (+ `-sm.webp`), lazy-loaded with a blurred placeholder.
 
-Total: **56 images** (≈ $7.50 at 2K).
+Total: **68 images** (≈ $9.11 at 2K).
 
 ## Category tiles (1:1)
 
@@ -52,6 +52,14 @@ A South Asian couple sitting close together on a quiet veranda sharing cups of t
 A South Asian woman in a gentle seated yoga stretch on a cotton mat beside an open window with sheer curtains, a brass bowl of jasmine flowers nearby. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of soft peach, blush pink, lilac, warm cream and a touch of deep plum, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
+### Thyroid
+
+`assets/focus/thyroid.webp` · 1:1 · tone: morning
+
+```text
+A South Asian woman in her thirties standing at a sunny kitchen window taking a small white tablet with a glass of water before breakfast, a bowl of curd, a boiled egg and a few nuts on the counter behind her, calm expression. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
 ### Gut Health
 
 `assets/focus/gut.webp` · 1:1 · tone: afternoon
@@ -66,6 +74,14 @@ Earthenware bowls of homemade curd and soft idli with a glass of spiced buttermi
 
 ```text
 Fresh turmeric root, ginger, whole black pepper and a cup of golden turmeric milk on a rustic wooden board. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Hair Loss
+
+`assets/focus/hair.webp` · 1:1 · tone: morning
+
+```text
+A South Asian man in his thirties gently checking his hairline in a bright bathroom mirror, a bowl of eggs, dal and pumpkin seeds on the shelf beside him, calm expression. Square 1:1 frame; one clear subject centred with generous flat negative space. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```
 
 ## Phase heroes (16:9)
@@ -466,4 +482,86 @@ A South Asian woman sitting relaxed by a sunny window with a cup of tea, a simpl
 
 ```text
 A South Asian man calmly preparing a colourful meal at a kitchen counter: sliced tomatoes, a bowl of walnuts and pumpkin seeds, leafy greens and a glass of water, relaxed posture. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+## Condition guides, root cause (16:9)
+
+### Hair loss · root cause
+
+`assets/guides/hair.webp` · 16:9 · tone: night
+
+```text
+Hair follicles in a scalp cross-section, shown left to right shrinking from a thick deep follicle with a strong hair to a tiny shallow follicle with a fine wisp, simple educational scene with no text, labels or letters. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of indigo, deep teal, midnight navy, soft lavender and pale moonlight yellow, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### High cholesterol · root cause
+
+`assets/guides/cholesterol.webp` · 16:9 · tone: morning
+
+```text
+A cut-away of an artery: smooth open artery on the left, yellow fatty plaque building up inside the wall and narrowing the channel on the right, round LDL particles drifting in the blood, simple educational scene with no text, labels or letters. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### High blood sugar and type 2 diabetes · root cause
+
+`assets/guides/sugar.webp` · 16:9 · tone: midday
+
+```text
+Glucose shown as small glowing cubes crowding outside a muscle cell whose door-like insulin receptors are half closed, with a tired pancreas shape nearby, simple educational scene with no text, labels or letters. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of clear sky blue, sunny yellow, off-white, turquoise and deep navy, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### High blood pressure · root cause
+
+`assets/guides/bp.webp` · 16:9 · tone: afternoon
+
+```text
+A heart pumping into a narrowed, stiff artery with a pressure gauge needle high, a kidney shape holding water droplets and a salt shaker nearby, simple educational scene with no text, labels or letters. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Gut health and IBS · root cause
+
+`assets/guides/gut.webp` · 16:9 · tone: afternoon
+
+```text
+A friendly stylised intestine connected by a glowing nerve line to a brain above, small gas bubbles inside the intestine and wavy signal lines between them, simple educational scene with no text, labels or letters. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of sage green, pale aqua, warm sand, teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Chronic inflammation · root cause
+
+`assets/guides/inflammation.webp` · 16:9 · tone: evening
+
+```text
+Soft glowing orange immune cells clustered in belly fat tissue, sending small spark-like signals through blood vessels toward a heart and joints, simple educational scene with no text, labels or letters. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of amber, terracotta, dusty rose, deep plum and warm cream, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Hormonal balance · root cause
+
+`assets/guides/hormonal.webp` · 16:9 · tone: dawn
+
+```text
+Stylised glands as soft shapes, a thyroid butterfly at the neck, ovaries and testes as simple ovals, connected by gentle arcs to the brain, a balance scale tipping slightly, simple educational scene with no text, labels or letters. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of soft peach, blush pink, lilac, warm cream and a touch of deep plum, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Thyroid problems · root cause
+
+`assets/guides/thyroid.webp` · 16:9 · tone: morning
+
+```text
+A softly glowing butterfly-shaped thyroid gland at the base of a stylised neck, linked by a gentle curved arrow up to a small glowing control centre at the base of the brain and a second arrow back down, small droplets of hormone flowing outward to the body, simple educational scene with no text, labels or letters. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of saffron orange, warm gold, cream, soft teal and charcoal, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Fertility and infertility · root cause
+
+`assets/guides/fertility.webp` · 16:9 · tone: evening
+
+```text
+An egg cell surrounded by a few swimming sperm near an open fallopian tube, with a small calendar and an hourglass in the background suggesting timing and age, simple educational scene with no text, labels or letters. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of amber, terracotta, dusty rose, deep plum and warm cream, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
+```
+
+### Muscle and body aches · root cause
+
+`assets/guides/body-aches.webp` · 16:9 · tone: evening
+
+```text
+Muscle fibres drawn as soft bundles with small glowing spots of soreness, surrounded by floating icons of a sun (vitamin D), a leaf (magnesium), a drop (iron) and a crescent moon (sleep), simple educational scene with no text, labels or letters. Wide 16:9 frame; subject off-centre to the right with a calm, open left side. Style: modern minimalist flat vector illustration, bold simple geometric shapes and a few overlapping triangles in a mid-century poster style, clean crisp edges, flat solid colours with simple two-tone shading, no gradients, no texture, no grain, no photorealism, limited palette of amber, terracotta, dusty rose, deep plum and warm cream, simplified figures with minimal facial features, large calm areas of flat negative space, the whole canvas filled edge to edge with flat background colour from the palette (no white background, no inner panel or square, no vignette), South Asian people where people appear, no text, no letters, no logos, no border, no frame.
 ```

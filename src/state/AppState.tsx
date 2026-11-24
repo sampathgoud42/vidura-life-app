@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { DEFAULT_PREFS, type CategoryId, type Meal, type MealSlot, type Phase, type PhaseId } from "../data/content";
 import { doneOn } from "../lib/insights";
 import { THEMES } from "../lib/palette";
+import { EMAIL_LINK_ENABLED } from "../lib/emailLink";
 import { syncContactOnce } from "../lib/remote";
 import {
   DAY_KEY,
@@ -38,8 +39,8 @@ export interface AppApi {
   displayMinutes: number;
   displayPhase: Phase;
   setPreviewMinutes: (m: number | null) => void;
-  createProfile: (name: string, email: string) => void;
-  updateProfile: (patch: Partial<Pick<Profile, "name" | "email" | "categories" | "prefs">>) => void;
+  createProfile: (name: string, email: string, emailVerified?: boolean) => void;
+  updateProfile: (patch: Partial<Pick<Profile, "name" | "email" | "categories" | "prefs" | "emailVerified">>) => void;
   complete: (activityId: string, categories: CategoryId[], phase: PhaseId) => LogEntry;
   undo: (entryId: string) => void;
   clearData: () => void;
@@ -113,9 +114,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const createProfile = useCallback(
-    (name: string, email: string) => {
+    (name: string, email: string, emailVerified?: boolean) => {
       const t = new Date().toISOString();
-      persistProfile({ name, email, categories: [], createdAt: t, updatedAt: t, version: 1 });
+      persistProfile({ name, email, categories: [], createdAt: t, updatedAt: t, version: 1, ...(emailVerified ? { emailVerified: true } : {}) });
     },
     [persistProfile],
   );
@@ -210,10 +211,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 
   // Save the email to the wellness database once, if it isn't there yet (optional, silent).
+  // With email-link sign-in on, only emails the person has proved are theirs are saved.
   const profileEmail = profile?.email;
+  const emailUsable = !EMAIL_LINK_ENABLED || profile?.emailVerified === true;
   useEffect(() => {
-    if (profileRef.current && profileEmail) syncContactOnce({ name: profileRef.current.name, email: profileEmail });
-  }, [profileEmail]);
+    if (profileRef.current && profileEmail && emailUsable) syncContactOnce({ name: profileRef.current.name, email: profileEmail });
+  }, [profileEmail, emailUsable]);
 
   // Keep several tabs in sync.
   useEffect(() => {

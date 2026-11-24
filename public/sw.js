@@ -1,5 +1,5 @@
 /* Vidura Life service worker — offline app shell, cached assets, fresh HTML when online. */
-const VERSION = "vidura-v6"; // bump on releases that replace assets: old caches are dropped on activate
+const VERSION = "vidura-v10"; // bump on releases that replace assets: old caches are dropped on activate
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/favicon.svg"];
 
 self.addEventListener("install", (event) => {
@@ -25,14 +25,20 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
+  // Streamed media (range requests): leave to the browser and HTTP cache.
+  if (req.headers.has("range") || url.pathname.includes("/assets/audio/music/")) return;
 
   // Pages: network first (always the latest build), cached shell when offline.
   if (req.mode === "navigate") {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          const copy = res.clone();
-          caches.open(VERSION).then((c) => c.put("./index.html", copy));
+          // Only the app itself is the offline shell (not standalone pages like the privacy policy).
+          const isApp = !url.pathname.endsWith(".html") || url.pathname.endsWith("/index.html");
+          if (res.ok && isApp) {
+            const copy = res.clone();
+            caches.open(VERSION).then((c) => c.put("./index.html", copy));
+          }
           return res;
         })
         .catch(() => caches.match("./index.html")),

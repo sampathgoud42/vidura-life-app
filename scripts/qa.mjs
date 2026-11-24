@@ -18,6 +18,7 @@ fs.mkdirSync(SHOTS, { recursive: true });
 // Browsers live inside the project (must be set before playwright-core loads its registry).
 process.env.PLAYWRIGHT_BROWSERS_PATH = "0";
 const { chromium } = await import("playwright-core");
+const breathwork = await import("../src/data/breathwork.ts");
 
 // During QA the wellness API writes to a throwaway database, never the real one.
 const QA_DB = path.join(root, "qa", "wellness-qa.db");
@@ -41,6 +42,26 @@ const pass = (name, ok, detail = "") => {
   results.push({ name, ok, detail });
   console.log(`${ok ? "✔" : "✖"} ${name}${detail ? ` — ${detail}` : ""}`);
 };
+
+// Breathing suggestion rules (no browser needed).
+{
+  const H = (h, m = 0) => h * 60 + m;
+  const phaseOf = (m) => (m < H(7) ? "dawn" : m < H(11) ? "morning" : m < H(14) ? "midday" : m < H(17) ? "afternoon" : m < H(20) ? "evening" : "night");
+  const pick = (m, categories, times) => breathwork.suggestTechnique({ minutes: m, phase: phaseOf(m), categories, doneToday: new Set(), day: 3, times }).id;
+  const fast = (id) => id === "kapalbhati" || id === "bhastrika";
+  let bad = 0;
+  for (let d = 0; d < 7; d++)
+    for (let m = 0; m < 1440; m += 15) {
+      for (const c of [["bp"], ["fertility"], ["bp", "gut"]]) if (fast(breathwork.suggestTechnique({ minutes: m, phase: phaseOf(m), categories: c, doneToday: new Set(), day: d }).id)) bad++;
+      if (m >= H(11) && fast(breathwork.suggestTechnique({ minutes: m, phase: phaseOf(m), categories: ["gut"], doneToday: new Set(), day: d }).id)) bad++;
+    }
+  pass("Breathing: never Kapalbhati/Bhastrika for BP or fertility, or after 11:00", bad === 0, `${bad} bad picks`);
+  pass("Breathing: never a fast technique right after breakfast", !fast(pick(H(8, 30), ["gut"])), pick(H(8, 30), ["gut"]));
+  pass("Breathing: early morning with a gut focus suggests Kapalbhati", pick(H(6, 30), ["gut"]) === "kapalbhati");
+  pass("Breathing: BP focus at night prefers Bhramari or Coherent", ["bhramari", "coherent"].includes(pick(H(21, 30), ["bp"])), pick(H(21, 30), ["bp"]));
+  pass("Breathing: a practice time the user sets is followed", pick(H(7), ["hormonal"], { dirga: H(7) }) === "dirga");
+  pass("Breathing: a fast technique moved to the evening gets a caution", !!breathwork.timeCaution(breathwork.techniqueById("kapalbhati"), H(20)));
+}
 
 const PROFILE = {
   name: "Priya",
@@ -142,14 +163,14 @@ try {
 
     await wait(3600);
     await shot(page, "A07-focus");
-    pass("Focus screen shows 7 category tiles", (await page.locator(".tile").count()) === 7);
+    pass("Focus screen shows 9 category tiles", (await page.locator(".tile").count()) === 9);
     pass("Focus screen fits 380px (no horizontal scroll)", (await overflow(page)) <= 0);
     const vfit = await page.evaluate(() => {
       const foot = document.querySelector(".focus-footer").getBoundingClientRect();
       const last = Math.max(...[...document.querySelectorAll(".tile")].map((t) => t.getBoundingClientRect().bottom));
       return { last: Math.round(last), foot: Math.round(foot.top), scroll: document.documentElement.scrollHeight - innerHeight };
     });
-    pass("All 7 tiles visible above the action bar at 380×820", vfit.last <= vfit.foot && vfit.scroll <= 4, JSON.stringify(vfit));
+    pass("All 9 tiles visible above the action bar at 380×820", vfit.last <= vfit.foot && vfit.scroll <= 4, JSON.stringify(vfit));
 
     await page.getByRole("button", { name: "Continue" }).click();
     await wait(400);
@@ -195,10 +216,44 @@ try {
     await wait(700);
     pass("Esc closes guided mode", (await page.locator(".guided").count()) === 0);
 
+    // Breathing: a technique in "Also good right now" opens its interactive session.
+    const breathItem = page.locator(".also-breath");
+    await breathItem.waitFor({ timeout: 5000 });
+    pass("Also good right now suggests a breathing technique", (await breathItem.count()) === 1, await breathItem.getAttribute("data-technique"));
+    await breathItem.click();
+    await wait(900);
+    pass("Tapping it opens the technique setup", await page.locator(".breath-setup").isVisible());
+    await page.locator(".breath-setup .guided-actions button").click({ trial: true }).catch(() => {});
+    const safetyBox = page.locator(".breath-safety input[type=checkbox]");
+    if (await safetyBox.count()) await safetyBox.check();
+    await page.locator(".breath-setup .guided-actions button").click();
+    await wait(1600);
+    await shot(page, "A13b-breath");
+    pass("The breathing session runs with a timer and cue", (await page.locator(".breath-player .guided-time").isVisible()) && (await page.locator(".breath-cue").innerText()).length > 0);
+    await page.keyboard.press("Escape");
+    await wait(700);
+    pass("Esc closes the breathing session", (await page.locator(".breath-player").count()) === 0);
+
+    await page.getByRole("button", { name: /Breathing guide: 8 techniques/ }).click();
+    await wait(1000);
+    await shot(page, "A13c-breath-guide");
+    pass("Breathing guide: comparison of 8 techniques", (await page.locator(".breath-table tbody tr").count()) === 8);
+    pass("Breathing guide: every technique has When NOT to do it", (await page.locator(".breath-avoid").count()) === 8);
+    pass("Breathing guide: every technique has a practice-time picker", (await page.locator(".breath-card .practice-time-input").count()) === 8);
+    await page.locator("#b-kapalbhati .breath-try").click();
+    await wait(900);
+    pass("Kapalbhati asks for the safety check before Start", await page.locator(".breath-setup .guided-actions button").isDisabled());
+    await page.keyboard.press("Escape");
+    await wait(600);
+    await page.locator(".guide-back").first().click();
+    await wait(900);
+
     await page.getByRole("button", { name: "Tips", exact: true }).click();
     await wait(900);
     await shot(page, "A14-tips");
     const first = await page.locator(".tip-top .tip-title").innerText();
+    await page.locator(".tip-top").scrollIntoViewIfNeeded();
+    await wait(300);
     const card = await page.locator(".tip-top").boundingBox();
     await page.mouse.move(card.x + card.width / 2, card.y + card.height / 2);
     await page.mouse.down();
@@ -396,7 +451,7 @@ try {
       const tiles = [...document.querySelectorAll(".tile")].map((t) => t.getBoundingClientRect());
       return { n: tiles.length, last: Math.round(Math.max(...tiles.map((r) => r.bottom))), foot: Math.round(foot?.top ?? 0), scroll: document.documentElement.scrollHeight - innerHeight, size: Math.round(tiles[0]?.width ?? 0) };
     });
-    pass(`Desktop ${w}×${h}: 7 tiles visible without scrolling`, fit.n === 7 && fit.last <= fit.foot && fit.scroll <= 4, JSON.stringify(fit));
+    pass(`Desktop ${w}×${h}: 9 tiles visible without scrolling`, fit.n === 9 && fit.last <= fit.foot && fit.scroll <= 4, JSON.stringify(fit));
     await ctx.close();
   }
 
@@ -532,7 +587,8 @@ try {
     pass("Foods: enjoy + go easy on, per focus", (await page.locator(".food-guide").count()) === 2 && (await page.locator(".food-col").count()) === 4);
     pass("Food art loads", (await page.locator(".food-guide .smart-img[data-loaded]").count()) >= 2);
     pass("Protein per serving on foods", (await page.locator(".food-guide .protein-chip").count()) >= 4);
-    await page.locator(".guide-link").first().click();
+    // The fertility tracker guide, not the evidence guides listed alongside it.
+    await page.locator(".guide-link").filter({ has: page.locator(".guide-link-title", { hasText: /^Fertility guide$/ }) }).click();
     await wait(1200);
     await shot(page, "I04-guide");
     pass("Fertility guide opens for men", (await page.getByRole("radio", { name: /For men/ }).getAttribute("aria-checked")) === "true");
@@ -633,6 +689,37 @@ try {
     pass("Swap options rank BP-friendly dishes first", /BP/.test(firstFits), firstFits.split("\n")[0]);
     await page.keyboard.press("Escape");
     pass("BP screens fit 380px", (await overflow(page)) <= 0);
+    await ctx.close();
+  }
+
+  // ── N · Thyroid focus + "Your numbers" reference ranges by sex and age
+  {
+    const man = { ...PROFILE, categories: ["thyroid", "fertility"], prefs: { region: "telugu", diet: "vegetarian", approach: "both", audience: "men", age: "35-39" } };
+    const { ctx, page } = await newPage({}, { fn: (p) => localStorage.setItem("vidura.profile", JSON.stringify(p)), arg: man });
+    await page.goto(`${BASE}?at=10:30`);
+    await wait(4500);
+    await page.getByRole("button", { name: "Tips", exact: true }).click();
+    await wait(900);
+    await page.locator(".guide-link", { hasText: "Thyroid problems" }).first().click();
+    await wait(1200);
+    const nums = page.locator("#c-numbers");
+    pass("Thyroid guide opens with a Your numbers section", await nums.isVisible());
+    pass("Ranges are labelled for a man aged 35–39", (await nums.locator(".num-for").innerText()) === "For a man aged 35–39");
+    pass("TSH typical range 0.4–4.0 at 35–39", (await nums.innerText()).includes("0.4–4.0"));
+    pass("Lab-range disclaimer shown", (await nums.innerText()).includes("use the reference range printed on your own report"));
+    await shot(page, "N01-thyroid-numbers", true);
+    pass("Guide with ranges fits 380px", (await overflow(page)) <= 0);
+    await nums.locator("select").nth(1).selectOption("70+");
+    await wait(400);
+    pass("Age 70+: TSH typical range widens to 0.4–7.0", (await nums.innerText()).includes("0.4–7.0"));
+    const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem("vidura.profile")).prefs);
+    pass("Age band saved with the Make it yours settings", prefs.age === "70+" && prefs.audience === "men", JSON.stringify(prefs));
+    await page.locator(".guide-back").first().click();
+    await wait(700);
+    await page.locator(".guide-link", { hasText: "Fertility and infertility" }).first().click();
+    await wait(1000);
+    const fert = await page.locator("#c-numbers").innerText();
+    pass("Fertility ranges for a man: WHO semen limits only", fert.includes("16 million") && !fert.includes("AMH"));
     await ctx.close();
   }
 

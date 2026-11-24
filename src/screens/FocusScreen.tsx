@@ -10,14 +10,14 @@ import { haptics } from "../lib/device";
 import { useApp } from "../state/AppState";
 
 /** Display order: the artifact's headline goals first. */
-const ORDER: CategoryId[] = ["cholesterol", "sugar", "bp", "gut", "inflammation", "hormonal", "fertility"];
+const ORDER: CategoryId[] = ["cholesterol", "sugar", "bp", "thyroid", "gut", "inflammation", "hormonal", "fertility", "hair"];
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
 /**
  * Sizes the floating tiles so that every one of them fits between the header and
- * the action bar. It tries 3 or 4 columns on wide screens and 2 or 3 on phones,
- * and keeps whichever gives the largest tiles (seven tiles: 4 + 3, or 3 + 3 + 1).
+ * the action bar. It tries 3, 4 or 5 columns on wide screens and 2 or 3 on phones,
+ * and keeps whichever gives the largest tiles (nine tiles: 5 + 4 or 3 × 3 on wide screens, 3 × 3 on phones).
  */
 function useFitTiles(gridRef: RefObject<HTMLDivElement | null>, footRef: RefObject<HTMLElement | null>) {
   const [fit, setFit] = useState({ tile: 0, cols: 2 });
@@ -35,8 +35,8 @@ function useFitTiles(gridRef: RefObject<HTMLDivElement | null>, footRef: RefObje
         const byWidth = (grid.clientWidth - (cols - 1) * gap) / cols;
         return Math.min(byWidth, byHeight, wide ? 300 : 230);
       };
-      const [a, b] = wide ? [3, 4] : [2, 3];
-      const cols = size(b) > size(a) ? b : a;
+      const options = wide ? [3, 4, 5] : [2, 3];
+      const cols = options.reduce((best, c) => (size(c) > size(best) ? c : best), options[0]);
       const tile = Math.floor(Math.max(wide ? 128 : 96, size(cols)));
       setFit((f) => (f.tile === tile && f.cols === cols ? f : { tile, cols }));
     };

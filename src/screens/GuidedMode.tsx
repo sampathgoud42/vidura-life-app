@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { BreathingOrb } from "../components/BreathingOrb";
 import { MagneticButton } from "../components/Controls";
-import { ArrowLeft, ArrowRight, Check, Close, Pause, Play } from "../components/Icons";
+import { ArrowLeft, ArrowRight, Check, Close, Music, Pause, Play, Voice } from "../components/Icons";
 import { useLightBurst } from "../components/LightBurst";
 import { SmartImage } from "../components/SmartImage";
+import { BreathAudio, clipFor, loadAudioSettings, saveAudioSettings, type AudioSettings } from "../lib/breathAudio";
 import { haptics, requestWakeLock } from "../lib/device";
 import type { Resolved } from "../lib/plan";
 import { formatDuration } from "../lib/time";
@@ -37,6 +38,38 @@ export function GuidedMode({ item, onClose, onComplete }: { item: Resolved; onCl
   const breath = item.activity.breath ?? { inhale: 5, exhale: 5 };
   const cycle = breath.inhale + (breath.hold ?? 0) + breath.exhale;
   const showBreath = item.activity.kind === "breathe" || item.activity.kind === "rest";
+  const isBreathwork = item.activity.kind === "breathe";
+  const humming = item.activity.id === "evening-bhramari";
+
+  // Voice guidance + background music (breathing sessions only).
+  const audio = useRef<BreathAudio | null>(null);
+  const [sound, setSound] = useState<AudioSettings>(loadAudioSettings);
+  const soundRef = useRef(sound);
+  soundRef.current = sound;
+  const lastSpoken = useRef("");
+  useEffect(() => {
+    if (!isBreathwork) return;
+    const a = new BreathAudio();
+    a.init();
+    a.resume();
+    audio.current = a;
+    return () => {
+      a.dispose();
+      audio.current = null;
+    };
+  }, [isBreathwork]);
+  useEffect(() => {
+    audio.current?.music(sound.music && running && !finished);
+  }, [sound.music, running, finished]);
+  const setSoundPref = (patch: Partial<AudioSettings>) => {
+    audio.current?.resume();
+    haptics.tap();
+    setSound((s) => {
+      const next = { ...s, ...patch };
+      saveAudioSettings(next);
+      return next;
+    });
+  };
 
   // Clock
   useEffect(() => {
@@ -52,22 +85,39 @@ export function GuidedMode({ item, onClose, onComplete }: { item: Resolved; onCl
         lastSec = sec;
         setElapsed(e);
       }
-      const inCycle = ((performance.now() - since.current) / 1000) % cycle;
-      setCue(inCycle < breath.inhale ? "in" : inCycle < breath.inhale + (breath.hold ?? 0) ? "hold" : "out");
+      const run = (performance.now() - since.current) / 1000;
+      const inCycle = run % cycle;
+      const hold = breath.hold ?? 0;
+      const ph = inCycle < breath.inhale ? "in" : inCycle < breath.inhale + hold ? "hold" : "out";
+      setCue(ph);
+      if (audio.current && soundRef.current.voice && e < total) {
+        const phStart = ph === "in" ? 0 : ph === "hold" ? breath.inhale : breath.inhale + hold;
+        const len = ph === "in" ? breath.inhale : ph === "hold" ? hold : breath.exhale;
+        const intoPhase = inCycle - phStart;
+        const sec = Math.floor(intoPhase);
+        const key = `${Math.floor(run / cycle)}:${ph}:${sec}`;
+        if (key !== lastSpoken.current) {
+          // Retry a word that can't play yet (clips still loading) for half a second, then skip it.
+          const clip = clipFor(ph, sec, len, humming);
+          if (!clip || audio.current.say(clip) || intoPhase - sec > 0.5) lastSpoken.current = key;
+        }
+      }
       if (e < total) raf = requestAnimationFrame(tick);
       else setElapsed(total);
     };
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
+      lastSpoken.current = "";
       acc.current = Math.min(total, acc.current + (performance.now() - since.current) / 1000);
     };
-  }, [running, finished, total, cycle, breath.inhale, breath.hold]);
+  }, [running, finished, total, cycle, breath.inhale, breath.hold, breath.exhale, humming]);
 
   // Celebrate the natural end of a session.
   useEffect(() => {
     if (!finished) return;
     haptics.success();
+    if (soundRef.current.voice) audio.current?.say("done");
     const r = doneBtn.current?.getBoundingClientRect();
     if (r) burst({ x: r.left + r.width / 2, y: r.top, mode: "rise", count: 50 });
     doneBtn.current?.focus();
@@ -134,6 +184,7 @@ export function GuidedMode({ item, onClose, onComplete }: { item: Resolved; onCl
 
   const toggle = () => {
     haptics.tap();
+    audio.current?.resume();
     setRunning((r) => {
       if (!r) setBreathEpoch((n) => n + 1); // restart the orb so it matches the cue
       return !r;
@@ -148,6 +199,7 @@ export function GuidedMode({ item, onClose, onComplete }: { item: Resolved; onCl
       aria-modal="true"
       aria-labelledby="guided-title"
       tabIndex={-1}
+      onPointerDown={() => audio.current?.resume()}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -162,9 +214,35 @@ export function GuidedMode({ item, onClose, onComplete }: { item: Resolved; onCl
               {item.headline}
             </h2>
           </div>
-          <button type="button" className="icon-btn icon-btn-light" onClick={onClose} aria-label="Close guided session" data-autofocus>
-            <Close />
-          </button>
+          <div className="guided-head-actions">
+            {isBreathwork && (
+              <>
+                <button
+                  type="button"
+                  className="icon-btn icon-btn-light"
+                  onClick={() => setSoundPref({ voice: !sound.voice })}
+                  aria-pressed={sound.voice}
+                  aria-label={sound.voice ? "Turn voice guidance off" : "Turn voice guidance on"}
+                  title={sound.voice ? "Voice on" : "Voice off"}
+                >
+                  <Voice off={!sound.voice} />
+                </button>
+                <button
+                  type="button"
+                  className="icon-btn icon-btn-light"
+                  onClick={() => setSoundPref({ music: !sound.music })}
+                  aria-pressed={sound.music}
+                  aria-label={sound.music ? "Turn background music off" : "Turn background music on"}
+                  title={sound.music ? "Music on" : "Music off"}
+                >
+                  <Music off={!sound.music} />
+                </button>
+              </>
+            )}
+            <button type="button" className="icon-btn icon-btn-light" onClick={onClose} aria-label="Close guided session" data-autofocus>
+              <Close />
+            </button>
+          </div>
         </header>
 
         <div className="guided-center">
