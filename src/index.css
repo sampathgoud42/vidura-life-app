@@ -4701,3 +4701,14 @@ html.phase-shift *::after {
   font-size: 0.86rem;
   color: var(--ink-soft);
 }
+
+/* Tips: the guides block below the tab content, evenly spaced. */
+.tips-guides {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.4rem;
+}
+.tips-guides .guide-link,
+.tips-guides .guide-links + .guide-link {
+  margin-top: 0;
+}
