@@ -23,6 +23,7 @@ import {
 } from "../data/breathwork";
 import { BreathAudio, loadAudioSettings, saveAudioSettings, type AudioSettings, type ClipName } from "../lib/breathAudio";
 import { haptics, requestWakeLock } from "../lib/device";
+import { HandPoseCard } from "../components/HandPoseCard";
 import { formatDuration } from "../lib/time";
 
 const RING_R = 46;
@@ -233,6 +234,8 @@ function Setup({
             <li key={h}>{h}</li>
           ))}
         </ol>
+
+        <HandPoseCard id={t.id} light />
 
         {t.lengths && (
           <div className="breath-opt" role="radiogroup" aria-label="Session length">

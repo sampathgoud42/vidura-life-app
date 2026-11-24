@@ -131,6 +131,13 @@ const pass = (name, ok, detail = "") => {
     const zwj = [...C.CATEGORIES.map((c) => c.emoji), ...guideData.CONDITION_GUIDES.map((g) => g.emoji)].filter((e) => e.includes("\u200d"));
     pass("Focus and guide icons are single emoji (no joined sequences)", zwj.length === 0, zwj.join(" "));
   }
+  {
+    const HP = breathwork.HAND_POSE;
+    const ids = breathwork.TECHNIQUES.map((t) => t.id);
+    pass("Breathing: every technique names a mudra and a posture", ids.every((id) => HP[id]?.mudra && HP[id]?.mudraHow && HP[id]?.posture && HP[id]?.postureHow));
+    pass("Breathing: Nadi Shodhana and Anulom Vilom use Nasika mudra; Bhramari uses Shanmukhi", /Nasika/.test(HP["nadi-shodhana"].mudra) && /Nasika/.test(HP["anulom-vilom"].mudra) && /Shanmukhi/.test(HP.bhramari.mudra));
+    pass("Breathing: Kapalbhati and Bhastrika are seated, never lying down", /never lying down/i.test(HP.kapalbhati.posture) && /never lying down/i.test(HP.bhastrika.posture));
+  }
   pass("Breathing: a fast technique moved to the evening gets a caution", !!breathwork.timeCaution(breathwork.techniqueById("kapalbhati"), H(20)));
 }
 
@@ -322,6 +329,12 @@ try {
     pass("Breathing guide: comparison of 8 techniques", (await page.locator(".breath-table tbody tr").count()) === 8);
     pass("Breathing guide: every technique has When NOT to do it", (await page.locator(".breath-avoid").count()) === 8);
     pass("Breathing guide: every technique has a practice-time picker", (await page.locator(".breath-card .practice-time-input").count()) === 8);
+    pass("Breathing guide: every technique shows hands and posture", (await page.locator(".breath-card .hand-pose").count()) === 8);
+    pass("Breathing guide: Nasika mudra art for the alternate-nostril techniques", (await page.locator(".breath-card .mudra-nasika").count()) === 2);
+    pass("Breathing guide: every technique has hand-drawn mudra art", (await page.locator(".breath-card .mudra-art").count()) === 8 && (await page.locator(".breath-card .mudra-shanmukhi, .breath-card .mudra-jnana, .breath-card .mudra-dhyana, .breath-card .mudra-dirga").count()) === 6);
+    await page.locator("#b-nadi-shodhana .hand-pose").scrollIntoViewIfNeeded();
+    await wait(400);
+    await shot(page, "A13d-breath-hands");
     await page.locator("#b-kapalbhati .breath-try").click();
     await wait(900);
     pass("Kapalbhati asks for the safety check before Start", await page.locator(".breath-setup .guided-actions button").isDisabled());
