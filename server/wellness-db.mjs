@@ -61,6 +61,31 @@ export function validateContact(body) {
  * their email (previousEmail given, new one unknown), the existing row is renamed.
  * Returns { created: boolean }.
  */
+/** Deletes the contact with this email. Returns whether a row was removed. */
+export function deleteContactRow(db, email) {
+  return db.prepare("DELETE FROM contacts WHERE email = ?").run(email).changes > 0;
+}
+
+/**
+ * Asks Firebase Authentication which verified email an ID token belongs to,
+ * so a DELETE can only ever remove the caller's own row.
+ */
+export async function emailFromIdToken(idToken, apiKey) {
+  if (!apiKey || typeof idToken !== "string" || idToken.length < 20 || idToken.length > 4096) return null;
+  try {
+    const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(apiKey)}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ idToken }),
+    });
+    if (!res.ok) return null;
+    const user = (await res.json())?.users?.[0];
+    return user?.email && user.emailVerified !== false ? String(user.email).toLowerCase() : null;
+  } catch {
+    return null;
+  }
+}
+
 export function upsertContact(db, { email, name, source, previousEmail }) {
   const now = new Date().toISOString();
   if (previousEmail) {
@@ -109,11 +134,11 @@ function readBody(req) {
 }
 
 /**
- * HTTP handler for PUT/POST {base}/contact and GET {base}/health, usable as
+ * HTTP handler for PUT/POST/DELETE {base}/contact and GET {base}/health, usable as
  * connect middleware (Vite) or with node:http. Cross-origin calls are accepted
  * from `allowedOrigins` only; a small per-IP rate limit keeps it tidy.
  */
-export function createWellnessHandler({ dbFile, allowedOrigins = [], base = "/api/wellness", log = console }) {
+export function createWellnessHandler({ dbFile, allowedOrigins = [], base = "/api/wellness", log = console, firebaseApiKey = "", verifyToken = emailFromIdToken }) {
   let db = null;
   const hits = new Map();
   const allowed = (origin) => allowedOrigins.includes(origin);
@@ -128,7 +153,7 @@ export function createWellnessHandler({ dbFile, allowedOrigins = [], base = "/ap
     if (origin && allowed(origin)) {
       res.setHeader("access-control-allow-origin", origin);
       res.setHeader("vary", "Origin");
-      res.setHeader("access-control-allow-methods", "GET, PUT, POST, OPTIONS");
+      res.setHeader("access-control-allow-methods", "GET, PUT, POST, DELETE, OPTIONS");
       res.setHeader("access-control-allow-headers", "content-type");
       res.setHeader("access-control-max-age", "86400");
     }
@@ -137,7 +162,7 @@ export function createWellnessHandler({ dbFile, allowedOrigins = [], base = "/ap
       return res.end();
     }
     if (route === "/health") return json(res, 200, { ok: true });
-    if (req.method !== "PUT" && req.method !== "POST") return json(res, 405, { ok: false });
+    if (req.method !== "PUT" && req.method !== "POST" && req.method !== "DELETE") return json(res, 405, { ok: false });
     if (origin && !allowed(origin) && origin !== `http://${req.headers.host}` && origin !== `https://${req.headers.host}`) return json(res, 403, { ok: false });
 
     const ip = req.socket?.remoteAddress ?? "?";
@@ -155,6 +180,13 @@ export function createWellnessHandler({ dbFile, allowedOrigins = [], base = "/ap
         body = JSON.parse(raw);
       } catch {
         return json(res, 400, { ok: false });
+      }
+      if (req.method === "DELETE") {
+        // Account deletion: only the owner of a valid Firebase ID token can remove their row.
+        const email = await verifyToken(body?.idToken, firebaseApiKey);
+        if (!email) return json(res, 401, { ok: false });
+        db ??= openWellnessDb(dbFile);
+        return json(res, 200, { ok: true, deleted: deleteContactRow(db, email) });
       }
       const contact = validateContact(body);
       if (!contact) return json(res, 422, { ok: false });

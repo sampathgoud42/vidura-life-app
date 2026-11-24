@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
  * Renders the Vidura orb mark to every icon the PWA needs (sharp renders SVG).
+ * Also writes the iOS app icon (1024, no transparency) and launch splash for ios/.
  * Usage: node scripts/make-icons.mjs
  */
 import fs from "node:fs";
@@ -52,3 +53,17 @@ for (const [name, size, svg] of jobs) {
   console.log(`✔ icons/${name}`);
 }
 console.log("✔ icons/favicon.svg");
+
+// iOS app (Capacitor): one 1024 icon without alpha, and the 2732 launch splash.
+const ios = path.join(root, "ios", "App", "App", "Assets.xcassets");
+if (fs.existsSync(ios)) {
+  await sharp(Buffer.from(mark({ pad: 4 })))
+    .resize(1024, 1024)
+    .flatten({ background: "#FFE7C8" })
+    .png({ compressionLevel: 9 })
+    .toFile(path.join(ios, "AppIcon.appiconset", "AppIcon-512@2x.png"));
+  console.log("✔ ios AppIcon 1024");
+  const splash = await sharp(Buffer.from(mark({ pad: 34 }))).resize(2732, 2732).flatten({ background: "#FFE7C8" }).png({ compressionLevel: 9 }).toBuffer();
+  for (const n of ["splash-2732x2732.png", "splash-2732x2732-1.png", "splash-2732x2732-2.png"]) fs.writeFileSync(path.join(ios, "Splash.imageset", n), splash);
+  console.log("✔ ios Splash 2732");
+}

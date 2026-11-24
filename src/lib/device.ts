@@ -1,5 +1,6 @@
 /** Small, feature-detected device helpers: haptics, media queries, view transitions. */
 import { flushSync } from "react-dom";
+import { isNative, nativeHaptic, nativeKeepAwake } from "./native";
 
 const mq = (q: string) => {
   try {
@@ -21,12 +22,19 @@ function vibrate(pattern: number | number[]): void {
   }
 }
 
-export const haptics = {
-  tap: () => vibrate(8),
-  select: () => vibrate(12),
-  success: () => vibrate([10, 40, 18]),
-  warn: () => vibrate([6, 30, 6]),
-};
+export const haptics = isNative
+  ? {
+      tap: () => nativeHaptic("tap"),
+      select: () => nativeHaptic("select"),
+      success: () => nativeHaptic("success"),
+      warn: () => nativeHaptic("warn"),
+    }
+  : {
+      tap: () => vibrate(8),
+      select: () => vibrate(12),
+      success: () => vibrate([10, 40, 18]),
+      warn: () => vibrate([6, 30, 6]),
+    };
 
 type DocWithVT = Document & { startViewTransition?: (cb: () => void) => { finished: Promise<void> } };
 
@@ -48,6 +56,7 @@ type WakeLockSentinelLike = { release: () => Promise<void> };
 type NavWithWakeLock = Navigator & { wakeLock?: { request: (t: "screen") => Promise<WakeLockSentinelLike> } };
 
 export async function requestWakeLock(): Promise<WakeLockSentinelLike | null> {
+  if (isNative) return nativeKeepAwake();
   try {
     return (await (navigator as NavWithWakeLock).wakeLock?.request("screen")) ?? null;
   } catch {

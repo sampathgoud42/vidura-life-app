@@ -10,6 +10,7 @@
  * otherwise the same-origin /api/wellness that the local dev / preview server
  * mounts. On other hosts without VITE_WELLNESS_API it's skipped.
  */
+import { isNative } from "./native";
 import { markContactSynced, contactSynced } from "./storage";
 
 const CONFIGURED = (import.meta.env.VITE_WELLNESS_API as string | undefined)?.trim().replace(/\/+$/, "");
@@ -18,6 +19,7 @@ const LOCAL_HOST = /^(?:localhost|127\.\d+\.\d+\.\d+|\[::1\]|10\.\d+\.\d+\.\d+|1
 function contactUrl(): string | null {
   try {
     if (CONFIGURED) return `${CONFIGURED}/contact`;
+    if (isNative) return null; // the app has no local server
     return LOCAL_HOST.test(window.location.hostname) ? new URL("api/wellness/contact", document.baseURI).href : null;
   } catch {
     return null;
@@ -53,6 +55,26 @@ export async function saveContact(c: ContactPayload): Promise<boolean> {
     }
   } catch {
     return false; // offline, blocked, no server: silently skip
+  }
+}
+
+/**
+ * Removes this person's row from the wellness database. The server checks the
+ * Firebase ID token and deletes only the email that token belongs to.
+ */
+export async function deleteContact(idToken: string): Promise<boolean> {
+  try {
+    const url = contactUrl();
+    if (!url) return true; // no database configured for this build: nothing stored
+    const res = await fetch(url, {
+      method: "DELETE",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ idToken }),
+      credentials: "omit",
+    });
+    return res.ok;
+  } catch {
+    return false;
   }
 }
 

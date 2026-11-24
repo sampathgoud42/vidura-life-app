@@ -30,7 +30,11 @@ function phaseTokens(): Plugin {
  * server instead (VITE_WELLNESS_API), and simply skips it when none is set.
  */
 function wellnessApi(env: Record<string, string>): Plugin {
-  const handler = createWellnessHandler({ dbFile: resolveDbFile(process.cwd(), env), allowedOrigins: DEFAULT_ORIGINS });
+  const handler = createWellnessHandler({
+    dbFile: resolveDbFile(process.cwd(), env),
+    allowedOrigins: [...DEFAULT_ORIGINS, "capacitor://localhost"],
+    firebaseApiKey: env.FIREBASE_API_KEY || env.VITE_FIREBASE_API_KEY || "",
+  });
   return {
     name: "vidura-wellness-api",
     configureServer: (server) => void server.middlewares.use("/api/wellness", handler),

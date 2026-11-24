@@ -2335,6 +2335,13 @@ html.phase-shift *::after {
 .clear-btn {
   width: 100%;
 }
+.delete-account {
+  margin-top: 0.6rem;
+}
+p.confirm-row {
+  margin: 0.6rem 0 0;
+  font-size: 0.92rem;
+}
 
 
 /* ── Protein & fit chips ──────────────────────────────────────────────────── */

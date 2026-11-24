@@ -224,7 +224,7 @@ try {
     await page.getByRole("button", { name: "Settings", exact: true }).click();
     await wait(900);
     await shot(page, "A17-settings");
-    pass("Settings sheet has the privacy note", (await page.locator(".privacy-note").innerText()).includes("stays on this device"));
+    pass("Settings sheet has the privacy note", (await page.locator(".privacy-note").first().innerText()).includes("stays on this device"));
     await page.locator("#s-email").fill("priya.s@example.com");
     await wait(1400);
     const rows = dbRows();

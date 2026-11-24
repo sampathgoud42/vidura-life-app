@@ -28,7 +28,11 @@ try {
 const dbFile = resolveDbFile(root);
 const port = Number(process.env.WELLNESS_PORT || 8791);
 const extra = (process.env.WELLNESS_ALLOWED_ORIGINS || "").split(",").map((s) => s.trim()).filter(Boolean);
-const handler = createWellnessHandler({ dbFile, allowedOrigins: [...DEFAULT_ORIGINS, ...extra] });
+const handler = createWellnessHandler({
+  dbFile,
+  allowedOrigins: [...DEFAULT_ORIGINS, "capacitor://localhost", ...extra],
+  firebaseApiKey: process.env.FIREBASE_API_KEY || process.env.VITE_FIREBASE_API_KEY || "",
+});
 
 http
   .createServer((req, res) => handler(req, res, null))

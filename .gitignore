@@ -28,3 +28,6 @@ Thumbs.db
 *.db
 *.db-wal
 *.db-shm
+
+# App Store screenshots (generated: npm run ios:screenshots)
+/store/

@@ -4,12 +4,25 @@ import { BottomSheet } from "../components/BottomSheet";
 import { Chip, MagneticButton } from "../components/Controls";
 import { Lock } from "../components/Icons";
 import { useToast } from "../components/Toast";
-import { APP, CATEGORIES, DEFAULT_PREFS, type CategoryId } from "../data/content";
+import { APP, CATEGORIES, DEFAULT_PREFS, PHASES, type CategoryId } from "../data/content";
+import { deleteAccount, requestDeleteByEmail } from "../lib/account";
+import { isNative, remindersOn, setReminders, type ReminderSlot } from "../lib/native";
 import { saveContact } from "../lib/remote";
 import type { Prefs } from "../lib/storage";
 import { EMAIL_HINTS, NAME_HINTS, validateEmail, validateName } from "../lib/validation";
 import { useApp } from "../state/AppState";
 import { PrefsFields } from "./KitchenScreen";
+
+export const PRIVACY_URL = "https://vidura-life-app.web.app/privacy.html";
+
+/** One gentle reminder a few minutes into each part of the day. */
+const REMINDER_SLOTS: ReminderSlot[] = PHASES.map((p) => ({
+  at: p.start + 5,
+  title: `${p.label} · Vidura Life`,
+  body: `${p.mood} Your next small step is ready.`,
+}));
+
+type DeleteStep = "idle" | "confirm" | "working" | "emailed" | "failed";
 
 export function SettingsSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { profile, updateProfile, clearData, storageOk } = useApp();
@@ -20,6 +33,8 @@ export function SettingsSheet({ open, onClose }: { open: boolean; onClose: () =>
   const [emailHint, setEmailHint] = useState("");
   const [catHint, setCatHint] = useState("");
   const [confirming, setConfirming] = useState(false);
+  const [deleteStep, setDeleteStep] = useState<DeleteStep>("idle");
+  const [reminders, setRemindersState] = useState(remindersOn);
 
   useEffect(() => {
     if (!open || !profile) return;
@@ -29,6 +44,7 @@ export function SettingsSheet({ open, onClose }: { open: boolean; onClose: () =>
     setEmailHint("");
     setCatHint("");
     setConfirming(false);
+    setDeleteStep("idle");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
@@ -153,6 +169,26 @@ export function SettingsSheet({ open, onClose }: { open: boolean; onClose: () =>
         <PrefsFields prefs={prefs} onChange={(p) => updateProfile({ prefs: p })} compact />
       </section>
 
+      {isNative && (
+        <section className="settings-section" aria-labelledby="s-reminders">
+          <h3 id="s-reminders" className="section-title">
+            Reminders
+          </h3>
+          <p className="privacy-note reminder-note">A gentle nudge at the start of each part of the day: dawn, morning, midday, afternoon, evening and night.</p>
+          <MagneticButton
+            variant={reminders ? "soft" : "ghost"}
+            aria-pressed={reminders}
+            onClick={async () => {
+              const on = await setReminders(!reminders, REMINDER_SLOTS);
+              setRemindersState(on);
+              toast(on ? "Daily reminders on" : !reminders ? "Allow notifications for Vidura Life in iPhone Settings" : "Daily reminders off");
+            }}
+          >
+            {reminders ? "Daily reminders: on" : "Turn on daily reminders"}
+          </MagneticButton>
+        </section>
+      )}
+
       <section className="settings-section" aria-labelledby="s-data">
         <h3 id="s-data" className="section-title">
           Your data
@@ -188,6 +224,62 @@ export function SettingsSheet({ open, onClose }: { open: boolean; onClose: () =>
             </motion.div>
           )}
         </AnimatePresence>
+
+        <div className="delete-account" aria-live="polite">
+          {deleteStep === "idle" && (
+            <MagneticButton variant="ghost" className="clear-btn delete-btn" onClick={() => setDeleteStep("confirm")}>
+              Delete my account
+            </MagneticButton>
+          )}
+          {(deleteStep === "confirm" || deleteStep === "working") && (
+            <div className="confirm-row">
+              <p>
+                This permanently deletes your Vidura Life account: your email sign-in, the name and email saved for you, and everything on this device. It can't
+                be undone.
+              </p>
+              <div className="confirm-actions">
+                <MagneticButton variant="soft" onClick={() => setDeleteStep("idle")} disabled={deleteStep === "working"}>
+                  Keep my account
+                </MagneticButton>
+                <MagneticButton
+                  variant="danger"
+                  disabled={deleteStep === "working"}
+                  onClick={async () => {
+                    setDeleteStep("working");
+                    const r = await deleteAccount();
+                    if (r === "deleted") {
+                      onClose();
+                      clearData();
+                      toast("Your account has been deleted");
+                    } else if (r === "needs-email") {
+                      setDeleteStep((await requestDeleteByEmail(profile.name, profile.email)) ? "emailed" : "failed");
+                    } else setDeleteStep("failed");
+                  }}
+                >
+                  {deleteStep === "working" ? "Deleting…" : "Delete my account"}
+                </MagneticButton>
+              </div>
+            </div>
+          )}
+          {deleteStep === "emailed" && (
+            <p className="confirm-row">
+              To make sure it's you, I've emailed a link to {profile.email}. Open it on this device and your account will be deleted straight away.
+            </p>
+          )}
+          {deleteStep === "failed" && (
+            <p className="confirm-row">
+              I couldn't reach the server, so nothing was deleted. Check your connection and try again.{" "}
+              <button type="button" className="link-btn" onClick={() => setDeleteStep("confirm")}>
+                Try again
+              </button>
+            </p>
+          )}
+        </div>
+        <p className="privacy-note policy-link">
+          <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer">
+            Privacy policy
+          </a>
+        </p>
       </section>
     </BottomSheet>
   );

@@ -1,6 +1,8 @@
 import { AnimatePresence, LayoutGroup, MotionConfig, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { LivingBackground } from "./components/LivingBackground";
+import { useToast } from "./components/Toast";
+import { cancelDeleteRequest, deleteAccount, deleteRequested } from "./lib/account";
 import { EMAIL_LINK_ENABLED, readLinkFromUrl } from "./lib/emailLink";
 import type { Profile } from "./lib/storage";
 import { greetingFor } from "./lib/time";
@@ -27,7 +29,8 @@ const fade = {
 const needsEmailCheck = (p: Profile | null) => EMAIL_LINK_ENABLED && !!p && !p.emailVerified;
 
 export default function App() {
-  const { profile, nowMinutes, createProfile, updateProfile } = useApp();
+  const { profile, nowMinutes, createProfile, updateProfile, clearData } = useApp();
+  const toast = useToast();
   const [linkCode] = useState(readLinkFromUrl);
   const [verifiedEmail, setVerifiedEmail] = useState<string | undefined>();
   const [stage, setStage] = useState<Stage>(() =>
@@ -61,7 +64,16 @@ export default function App() {
               <VerifyLink
                 code={linkCode}
                 onRestart={() => setStage(profile ? "reverify" : "onboarding")}
-                onVerified={({ email, name }) => {
+                onVerified={async ({ email, name }) => {
+                  if (deleteRequested()) {
+                    // The confirmation link for "Delete my account": finish the deletion now.
+                    cancelDeleteRequest();
+                    const r = await deleteAccount();
+                    clearData();
+                    toast(r === "deleted" ? "Your account has been deleted" : "Couldn't finish deleting. Please try again from Settings.");
+                    setStage("onboarding");
+                    return;
+                  }
                   if (profile) {
                     updateProfile({ email, emailVerified: true, ...(name ? { name } : {}) });
                     setStage("welcomeBack");

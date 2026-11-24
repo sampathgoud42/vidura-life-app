@@ -14,7 +14,11 @@
  * Authentication → Settings → Authorized domains.
  */
 
+import { isNative } from "./native";
+
 const API_KEY = (import.meta.env.VITE_FIREBASE_API_KEY as string | undefined)?.trim() || "";
+/** Where emailed links point from the iOS app: the live site, which hands them to the app (Universal Links). */
+const LIVE_URL = "https://vidura-life-app.web.app/";
 const API = "https://identitytoolkit.googleapis.com/v1/accounts";
 
 export const EMAIL_LINK_ENABLED = API_KEY.length > 0;
@@ -89,8 +93,10 @@ async function call(path: string, body: unknown): Promise<{ ok: true; data: Reco
   }
 }
 
-/** The page the emailed link returns to: this app, without any query or hash. */
-const continueUrl = () => `${window.location.origin}${window.location.pathname}`;
+/** This page without any query or hash. */
+const here = () => `${window.location.origin}${window.location.pathname}`;
+/** The page the emailed link returns to: this app (or, in the iOS app, the live site that opens it). */
+const continueUrl = () => (isNative ? LIVE_URL : here());
 
 export async function sendSignInLink(email: string) {
   return call("sendOobCode", { requestType: "EMAIL_SIGNIN", email, continueUrl: continueUrl(), canHandleCodeInApp: true });
@@ -100,6 +106,7 @@ export async function sendSignInLink(email: string) {
 export async function completeSignIn(email: string, oobCode: string): Promise<{ ok: true; email: string } | { ok: false; error: LinkError }> {
   const r = await call("signInWithEmailLink", { email, oobCode });
   if (!r.ok) return r;
+  if (typeof r.data.refreshToken === "string") saveAuth(r.data.refreshToken);
   return { ok: true, email: typeof r.data.email === "string" ? r.data.email : email };
 }
 
@@ -132,5 +139,51 @@ export function readLinkFromUrl(href = window.location.href): string | null {
 
 /** Drop the one-time code from the address bar so a refresh or share doesn't reuse it. */
 export function clearLinkFromUrl(): void {
-  window.history.replaceState(null, "", continueUrl() + window.location.hash);
+  window.history.replaceState(null, "", here() + window.location.hash);
+}
+
+// ── The Firebase sign-in, kept so the person can delete their account later ──
+const AUTH_KEY = "vidura.auth";
+
+function saveAuth(refreshToken: string): void {
+  try {
+    localStorage.setItem(AUTH_KEY, JSON.stringify({ refreshToken }));
+  } catch {
+    /* private mode: deletion will ask to confirm by email instead */
+  }
+}
+
+function loadRefreshToken(): string | null {
+  try {
+    const o = JSON.parse(localStorage.getItem(AUTH_KEY) || "null");
+    return o && typeof o.refreshToken === "string" ? o.refreshToken : null;
+  } catch {
+    return null;
+  }
+}
+
+export const hasSavedSignIn = () => EMAIL_LINK_ENABLED && loadRefreshToken() !== null;
+
+/** A short-lived ID token from the saved sign-in, or null if there is none or it was revoked. */
+export async function freshIdToken(): Promise<string | null> {
+  const refresh = loadRefreshToken();
+  if (!EMAIL_LINK_ENABLED || !refresh) return null;
+  try {
+    const res = await fetch(`https://securetoken.googleapis.com/v1/token?key=${encodeURIComponent(API_KEY)}`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ grant_type: "refresh_token", refresh_token: refresh }).toString(),
+    });
+    if (!res.ok) return null;
+    const data = (await res.json()) as { id_token?: string };
+    return data.id_token ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Permanently deletes the Firebase account behind this ID token. */
+export async function deleteFirebaseAccount(idToken: string): Promise<boolean> {
+  const r = await call("delete", { idToken });
+  return r.ok;
 }
