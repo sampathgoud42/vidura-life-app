@@ -94,7 +94,7 @@ export const CONDITION_GUIDES: readonly ConditionGuide[] = [
     id: "hair",
     category: "hair",
     title: "Hair loss",
-    emoji: "🧑‍🦲",
+    emoji: "💈",
     bottomLine:
       "No treatment cures pattern hair loss, and what works only works while you keep using it. The boring, cheap combination wins: minoxidil, plus a DHT blocker (finasteride or dutasteride) if you accept its small risk, started early. A transplant without ongoing treatment is wasted money.",
     image: {

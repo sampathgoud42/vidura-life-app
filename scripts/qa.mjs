@@ -19,6 +19,9 @@ fs.mkdirSync(SHOTS, { recursive: true });
 process.env.PLAYWRIGHT_BROWSERS_PATH = "0";
 const { chromium } = await import("playwright-core");
 const breathwork = await import("../src/data/breathwork.ts");
+const contentData = await import("../src/data/content.ts");
+const guideData = await import("../src/data/conditionGuides.ts");
+const { mergeAudiencePairs } = await import("../src/lib/audience.ts");
 
 // During QA the wellness API writes to a throwaway database, never the real one.
 const QA_DB = path.join(root, "qa", "wellness-qa.db");
@@ -80,6 +83,53 @@ const pass = (name, ok, detail = "") => {
     pass("Breathing: Short guide says only In… Out… from the first second", short.every((x) => !x.count && ["sin", "sout", "shold"].includes(x.say)));
     pass("Breathing: the guide level defaults to Standard", breathwork.loadGuideLevel() === "standard");
     pass("Breathing: the opening cues say Inhale / Exhale", segs[0].label === "Inhale" && segs[1].label === "Exhale");
+  }
+  {
+    // Lists with For men / For women tags: the same text never shows twice, once per sex.
+    const C = contentData;
+    const lists = [["Daily ritual", C.DAILY_RITUAL, (s) => s.text]];
+    for (const [cat, steps] of Object.entries(C.MORNING_ADDS)) lists.push([`Morning add-ons · ${cat}`, steps, (s) => s.text]);
+    for (const cat of C.CATEGORIES.map((c) => c.id))
+      for (const ap of ["modern", "ayurvedic", "both"]) lists.push([`Tricks · ${cat} · ${ap}`, C.TRICKS.filter((t) => t.category === cat && t.approach === ap), (t) => t.title]);
+    for (const g of C.FOOD_GUIDES) {
+      lists.push([`Foods · ${g.category} · enjoy`, g.enjoy, (i) => i.name]);
+      lists.push([`Foods · ${g.category} · limit`, g.limit, (i) => i.name]);
+    }
+    const pairsBefore = [];
+    const dupesAfter = [];
+    for (const [name, items, key] of lists) {
+      const both = (arr) => {
+        const m = new Map();
+        for (const i of arr) if (i.audience) m.set(key(i).trim().toLowerCase(), (m.get(key(i).trim().toLowerCase()) ?? new Set()).add(i.audience));
+        return [...m].filter(([, s]) => s.size > 1).map(([k]) => k);
+      };
+      pairsBefore.push(...both(items).map((k) => `${name}: ${k}`));
+      const shown = mergeAudiencePairs(items, key);
+      const keys = shown.map((i) => key(i).trim().toLowerCase());
+      if (both(shown).length || new Set(keys).size !== keys.length) dupesAfter.push(name);
+    }
+    pass("No list shows the same item tagged For men and again For women", dupesAfter.length === 0, `${pairsBefore.length} pairs merged${dupesAfter.length ? " · still duplicated: " + dupesAfter.join(", ") : ""}`);
+    // Hair loss: Tips, Tricks, a washing routine and Foods, evidence-graded, no gimmicks sold as cures.
+    const hairTips = C.TIPS.filter((t) => t.category === "hair");
+    const hairTricks = C.TRICKS.filter((t) => t.category === "hair");
+    const wash = C.CARE_ROUTINES.hair;
+    const hairFood = C.FOOD_GUIDES.find((g) => g.category === "hair");
+    pass("Hair: tips, tricks for every approach, a washing routine and foods", hairTips.length >= 6 && ["both", "modern", "ayurvedic"].every((ap) => hairTricks.some((t) => t.approach === ap)) && !!wash && !!hairFood, `${hairTips.length} tips · ${hairTricks.length} tricks`);
+    pass("Hair wash routine: ketoconazole 2–3×/week, 3–5 min, and washing doesn't cause loss", wash.steps.some((x) => /ketoconazole 2%/i.test(x.text) && /3 to 5 minutes/.test(x.text)) && /doesn't cause hair loss/.test(wash.note ?? ""));
+    const GIMMICK = /onion|rice water|biotin|dht-blocking/i;
+    const NEG = /no good evidence|no oil|unless|aren't proven|can upset|isn't|doesn't/i;
+    const sold = [
+      ...hairTips.map((t) => t.title + " " + t.body),
+      ...hairTricks.map((t) => t.title + " " + t.body + " " + (t.caution ?? "")),
+      ...wash.steps.map((x) => x.text),
+      ...hairFood.enjoy.map((i) => i.name + " " + (i.note ?? "")),
+    ].filter((x) => GIMMICK.test(x) && !NEG.test(x));
+    pass("Hair: onion juice, rice water, biotin and DHT-blocking oils never offered as remedies", sold.length === 0, sold.join(" | "));
+    const sexual = [...hairTips, ...hairTricks].filter((t) => /finasteride|dutasteride/i.test(t.body));
+    pass("Hair tips and tricks don't default to products with sexual or sperm side effects", sexual.length === 0);
+    pass("Hair foods: protein, iron, zinc and omega-3 to enjoy; crash diets and sugar to limit", /dal/i.test(hairFood.enjoy.map((i) => i.name).join()) && hairFood.enjoy.some((i) => /zinc/i.test(i.note ?? "")) && hairFood.enjoy.some((i) => /omega-3/i.test(i.note ?? "")) && hairFood.limit.some((i) => /crash/i.test(i.name)) && hairFood.limit.some((i) => /sugar/i.test(i.name)));
+    const zwj = [...C.CATEGORIES.map((c) => c.emoji), ...guideData.CONDITION_GUIDES.map((g) => g.emoji)].filter((e) => e.includes("\u200d"));
+    pass("Focus and guide icons are single emoji (no joined sequences)", zwj.length === 0, zwj.join(" "));
   }
   pass("Breathing: a fast technique moved to the evening gets a caution", !!breathwork.timeCaution(breathwork.techniqueById("kapalbhati"), H(20)));
 }
@@ -248,7 +298,18 @@ try {
     const safetyBox = page.locator(".breath-safety input[type=checkbox]");
     if (await safetyBox.count()) await safetyBox.check();
     await page.locator(".breath-setup .guided-actions button").click();
-    await wait(1600);
+    await wait(300);
+    const firstCount = await page.locator(".breath-countdown").innerText().catch(() => "");
+    const timerAtStart = await page.locator(".breath-player .guided-time").innerText();
+    await wait(1000);
+    pass("Start shows 3… 2… 1… before the timer runs", firstCount.trim() === "3" && (await page.locator(".breath-player .guided-time").innerText()) === timerAtStart, `${firstCount.trim()} · ${timerAtStart}`);
+    await wait(4800);
+    pass("The countdown ends and the session clock starts", (await page.locator(".breath-countdown").count()) === 0 && (await page.locator(".breath-player .guided-time").innerText()) !== timerAtStart);
+    await page.getByRole("button", { name: "Pause" }).click();
+    await wait(400);
+    await page.getByRole("button", { name: "Resume" }).click();
+    await wait(300);
+    pass("Resume after pause skips the countdown", (await page.locator(".breath-countdown").count()) === 0);
     await shot(page, "A13b-breath");
     pass("The breathing session runs with a timer and cue", (await page.locator(".breath-player .guided-time").isVisible()) && (await page.locator(".breath-cue").innerText()).length > 0);
     await page.keyboard.press("Escape");

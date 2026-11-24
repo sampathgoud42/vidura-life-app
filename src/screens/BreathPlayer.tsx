@@ -394,7 +394,9 @@ function Session({
   const segs = useMemo(() => program(t, opts), [t, opts]);
   const starts = useMemo(() => segs.reduce<number[]>((acc, _s, i) => (acc.push(i ? acc[i - 1] + segs[i - 1].secs : 0), acc), []), [segs]);
   const total = programSeconds(segs);
-  const [running, setRunning] = useState(true);
+  // 3… 2… 1… Start before the clock runs (only when the session opens, not on resume).
+  const [countdown, setCountdown] = useState<number | null>(3);
+  const [running, setRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [segIndex, setSegIndex] = useState(0);
   const [part, setPart] = useState<"belly" | "ribs" | "chest">("belly");
@@ -430,6 +432,25 @@ function Session({
       return next;
     });
   };
+
+  useEffect(() => {
+    if (countdown === null) return;
+    const a = audio.current;
+    if (countdown > 0) {
+      if (soundRef.current.voice) a?.say(`n${countdown}` as ClipName);
+      haptics.tap();
+    } else {
+      a?.chime();
+    }
+    const id = window.setTimeout(() => {
+      if (countdown > 0) setCountdown(countdown - 1);
+      else {
+        setCountdown(null);
+        setRunning(true);
+      }
+    }, 1000);
+    return () => window.clearTimeout(id);
+  }, [countdown, audio]);
 
   // The clock: timestamp-based, so it stays right if the tab sleeps.
   useEffect(() => {
@@ -593,6 +614,13 @@ function Session({
           <div ref={orbRef} className="breath-orb" style={{ transform: `scale(${LO})` }}>
             <BreathingOrb size="100%" breathing={false} interactive={false} />
           </div>
+          {countdown !== null && (
+            <div className="breath-countdown" role="status" aria-live="assertive">
+              <span key={countdown} className="breath-countdown-n">
+                {countdown > 0 ? countdown : "Start"}
+              </span>
+            </div>
+          )}
           {seg.side && !finished && (
             <div className="nostrils" aria-hidden="true">
               <span className={`nostril ${seg.side === "left" ? "on" : ""}`}>L</span>
@@ -606,7 +634,7 @@ function Session({
           </span>
           {!finished && (
             <span className="guided-cue breath-cue" aria-live="polite">
-              {running ? seg.label : "Paused"}
+              {countdown !== null ? "Get ready" : running ? seg.label : "Paused"}
               {running && !t.fast && seg.kind !== "rest" && <span className="breath-left"> · {segLeft}</span>}
             </span>
           )}
@@ -629,7 +657,7 @@ function Session({
       </div>
 
       <footer className="guided-actions">
-        {!finished && (
+        {!finished && countdown === null && (
           <MagneticButton variant="glassy" size="lg" onClick={toggle} aria-label={running ? "Pause" : "Resume"}>
             {running ? <Pause size={18} /> : <Play size={18} />} {running ? "Pause" : "Resume"}
           </MagneticButton>

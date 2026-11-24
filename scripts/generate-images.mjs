@@ -74,6 +74,7 @@ const slots = [
   ...CONDITION_GUIDES.map((g) => ({ group: "Condition guides, root cause (16:9)", label: `${g.title} · root cause`, slot: g.image })),
   ...TECHNIQUES.filter((t) => t.image.src.startsWith("assets/breath/")).map((t) => ({ group: "Breathing techniques (4:5)", label: t.name, slot: t.image })),
 ]
+  .filter((s, i, all) => all.findIndex((o) => o.slot.src === s.slot.src) === i)
   .filter((s) => !ONLY || ONLY.split(",").some((part) => s.slot.src.includes(part.trim())))
   .filter((s) => !SKIP || !SKIP.split(",").some((part) => s.slot.src.includes(part.trim())));
 

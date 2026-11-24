@@ -5,6 +5,7 @@ import {
   DAILY_RITUAL,
   HERB_NOTE,
   MORNING_ADDS,
+  CARE_ROUTINES,
   TRICKS,
   type AudienceId,
   type CategoryId,
@@ -13,6 +14,7 @@ import {
   type FoodItem,
   type RoutineStep,
 } from "../data/content";
+import { mergeAudiencePairs } from "../lib/audience";
 import { eligible } from "../lib/plan";
 import type { Prefs } from "../lib/storage";
 import { formatMinutes } from "../lib/time";
@@ -45,7 +47,10 @@ export function TricksSection({ cats, prefs }: { cats: readonly CategoryId[]; pr
         Small tricks for your focus, picked for your approach. <strong>{APPROACH_LABEL[prefs.approach]}</strong>. You can change it in Settings.
       </p>
       {cats.map((cat) => {
-        const list = TRICKS.filter((t) => t.category === cat && t.approach === prefs.approach && forAudience(prefs.audience, t.audience));
+        const list = mergeAudiencePairs(
+          TRICKS.filter((t) => t.category === cat && t.approach === prefs.approach && forAudience(prefs.audience, t.audience)),
+          (t) => t.title,
+        );
         if (!list.length) return null;
         return (
           <section key={cat} className="cat-block" aria-label={`${catOf(cat).label} tricks`}>
@@ -81,9 +86,10 @@ function StepList({ steps, prefs, numbered = false }: { steps: readonly RoutineS
   const Tag = numbered ? "ol" : "ul";
   return (
     <Tag className={`routine-steps ${numbered ? "is-numbered" : ""}`}>
-      {steps
-        .filter((s) => stepFits(s, prefs))
-        .map((s) => (
+      {mergeAudiencePairs(
+        steps.filter((s) => stepFits(s, prefs)),
+        (s) => s.text,
+      ).map((s) => (
           <li key={s.text}>
             <span className="routine-icon" aria-hidden="true">
               {s.icon}
@@ -116,6 +122,15 @@ export function RoutinesSection({ cats, prefs }: { cats: readonly CategoryId[]; 
             <CategoryHeading id={cat}>{`Your ${catOf(cat).label.toLowerCase()} routine`}</CategoryHeading>
             <p className="routine-sub">Morning add-ons</p>
             <StepList steps={MORNING_ADDS[cat]} prefs={prefs} />
+            {CARE_ROUTINES[cat] && (
+              <>
+                <p className="routine-sub">
+                  <span aria-hidden="true">{CARE_ROUTINES[cat]!.icon}</span> {CARE_ROUTINES[cat]!.title}
+                </p>
+                <StepList steps={CARE_ROUTINES[cat]!.steps} prefs={prefs} />
+                {CARE_ROUTINES[cat]!.note && <p className="routine-note">{CARE_ROUTINES[cat]!.note}</p>}
+              </>
+            )}
             <p className="routine-sub">Through the day</p>
             <ol className="routine-day">
               {merged.map((a) => (
@@ -159,8 +174,14 @@ function FoodList({ items, audience }: { items: readonly FoodItem[]; audience: A
 }
 
 export function FoodGuideCard({ guide, audience, diet, title }: { guide: FoodGuide; audience: AudienceId; diet: DietId; title?: string }) {
-  const enjoy = guide.enjoy.filter((i) => itemFits(i, audience, diet));
-  const limit = guide.limit.filter((i) => itemFits(i, audience, diet));
+  const enjoy = mergeAudiencePairs(
+    guide.enjoy.filter((i) => itemFits(i, audience, diet)),
+    (i) => i.name,
+  );
+  const limit = mergeAudiencePairs(
+    guide.limit.filter((i) => itemFits(i, audience, diet)),
+    (i) => i.name,
+  );
   return (
     <article className="food-guide" aria-label={title ?? `${catOf(guide.category).label} foods`}>
       {title !== "" && <CategoryHeading id={guide.category}>{title ?? `${catOf(guide.category).label}: foods`}</CategoryHeading>}
