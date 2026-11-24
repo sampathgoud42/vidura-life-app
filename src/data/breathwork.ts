@@ -368,8 +368,10 @@ export interface HandPose {
   easier?: string;
   posture: string;
   postureHow: string;
-  /** Short looping clip (muted) and its still, for the setup card. */
-  media?: { video: string; still: string; alt: string };
+  /** Full-body pose image (WebP, 4:5; a "-sm" copy sits beside it). */
+  image?: { src: string; alt: string };
+  /** Show the small accurate hand drawing too, where the image can't show the fingers clearly. */
+  inset?: boolean;
 }
 
 const JNANA = "Jnana (Chin) mudra";
@@ -379,18 +381,24 @@ const SEATED_HOW = "Cross-legged on a cushion (Sukhasana), or upright on a chair
 
 export const HAND_POSE: Record<TechniqueId, HandPose> = {
   "nadi-shodhana": {
+    inset: true,
+    image: { src: "assets/mudra/nasika.webp", alt: "A man seated cross-legged on a cushion, right hand at his nose in Nasika mudra, left hand on his knee in Jnana mudra, eyes closed" },
     mudra: "Nasika (Vishnu) mudra, right hand",
     mudraHow: "Fold the index and middle fingers into the palm. The thumb closes the right nostril; the ring finger closes the left. The left hand rests on the knee in Jnana mudra.",
     posture: SEATED,
     postureHow: SEATED_HOW,
   },
   "anulom-vilom": {
+    inset: true,
+    image: { src: "assets/mudra/nasika.webp", alt: "A man seated cross-legged on a cushion, right hand at his nose in Nasika mudra, left hand on his knee in Jnana mudra, eyes closed" },
     mudra: "Nasika (Vishnu) mudra, right hand",
     mudraHow: "Fold the index and middle fingers into the palm. The thumb closes the right nostril; the ring finger closes the left. The left hand rests on the knee in Jnana mudra.",
     posture: SEATED,
     postureHow: SEATED_HOW,
   },
   bhramari: {
+    inset: true,
+    image: { src: "assets/mudra/shanmukhi.webp", alt: "A woman seated cross-legged with her hands over her face in Shanmukhi mudra: thumbs on the ears, fingers over the eyes, beside the nose and around the lips" },
     mudra: "Shanmukhi mudra",
     mudraHow: "Thumbs press the ear flaps closed, index fingers rest on the closed eyes, middle fingers beside the nose, ring and little fingers around the lips.",
     easier: "Beginners: just press the ear flaps closed with your index fingers.",
@@ -398,30 +406,35 @@ export const HAND_POSE: Record<TechniqueId, HandPose> = {
     postureHow: SEATED_HOW,
   },
   kapalbhati: {
+    image: { src: "assets/mudra/jnana.webp", alt: "A woman seated cross-legged on a cushion, spine tall, hands on her knees in Jnana mudra, palms up, eyes closed" },
     mudra: JNANA,
     mudraHow: JNANA_HOW,
     posture: "Seated upright, never lying down",
     postureHow: "Cross-legged or on a chair, spine tall so the belly can move freely. Don't practise lying down.",
   },
   bhastrika: {
+    image: { src: "assets/mudra/jnana.webp", alt: "A woman seated cross-legged on a cushion, spine tall, hands on her knees in Jnana mudra, palms up, eyes closed" },
     mudra: JNANA,
     mudraHow: JNANA_HOW,
     posture: "Seated upright, never lying down",
     postureHow: "Cross-legged or on a chair, spine tall so the chest and belly can move freely. Don't practise lying down.",
   },
   ujjayi: {
+    image: { src: "assets/mudra/jnana.webp", alt: "A woman seated cross-legged on a cushion, spine tall, hands on her knees in Jnana mudra, palms up, eyes closed" },
     mudra: JNANA,
     mudraHow: JNANA_HOW,
     posture: SEATED,
     postureHow: `${SEATED_HOW} Ujjayi also works during gentle yoga.`,
   },
   coherent: {
+    image: { src: "assets/mudra/dhyana.webp", alt: "A woman seated cross-legged on a round cushion, hands resting in her lap in Dhyana mudra, right over left, thumbs touching, eyes closed" },
     mudra: "Dhyana mudra",
     mudraHow: "Hands rest in the lap, right hand on top of the left, palms up, thumb tips lightly touching. Or simply rest the hands on the thighs.",
     posture: SEATED,
     postureHow: SEATED_HOW,
   },
   dirga: {
+    image: { src: "assets/mudra/dirga.webp", alt: "A person lying on their back on a mat, one hand resting on the belly and one on the chest, eyes closed" },
     mudra: "One hand on the belly, one on the chest",
     mudraHow: "Feel the belly rise first, then the ribs widen, then the chest lift; empty in reverse.",
     posture: "Lying down (Shavasana) or seated",

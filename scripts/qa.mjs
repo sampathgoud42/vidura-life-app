@@ -330,8 +330,12 @@ try {
     pass("Breathing guide: every technique has When NOT to do it", (await page.locator(".breath-avoid").count()) === 8);
     pass("Breathing guide: every technique has a practice-time picker", (await page.locator(".breath-card .practice-time-input").count()) === 8);
     pass("Breathing guide: every technique shows hands and posture", (await page.locator(".breath-card .hand-pose").count()) === 8);
-    pass("Breathing guide: Nasika mudra art for the alternate-nostril techniques", (await page.locator(".breath-card .mudra-nasika").count()) === 2);
-    pass("Breathing guide: every technique has hand-drawn mudra art", (await page.locator(".breath-card .mudra-art").count()) === 8 && (await page.locator(".breath-card .mudra-shanmukhi, .breath-card .mudra-jnana, .breath-card .mudra-dhyana, .breath-card .mudra-dirga").count()) === 6);
+    const poseImgs = page.locator(".breath-card .hand-pose-media img");
+    for (let i = 0; i < (await poseImgs.count()); i++) await poseImgs.nth(i).scrollIntoViewIfNeeded();
+    await wait(800);
+    const loaded = await poseImgs.evaluateAll((els) => els.filter((e) => e.complete && e.naturalWidth > 0 && e.alt.length > 20).length);
+    pass("Breathing guide: every technique has a pose image that loads, with alt text", (await poseImgs.count()) === 8 && loaded === 8, `${loaded}/8`);
+    pass("Breathing guide: Nasika and Shanmukhi add an accurate hand inset", (await page.locator(".breath-card .hand-pose-inset .mudra-nasika").count()) === 2 && (await page.locator(".breath-card .hand-pose-inset .mudra-shanmukhi").count()) === 1);
     await page.locator("#b-nadi-shodhana .hand-pose").scrollIntoViewIfNeeded();
     await wait(400);
     await shot(page, "A13d-breath-hands");
