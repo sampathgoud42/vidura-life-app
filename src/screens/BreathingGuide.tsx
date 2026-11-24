@@ -1,3 +1,4 @@
+import { HandPoseCard } from "../components/HandPoseCard";
 import { ArrowLeft, Info, Play } from "../components/Icons";
 import { PracticeTime, useBreathTimes } from "../components/PracticeTime";
 import { SmartImage } from "../components/SmartImage";
@@ -149,6 +150,9 @@ function TechniqueCard({ t, onTry }: { t: Technique; onTry: () => void }) {
           </ol>
         </div>
       </div>
+
+      <h3 className="guide-h3">Hands and posture</h3>
+      <HandPoseCard id={t.id} />
 
       <h3 className="guide-h3">Best time</h3>
       <p className="guide-p">{t.bestTime}</p>

@@ -357,6 +357,78 @@ export const TECHNIQUES: readonly Technique[] = [
 
 export const techniqueById = (id: string): Technique | undefined => TECHNIQUES.find((t) => t.id === id);
 
+// ── Hands and posture ───────────────────────────────────────────────────────
+
+export interface HandPose {
+  /** Mudra (hand position) name. */
+  mudra: string;
+  /** One line: how to hold it. */
+  mudraHow: string;
+  /** Optional simpler version. */
+  easier?: string;
+  posture: string;
+  postureHow: string;
+  /** Short looping clip (muted) and its still, for the setup card. */
+  media?: { video: string; still: string; alt: string };
+}
+
+const JNANA = "Jnana (Chin) mudra";
+const JNANA_HOW = "Tip of the index finger touches the tip of the thumb; the other three fingers stay relaxed and straight. Rest the hands on the knees, palms up.";
+const SEATED = "Seated, spine tall";
+const SEATED_HOW = "Cross-legged on a cushion (Sukhasana), or upright on a chair with feet flat. Shoulders soft, chin level.";
+
+export const HAND_POSE: Record<TechniqueId, HandPose> = {
+  "nadi-shodhana": {
+    mudra: "Nasika (Vishnu) mudra, right hand",
+    mudraHow: "Fold the index and middle fingers into the palm. The thumb closes the right nostril; the ring finger closes the left. The left hand rests on the knee in Jnana mudra.",
+    posture: SEATED,
+    postureHow: SEATED_HOW,
+  },
+  "anulom-vilom": {
+    mudra: "Nasika (Vishnu) mudra, right hand",
+    mudraHow: "Fold the index and middle fingers into the palm. The thumb closes the right nostril; the ring finger closes the left. The left hand rests on the knee in Jnana mudra.",
+    posture: SEATED,
+    postureHow: SEATED_HOW,
+  },
+  bhramari: {
+    mudra: "Shanmukhi mudra",
+    mudraHow: "Thumbs press the ear flaps closed, index fingers rest on the closed eyes, middle fingers beside the nose, ring and little fingers around the lips.",
+    easier: "Beginners: just press the ear flaps closed with your index fingers.",
+    posture: SEATED,
+    postureHow: SEATED_HOW,
+  },
+  kapalbhati: {
+    mudra: JNANA,
+    mudraHow: JNANA_HOW,
+    posture: "Seated upright, never lying down",
+    postureHow: "Cross-legged or on a chair, spine tall so the belly can move freely. Don't practise lying down.",
+  },
+  bhastrika: {
+    mudra: JNANA,
+    mudraHow: JNANA_HOW,
+    posture: "Seated upright, never lying down",
+    postureHow: "Cross-legged or on a chair, spine tall so the chest and belly can move freely. Don't practise lying down.",
+  },
+  ujjayi: {
+    mudra: JNANA,
+    mudraHow: JNANA_HOW,
+    posture: SEATED,
+    postureHow: `${SEATED_HOW} Ujjayi also works during gentle yoga.`,
+  },
+  coherent: {
+    mudra: "Dhyana mudra",
+    mudraHow: "Hands rest in the lap, right hand on top of the left, palms up, thumb tips lightly touching. Or simply rest the hands on the thighs.",
+    posture: SEATED,
+    postureHow: SEATED_HOW,
+  },
+  dirga: {
+    mudra: "One hand on the belly, one on the chest",
+    mudraHow: "Feel the belly rise first, then the ribs widen, then the chest lift; empty in reverse.",
+    posture: "Lying down (Shavasana) or seated",
+    postureHow: "Lie on your back with knees bent or legs long, or sit tall. Let the shoulders and jaw go soft.",
+  },
+};
+
 /** Guide order: the comparison table Sampath asked for first, then the rest. */
 export const TABLE_ORDER: TechniqueId[] = ["kapalbhati", "bhastrika", "coherent", "ujjayi", "dirga", "bhramari", "nadi-shodhana", "anulom-vilom"];
 
