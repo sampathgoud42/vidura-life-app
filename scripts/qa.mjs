@@ -331,6 +331,7 @@ try {
     pass("Breathing guide: every technique has a practice-time picker", (await page.locator(".breath-card .practice-time-input").count()) === 8);
     pass("Breathing guide: every technique shows hands and posture", (await page.locator(".breath-card .hand-pose").count()) === 8);
     pass("Breathing guide: Nasika mudra art for the alternate-nostril techniques", (await page.locator(".breath-card .mudra-nasika").count()) === 2);
+    pass("Breathing guide: every technique has hand-drawn mudra art", (await page.locator(".breath-card .mudra-art").count()) === 8 && (await page.locator(".breath-card .mudra-shanmukhi, .breath-card .mudra-jnana, .breath-card .mudra-dhyana, .breath-card .mudra-dirga").count()) === 6);
     await page.locator("#b-nadi-shodhana .hand-pose").scrollIntoViewIfNeeded();
     await wait(400);
     await shot(page, "A13d-breath-hands");

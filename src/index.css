@@ -4804,3 +4804,54 @@ html.phase-shift *::after {
   .mudra-art .ma-hand { animation: none; }
   .mudra-art .ma-press { animation: none; opacity: 0.85; }
 }
+.mudra-art .ma-knee { fill: #b9a3c9; }
+.mudra-art .ma-under { fill: #c99472; }
+.mudra-art .ma-finger-curve { fill: none; stroke: #9c6448; stroke-width: 19; stroke-linecap: round; }
+.mudra-art .ma-finger-curve + .ma-finger-curve,
+.mudra-art .ma-finger-curve { paint-order: stroke; }
+.mudra-art .ma-face { fill: #c98e6b; }
+.mudra-art .ma-neck { fill: #b97f5e; }
+.mudra-art .ma-brow { fill: none; stroke: #3a2233; stroke-width: 3.5; stroke-linecap: round; }
+.mudra-art .ma-nose { fill: #b77b59; }
+.mudra-art .ma-lips { fill: none; stroke: #7a3b4a; stroke-width: 3; stroke-linecap: round; }
+.mudra-art .ma-wave { fill: none; stroke: #fff2b8; stroke-width: 2.5; stroke-linecap: round; opacity: 0; }
+.mudra-art .ma-shirt { fill: #f3e4cf; }
+.mudra-art .ma-fill { fill: #fff2b8; opacity: 0; }
+.mudra-art .ma-press-steady { animation: ma-glow 6s ease-in-out infinite; }
+.mudra-art .ma-wave-1 { animation: ma-hum 2.4s ease-out infinite; }
+.mudra-art .ma-wave-2 { animation: ma-hum 2.4s ease-out 0.6s infinite; }
+/* Dirga: belly fills first, then the chest; both empty together. */
+.mudra-art .ma-fill-belly { animation: ma-fill 10s ease-in-out infinite; }
+.mudra-art .ma-fill-chest { animation: ma-fill 10s ease-in-out 1.6s infinite; }
+.mudra-dirga .ma-hand-belly { animation: ma-rise 10s ease-in-out infinite; }
+.mudra-dirga .ma-hand-chest { animation: ma-rise 10s ease-in-out 1.6s infinite; }
+@keyframes ma-glow {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 0.9; }
+}
+@keyframes ma-hum {
+  0% { opacity: 0; transform: translateY(0); }
+  30% { opacity: 0.9; }
+  100% { opacity: 0; transform: translateY(8px); }
+}
+@keyframes ma-fill {
+  0%, 100% { opacity: 0; }
+  30%, 45% { opacity: 0.75; }
+  70% { opacity: 0; }
+}
+@keyframes ma-rise {
+  0%, 100% { transform: translateY(0); }
+  30%, 45% { transform: translateY(-4px); }
+  70% { transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mudra-art .ma-press-steady,
+  .mudra-art .ma-wave,
+  .mudra-art .ma-fill,
+  .mudra-dirga .ma-hand-belly,
+  .mudra-dirga .ma-hand-chest { animation: none; }
+  .mudra-art .ma-press-steady,
+  .mudra-art .ma-wave { opacity: 0.7; }
+}
+.mudra-art .ma-finger-line { fill: none; stroke: #9c6448; stroke-width: 20; stroke-linecap: round; }
+.mudra-art .ma-finger-curve { stroke: #d6a07d; stroke-width: 16; }

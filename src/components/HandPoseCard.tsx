@@ -11,7 +11,7 @@ export function HandPoseCard({ id, light = false }: { id: TechniqueId; light?: b
   const pose = HAND_POSE[id];
   const reduced = useReducedMotion();
   const m = pose.media;
-  const art = !m && (id === "nadi-shodhana" || id === "anulom-vilom");
+  const art = !m;
   return (
     <section className={`hand-pose ${light ? "hand-pose-light" : ""} ${m || art ? "has-media" : ""}`} aria-label="Hands and posture">
       {m && (
