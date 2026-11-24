@@ -4113,3 +4113,198 @@ html.phase-shift *::after {
   text-underline-offset: 2px;
   overflow-wrap: anywhere;
 }
+
+/* ── Condition guides: "Your numbers" reference ranges ───────────────────── */
+.num-person {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem 1rem;
+  margin: 0.4rem 0 0.2rem;
+}
+.num-for {
+  margin: 0;
+  font-weight: 680;
+  font-size: 1rem;
+}
+.num-pickers {
+  display: flex;
+  gap: 0.5rem;
+}
+.num-pick {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 620;
+  color: var(--ink-soft);
+}
+.num-pick select {
+  min-height: 40px;
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+  background: color-mix(in oklab, var(--bg-base) 70%, transparent);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+}
+.num-pick select:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.num-hint {
+  margin: 0.3rem 0 0;
+  font-size: 0.84rem;
+  color: var(--ink-soft);
+}
+.num-test {
+  margin-top: 1.1rem;
+}
+.num-test .guide-h3 {
+  margin-bottom: 0.15rem;
+}
+.num-how {
+  margin: 0 0 0.5rem;
+  font-size: 0.84rem;
+  color: var(--ink-soft);
+}
+.num-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+.num-table th,
+.num-table td {
+  padding: 0.5rem 0.55rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+}
+.num-table thead th {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+.num-table tbody th {
+  font-weight: 650;
+  white-space: nowrap;
+}
+.num-range {
+  font-weight: 620;
+  font-variant-numeric: tabular-nums;
+}
+.num-dot {
+  display: inline-block;
+  width: 0.62rem;
+  height: 0.62rem;
+  margin-right: 0.45rem;
+  border-radius: 50%;
+  vertical-align: 0.02em;
+  background: var(--tone);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--tone) 30%, transparent);
+}
+.num-row {
+  --tone: #8a94a6;
+}
+.num-row.tone-good {
+  --tone: #2ea99f;
+}
+.num-row.tone-ok {
+  --tone: #4d8fd6;
+}
+.num-row.tone-watch {
+  --tone: #f2b233;
+}
+.num-row.tone-high {
+  --tone: #ec7a45;
+}
+.num-row.tone-urgent {
+  --tone: #e0405f;
+}
+.num-row > th,
+.num-row > td {
+  background: color-mix(in oklab, var(--tone) 9%, transparent);
+}
+.num-you {
+  margin: 0.55rem 0 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  border-left: 3px solid var(--accent);
+  background: color-mix(in oklab, var(--accent) 10%, transparent);
+  font-size: 0.88rem;
+}
+.num-note {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  margin: 0.9rem 0 0.4rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+.num-note svg {
+  flex: none;
+  margin-top: 0.15rem;
+}
+.num-src {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+.num-src a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  overflow-wrap: anywhere;
+}
+/* Phones: each band becomes a two-line row (label + range, then meaning). */
+@media (max-width: 560px) {
+  .num-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .num-table tr {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.6rem;
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--ink) 12%, transparent);
+    background: color-mix(in oklab, var(--tone) 9%, transparent);
+  }
+  .num-table th,
+  .num-table td {
+    padding: 0;
+    border: 0;
+    background: none !important;
+  }
+  .num-table td:last-child {
+    grid-column: 1 / -1;
+    margin-top: 0.2rem;
+    color: var(--ink-soft);
+  }
+  .num-range {
+    text-align: right;
+  }
+}
+/* Age choices in Make it yours: a compact grid of chips. */
+.choice-group.cols-age {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.choice-group.cols-age .choice {
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.4rem;
+}
+@media (max-width: 520px) {
+  .choice-group.cols-age {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.field-optional {
+  font-weight: 500;
+}

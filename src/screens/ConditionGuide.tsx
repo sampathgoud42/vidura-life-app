@@ -1,13 +1,16 @@
 import { ArrowLeft, ArrowRight, Info } from "../components/Icons";
 import { SmartImage } from "../components/SmartImage";
 import { Display } from "../components/Typography";
-import type { CategoryId } from "../data/content";
+import { DEFAULT_PREFS, type CategoryId } from "../data/content";
+import { AGE_BANDS, RANGES_NOTE, audienceFromSex, numbersFor, personLabel, sexFromAudience, type AgeBandId, type Sex } from "../data/labRanges";
+import { useApp } from "../state/AppState";
 import { COUNTRIES, EVIDENCE_LABEL, GUIDE_DISCLAIMER, guidesFor, type ConditionGuide, type CauseStep, type Evidence } from "../data/conditionGuides";
 
 const EV_CLASS: Record<Evidence, string> = { proven: "verdict verdict-recommended", likely: "verdict verdict-optional", experimental: "verdict verdict-mixed" };
 
 const SECTIONS = [
   ["cause", "Root cause"],
+  ["numbers", "Your numbers"],
   ["protocol", "What works"],
   ["costs", "Costs"],
   ["plan", "Smart plan"],
@@ -87,9 +90,108 @@ export function RootCauseDiagram({ drivers, chain }: { drivers: string[]; chain:
   );
 }
 
+/**
+ * Reference ranges for this guide's key tests, personalised by sex (the Health notes
+ * setting) and the optional age band, with a short "how to read it".
+ */
+export function YourNumbers({ guideId }: { guideId: string }) {
+  const { profile, updateProfile } = useApp();
+  const prefs = profile?.prefs ?? { ...DEFAULT_PREFS };
+  const person = { sex: sexFromAudience(prefs.audience), age: prefs.age ?? null };
+  const n = numbersFor(guideId, person);
+  if (!n) return null;
+  const setSex = (v: string) => updateProfile({ prefs: { ...prefs, audience: audienceFromSex(v === "male" || v === "female" ? (v as Sex) : null) } });
+  const setAge = (v: string) => {
+    const { age: _drop, ...rest } = prefs;
+    updateProfile({ prefs: v ? { ...rest, age: v as AgeBandId } : rest });
+  };
+  return (
+    <section id="c-numbers" className="guide-section glass" aria-labelledby="c-numbers-h">
+      <h2 id="c-numbers-h" className="guide-h">
+        Your numbers: how to read them
+      </h2>
+      <div className="num-person">
+        <p className="num-for">{personLabel(person)}</p>
+        <div className="num-pickers">
+          <label className="num-pick">
+            <span>Sex</span>
+            <select value={person.sex ?? ""} onChange={(e) => setSex(e.target.value)}>
+              <option value="">Not set</option>
+              <option value="male">Man</option>
+              <option value="female">Woman</option>
+            </select>
+          </label>
+          <label className="num-pick">
+            <span>Age</span>
+            <select value={person.age ?? ""} onChange={(e) => setAge(e.target.value)}>
+              <option value="">Not set</option>
+              {AGE_BANDS.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+      </div>
+      {!person.sex || !person.age ? <p className="num-hint">Set your sex and age to see the ranges that apply to you. They're saved with your Make it yours settings.</p> : null}
+
+      {n.tests.map((t) => (
+        <div key={t.name} className="num-test">
+          <h3 className="guide-h3">{t.name}</h3>
+          <p className="num-how">{t.how}</p>
+          <table className="num-table">
+            <thead>
+              <tr>
+                <th scope="col">Result</th>
+                <th scope="col">Range</th>
+                <th scope="col">What it means</th>
+              </tr>
+            </thead>
+            <tbody>
+              {t.bands.map((b) => (
+                <tr key={b.label + b.range} className={`num-row tone-${b.tone}`}>
+                  <th scope="row">
+                    <span className="num-dot" aria-hidden="true" />
+                    {b.label}
+                  </th>
+                  <td className="num-range">{b.range}</td>
+                  <td>{b.meaning}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {t.forYou && <p className="num-you">{t.forYou}</p>}
+        </div>
+      ))}
+
+      <h3 className="guide-h3">How to read your report</h3>
+      <ul className="cond-list">
+        {n.read.map((line) => (
+          <li key={line}>{line}</li>
+        ))}
+      </ul>
+      <p className="num-note">
+        <Info size={14} /> {RANGES_NOTE}
+      </p>
+      <p className="num-src">
+        Ranges from:{" "}
+        {n.sources.map((src, i) => (
+          <span key={src.url}>
+            {i > 0 && " · "}
+            <a href={src.url} target="_blank" rel="noopener noreferrer">
+              {src.label}
+            </a>
+          </span>
+        ))}
+      </p>
+    </section>
+  );
+}
+
 export function ConditionGuideScreen({ guide, onBack }: { guide: ConditionGuide; onBack: () => void }) {
   const g = guide;
-  const sections = SECTIONS.filter(([id]) => id !== "food" || g.food);
+  const sections = SECTIONS.filter(([id]) => (id !== "food" || g.food) && (id !== "numbers" || numbersFor(g.id, { sex: null, age: null })));
   return (
     <div className="guide-screen cond-guide">
       <header className="screen-head guide-head">
@@ -131,6 +233,8 @@ export function ConditionGuideScreen({ guide, onBack }: { guide: ConditionGuide;
           ))}
         </ul>
       </section>
+
+      <YourNumbers guideId={g.id} />
 
       <section id="c-protocol" className="guide-section" aria-labelledby="c-protocol-h">
         <h2 id="c-protocol-h" className="guide-h">

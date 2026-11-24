@@ -142,14 +142,14 @@ try {
 
     await wait(3600);
     await shot(page, "A07-focus");
-    pass("Focus screen shows 8 category tiles", (await page.locator(".tile").count()) === 8);
+    pass("Focus screen shows 9 category tiles", (await page.locator(".tile").count()) === 9);
     pass("Focus screen fits 380px (no horizontal scroll)", (await overflow(page)) <= 0);
     const vfit = await page.evaluate(() => {
       const foot = document.querySelector(".focus-footer").getBoundingClientRect();
       const last = Math.max(...[...document.querySelectorAll(".tile")].map((t) => t.getBoundingClientRect().bottom));
       return { last: Math.round(last), foot: Math.round(foot.top), scroll: document.documentElement.scrollHeight - innerHeight };
     });
-    pass("All 8 tiles visible above the action bar at 380×820", vfit.last <= vfit.foot && vfit.scroll <= 4, JSON.stringify(vfit));
+    pass("All 9 tiles visible above the action bar at 380×820", vfit.last <= vfit.foot && vfit.scroll <= 4, JSON.stringify(vfit));
 
     await page.getByRole("button", { name: "Continue" }).click();
     await wait(400);
@@ -396,7 +396,7 @@ try {
       const tiles = [...document.querySelectorAll(".tile")].map((t) => t.getBoundingClientRect());
       return { n: tiles.length, last: Math.round(Math.max(...tiles.map((r) => r.bottom))), foot: Math.round(foot?.top ?? 0), scroll: document.documentElement.scrollHeight - innerHeight, size: Math.round(tiles[0]?.width ?? 0) };
     });
-    pass(`Desktop ${w}×${h}: 8 tiles visible without scrolling`, fit.n === 8 && fit.last <= fit.foot && fit.scroll <= 4, JSON.stringify(fit));
+    pass(`Desktop ${w}×${h}: 9 tiles visible without scrolling`, fit.n === 9 && fit.last <= fit.foot && fit.scroll <= 4, JSON.stringify(fit));
     await ctx.close();
   }
 
@@ -634,6 +634,37 @@ try {
     pass("Swap options rank BP-friendly dishes first", /BP/.test(firstFits), firstFits.split("\n")[0]);
     await page.keyboard.press("Escape");
     pass("BP screens fit 380px", (await overflow(page)) <= 0);
+    await ctx.close();
+  }
+
+  // ── N · Thyroid focus + "Your numbers" reference ranges by sex and age
+  {
+    const man = { ...PROFILE, categories: ["thyroid", "fertility"], prefs: { region: "telugu", diet: "vegetarian", approach: "both", audience: "men", age: "35-39" } };
+    const { ctx, page } = await newPage({}, { fn: (p) => localStorage.setItem("vidura.profile", JSON.stringify(p)), arg: man });
+    await page.goto(`${BASE}?at=10:30`);
+    await wait(4500);
+    await page.getByRole("button", { name: "Tips", exact: true }).click();
+    await wait(900);
+    await page.locator(".guide-link", { hasText: "Thyroid problems" }).first().click();
+    await wait(1200);
+    const nums = page.locator("#c-numbers");
+    pass("Thyroid guide opens with a Your numbers section", await nums.isVisible());
+    pass("Ranges are labelled for a man aged 35–39", (await nums.locator(".num-for").innerText()) === "For a man aged 35–39");
+    pass("TSH typical range 0.4–4.0 at 35–39", (await nums.innerText()).includes("0.4–4.0"));
+    pass("Lab-range disclaimer shown", (await nums.innerText()).includes("use the reference range printed on your own report"));
+    await shot(page, "N01-thyroid-numbers", true);
+    pass("Guide with ranges fits 380px", (await overflow(page)) <= 0);
+    await nums.locator("select").nth(1).selectOption("70+");
+    await wait(400);
+    pass("Age 70+: TSH typical range widens to 0.4–7.0", (await nums.innerText()).includes("0.4–7.0"));
+    const prefs = await page.evaluate(() => JSON.parse(localStorage.getItem("vidura.profile")).prefs);
+    pass("Age band saved with the Make it yours settings", prefs.age === "70+" && prefs.audience === "men", JSON.stringify(prefs));
+    await page.locator(".guide-back").first().click();
+    await wait(700);
+    await page.locator(".guide-link", { hasText: "Fertility and infertility" }).first().click();
+    await wait(1000);
+    const fert = await page.locator("#c-numbers").innerText();
+    pass("Fertility ranges for a man: WHO semen limits only", fert.includes("16 million") && !fert.includes("AMH"));
     await ctx.close();
   }
 

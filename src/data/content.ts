@@ -17,7 +17,7 @@
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 export type PhaseId = "dawn" | "morning" | "midday" | "afternoon" | "evening" | "night";
-export type CategoryId = "cholesterol" | "sugar" | "bp" | "fertility" | "hormonal" | "gut" | "inflammation" | "hair";
+export type CategoryId = "cholesterol" | "sugar" | "bp" | "fertility" | "hormonal" | "gut" | "inflammation" | "hair" | "thyroid";
 export type RegionId = "pan-indian" | "north-indian" | "telugu" | "tamil" | "kerala" | "bangalore";
 export type DietId = "vegetarian" | "non-vegetarian" | "vegan";
 export type ApproachId = "both" | "modern" | "ayurvedic";
@@ -366,6 +366,21 @@ export const CATEGORIES: readonly Category[] = [
     ),
   },
   {
+    id: "thyroid",
+    artifactId: "Thyroid (added)",
+    label: "Thyroid",
+    short: "Thyroid",
+    emoji: "🦋",
+    blurb: "Know your TSH, take your tablet right, and skip the 'thyroid support' pills.",
+    image: img(
+      "assets/focus/thyroid.webp",
+      "1:1",
+      "morning",
+      "A woman taking a small tablet with a glass of water at a sunny window",
+      "A South Asian woman in her thirties standing at a sunny kitchen window taking a small white tablet with a glass of water before breakfast, a bowl of curd, a boiled egg and a few nuts on the counter behind her, calm expression",
+    ),
+  },
+  {
     id: "gut",
     artifactId: "Gut Health",
     label: "Gut Health",
@@ -673,7 +688,7 @@ export const ACTIVITIES: readonly Activity[] = [
     summary: "Five slow sun salutations to wake up the whole body.",
     minutes: 10,
     window: [MIN(7), MIN(8, 30)],
-    categories: ["sugar", "hormonal", "inflammation"],
+    categories: ["sugar", "hormonal", "inflammation", "thyroid"],
     steps: [
       "Stand tall, palms together at your chest.",
       "Move with your breath: inhale to lengthen, exhale to fold.",
@@ -780,7 +795,7 @@ export const ACTIVITIES: readonly Activity[] = [
     summary: "A short, easy walk once you've eaten. Stairs count too.",
     minutes: 10,
     window: [MIN(13), MIN(14)],
-    categories: ["sugar", "cholesterol", "gut", "bp"],
+    categories: ["sugar", "cholesterol", "gut", "bp", "thyroid"],
     steps: [
       "Head out within 15 minutes of finishing your meal.",
       "Keep it easy. This isn't a workout.",
@@ -1240,6 +1255,19 @@ export const TIPS: readonly Tip[] = [
   { id: "horm-light", category: "hormonal", kind: "habit", icon: "☀️", title: "Morning light", body: "Twenty minutes outdoors in the morning is a gentle way to set the day's rhythm." },
   { id: "horm-doctor", category: "hormonal", kind: "care", icon: "🩺", title: "Get it checked", body: "Irregular cycles, thyroid symptoms or PCOS worries deserve a proper conversation with your doctor." },
 
+  // Thyroid
+  { id: "thy-tablet", category: "thyroid", kind: "care", icon: "💊", title: "Thyroid tablet, the same way every day", body: "Take levothyroxine with plain water on waking, 30 to 60 minutes before breakfast or tea. Same time, same brand where you can." },
+  { id: "thy-gap", category: "thyroid", kind: "care", icon: "⏳", title: "Keep a four-hour gap", body: "Calcium, iron, antacids and multivitamins block the tablet's absorption. Take them at least four hours apart from it." },
+  { id: "thy-test", category: "thyroid", kind: "care", icon: "🧪", title: "Retest 6 to 8 weeks after a change", body: "TSH takes about six weeks to settle after any dose change. Once you're stable, a yearly check is usually enough." },
+  { id: "thy-biotin", category: "thyroid", kind: "care", icon: "🚫", title: "Pause biotin before blood tests", body: "Biotin in hair and skin supplements can make thyroid results look wrong. Stop it two to three days before the test." },
+  { id: "thy-iodised", category: "thyroid", kind: "food", icon: "🧂", title: "Iodised salt is enough", body: "Ordinary iodised salt covers your iodine needs. Kelp and 'thyroid support' iodine pills can make thyroid problems worse." },
+  { id: "thy-cabbage", category: "thyroid", kind: "food", icon: "🥦", title: "Cabbage and soy are fine", body: "Cooked cabbage, cauliflower, broccoli and normal amounts of soy don't harm your thyroid when you get enough iodine. Keep soy a few hours from your tablet." },
+  { id: "thy-move", category: "thyroid", kind: "move", icon: "🚶", title: "Move to beat the slump", body: "Tiredness can linger even with normal results. A daily walk and some strength work help energy and weight more than any supplement." },
+  { id: "thy-symptoms", category: "thyroid", kind: "care", icon: "🦋", title: "Know both sets of signs", body: "Underactive: tiredness, feeling cold, weight gain, constipation, dry skin. Overactive: racing heart, weight loss, feeling hot, shaky hands. Either is worth a TSH test." },
+  { id: "thy-pregnancy", category: "thyroid", audience: "women", kind: "care", icon: "🤰", title: "Planning a pregnancy", body: "Get TSH checked before trying. If you take levothyroxine, tell your doctor as soon as you're pregnant, since the dose usually needs to go up early." },
+  { id: "thy-postpartum", category: "thyroid", audience: "women", kind: "care", icon: "🍼", title: "After the baby", body: "Thyroid swings in the first year after birth are common and easy to mistake for new-baby tiredness. Ask for a TSH test if you feel off." },
+  { id: "thy-men", category: "thyroid", audience: "men", kind: "care", icon: "🩺", title: "Men get it too", body: "Thyroid problems are less common in men, so they're often missed. Low energy, low libido or weight change are reasons to ask for a TSH test." },
+
   // Gut health
   { id: "gut-chew", category: "gut", kind: "habit", icon: "🍽️", title: "Chew slowly", body: "Aim for 20–30 chews a bite. Slower meals are calmer meals." },
   { id: "gut-ferment", category: "gut", kind: "food", icon: "🥛", title: "Fermented favourites", body: "Idli, dosa, dhokla, homemade curd and kanji are easy ways to enjoy fermented foods." },
@@ -1461,6 +1489,21 @@ export const TRICKS: readonly Trick[] = [
     { id: "horm-a-ashwagandha", audience: "men", icon: "🌿", title: "Ashwagandha", body: "A traditional Ayurvedic herb for men, taken in warm milk at night.", herb: true, dietNote: VEGAN_MILK },
   ]),
 
+  // Thyroid
+  ...tricks("thyroid", "both", [
+    { id: "thy-b-bedside", icon: "⏰", title: "Tablet by the bedside", body: "Keep the strip and a glass of water by your bed, so you take it before tea without thinking." },
+    { id: "thy-b-selenium", icon: "🌰", title: "Selenium from food", body: "Eggs, fish, sunflower seeds and dal provide selenium. One or two Brazil nuts is plenty, if you have them.", caution: "Don't take selenium tablets unless your doctor suggests them; too much causes hair and nail loss." },
+    { id: "thy-b-cooked", icon: "🥬", title: "Cook your greens", body: "Cooked cabbage, cauliflower and greens are the traditional way to enjoy them, and easy on the stomach." },
+  ]),
+  ...tricks("thyroid", "modern", [
+    { id: "thy-m-tracker", icon: "📈", title: "Keep a results note", body: "Write each TSH, free T4 and dose in your phone. Trends tell your doctor more than one result." },
+    { id: "thy-m-coffee", icon: "☕", title: "Coffee after, not with", body: "Coffee taken with the tablet cuts its absorption. Wait at least 30 minutes." },
+  ]),
+  ...tricks("thyroid", "ayurvedic", [
+    { id: "thy-a-routine", icon: "🌅", title: "A steady dinacharya", body: "Regular waking, meals and sleep make the daily tablet routine easy to keep." },
+    { id: "thy-a-ashwagandha", icon: "🌿", title: "Careful with ashwagandha", body: "Ashwagandha and 'thyroid herbs' can raise thyroid hormone levels. Talk to your doctor first, especially with an overactive thyroid or on levothyroxine.", herb: true },
+  ]),
+
   // Gut health
   ...tricks("gut", "both", [
     { id: "gut-b-curd", icon: "🥛", title: "A bowl of homemade curd", body: "With lunch, most days.", dietNote: VEGAN_CURD },
@@ -1586,6 +1629,12 @@ export const MORNING_ADDS: Record<CategoryId, readonly RoutineStep[]> = {
     { icon: "🎃", text: "A tablespoon of pumpkin seeds." },
     { icon: "☀️", text: "Twenty minutes of morning daylight for vitamin D." },
     { icon: "💧", text: "Your scalp treatment, if your doctor prescribed one, at the same time each day." },
+  ],
+  thyroid: [
+    { icon: "💊", text: "Thyroid tablet with plain water on waking, 30 to 60 minutes before tea or breakfast." },
+    { icon: "🥚", text: "Protein at breakfast: eggs, curd, paneer or besan chilla." },
+    { icon: "🌻", text: "A few sunflower or pumpkin seeds for selenium and zinc." },
+    { icon: "🤰", text: "Planning a pregnancy? Folic acid, and a TSH check first.", audience: "women" },
   ],
   inflammation: [
     { icon: "🟡", text: "Turmeric and a pinch of black pepper in warm water." },

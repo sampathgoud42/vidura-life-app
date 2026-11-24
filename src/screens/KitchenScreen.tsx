@@ -5,11 +5,14 @@ import { ChoiceGroup, GlassCard, MagneticButton } from "../components/Controls";
 import { ArrowRight } from "../components/Icons";
 import { Display } from "../components/Typography";
 import { APPROACHES, AUDIENCES, DEFAULT_PREFS, DIETS, MEAL_SLOTS, REGIONS, WEEKDAYS } from "../data/content";
+import { AGE_BANDS, type AgeBandId } from "../data/labRanges";
 import { PROTEIN_TARGET } from "../lib/balance";
 import { dayPlan } from "../lib/plan";
 import type { Prefs } from "../lib/storage";
 import { weekdayIndex } from "../lib/time";
 import { useApp } from "../state/AppState";
+
+const AGE_OPTIONS: readonly { id: AgeBandId | "unset"; label: string }[] = [{ id: "unset", label: "Skip" }, ...AGE_BANDS.map((b) => ({ id: b.id, label: b.label }))];
 
 export function PrefsFields({ prefs, onChange, compact = false }: { prefs: Prefs; onChange: (p: Prefs) => void; compact?: boolean }) {
   return (
@@ -37,6 +40,22 @@ export function PrefsFields({ prefs, onChange, compact = false }: { prefs: Prefs
           Health notes
         </p>
         <ChoiceGroup label="Health notes" options={AUDIENCES} value={prefs.audience} onChange={(audience) => onChange({ ...prefs, audience })} compact={compact} />
+      </div>
+      <div className="field">
+        <p className="field-label" aria-hidden="true">
+          Your age <span className="field-optional">(optional, for lab ranges in the guides)</span>
+        </p>
+        <ChoiceGroup
+          label="Your age, optional"
+          options={AGE_OPTIONS}
+          value={prefs.age ?? "unset"}
+          onChange={(v) => {
+            const { age: _drop, ...rest } = prefs;
+            onChange(v === "unset" ? rest : { ...rest, age: v });
+          }}
+          compact
+          className="cols-age"
+        />
       </div>
     </div>
   );

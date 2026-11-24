@@ -615,6 +615,7 @@ export const CONDITION_GUIDES: readonly ConditionGuide[] = [
         "Targeted tests through your doctor, not a large wellness panel.",
         "Treat what's found with generics: levothyroxine, the pill, metformin.",
         "Lifestyle first for PCOS and borderline testosterone.",
+        "Thyroid results off? The Thyroid guide covers TSH, levothyroxine and overactive thyroid in full.",
       ],
       convenient: [
         "One daily tablet at a fixed time (levothyroxine first thing in the morning).",
@@ -632,6 +633,114 @@ export const CONDITION_GUIDES: readonly ConditionGuide[] = [
       { label: "Teede et al., 2023 International Evidence-based Guideline for PCOS", url: "https://pubmed.ncbi.nlm.nih.gov/37580861/" },
       { label: "Bhasin et al., Testosterone Therapy in Men With Hypogonadism: Endocrine Society Guideline (2018)", url: "https://pubmed.ncbi.nlm.nih.gov/29562364/" },
       { label: "Endocrine Society: Testosterone therapy guideline, full text", url: "https://www.endocrine.org/clinical-practice-guidelines/testosterone-therapy" },
+    ],
+  },
+
+  // ── Thyroid ────────────────────────────────────────────────────────────────
+  {
+    id: "thyroid",
+    category: "thyroid",
+    title: "Thyroid problems",
+    emoji: "🦋",
+    bottomLine:
+      "One cheap blood test, TSH, finds almost every thyroid problem, and the main treatment for an underactive thyroid is a tablet that costs a dollar or two a month. Iodine, kelp and 'thyroid support' supplements don't fix it and can make it worse. The real work is taking the tablet the right way and rechecking TSH.",
+    image: {
+      src: "assets/guides/thyroid.webp",
+      ratio: "16:9",
+      tone: "morning",
+      alt: "A butterfly-shaped thyroid gland at the base of the neck, linked by a soft arc to the brain's control centre",
+      subject: "A softly glowing butterfly-shaped thyroid gland at the base of a stylised neck, linked by a gentle curved arrow up to a small glowing control centre at the base of the brain and a second arrow back down, small droplets of hormone flowing outward to the body, simple educational scene with no text, labels or letters",
+    },
+    rootCause: {
+      summary:
+        "The brain's pituitary gland sends TSH to tell the thyroid how much hormone (T4, then T3) to make. In most people with thyroid disease, the immune system is the cause: Hashimoto's slowly destroys the gland (underactive), and Graves' over-stimulates it (overactive). Iodine status, pregnancy and some medicines tip the balance too. About one in ten Indian adults has an underactive thyroid, often undiagnosed.",
+      drivers: ["Autoimmunity (Hashimoto's, Graves')", "Too little or too much iodine", "Pregnancy and the year after birth", "Medicines: lithium, amiodarone", "Being a woman, age, family history"],
+      chain: [
+        { label: "Immune system targets the thyroid", detail: "Anti-TPO antibodies (Hashimoto's) or TSH-receptor antibodies (Graves')", actsHere: ["Monitoring TSH"] },
+        { label: "Gland makes too little or too much", detail: "T4 and T3 fall, or rise", actsHere: ["Levothyroxine", "Carbimazole / methimazole"] },
+        { label: "Pituitary pushes back", detail: "TSH rises when hormone is low, falls when it's high" },
+        { label: "Whole-body metabolism shifts", detail: "Energy, weight, heart rate, mood, cycles, cholesterol", actsHere: ["Beta-blockers (symptoms)"] },
+        { label: "Long-term harm if untreated", detail: "High cholesterol and heart strain, bone loss, fertility and pregnancy problems", actsHere: ["Radioiodine", "Surgery"] },
+      ],
+    },
+    gimmicks: [
+      { name: "'Thyroid support' pills with iodine, kelp or bladderwrack", why: "Iodised salt already covers iodine for most people. Extra iodine can trigger or worsen both underactive and overactive thyroid, especially with Hashimoto's." },
+      { name: "Thyroid and adrenal 'glandulars'", why: "Dried animal gland with unpredictable amounts of real thyroid hormone. They can cause an overdose and hide your true results." },
+      { name: "Reverse-T3 panels and 'treat the symptoms, not the TSH' clinics", why: "Reverse T3 doesn't guide treatment in guidelines, and dosing to feel 'optimal' rather than to TSH risks heart rhythm problems and bone loss." },
+    ],
+    protocol: [
+      { name: "Levothyroxine (underactive thyroid)", evidence: "proven", what: "A daily synthetic T4 tablet, usually started at about 1.6 mcg per kg (lower if older or with heart disease), adjusted to bring TSH into range. Usually lifelong.", timeline: "Energy improves over 2 to 6 weeks; TSH is rechecked 6 to 8 weeks after each change.", sideEffects: "None at the right dose. Too much causes palpitations, anxiety, poor sleep and, over years, bone loss." },
+      { name: "Watchful waiting for mild (subclinical) cases", evidence: "proven", what: "TSH between about 4 and 10 with normal free T4 often settles by itself. Recheck in 6 to 12 weeks, then every 6 to 12 months. Treatment is considered if TSH keeps rising, with symptoms, antibodies, or pregnancy plans.", timeline: "Decided over 3 to 12 months.", sideEffects: "None; avoids lifelong tablets that trials show don't help most older adults with mild cases." },
+      { name: "Antithyroid tablets (overactive thyroid)", evidence: "proven", what: "Carbimazole or methimazole for 12 to 18 months for Graves'; propylthiouracil in early pregnancy. About half stay in remission afterwards.", timeline: "Symptoms ease in 3 to 8 weeks.", sideEffects: "Rash, itch; rarely a sudden drop in white cells (agranulocytosis): sore throat with fever needs an urgent blood count. Rare liver injury." },
+      { name: "Beta-blockers (overactive thyroid)", evidence: "proven", what: "Propranolol or atenolol calm a racing heart and tremor while other treatment takes effect.", timeline: "Hours to days.", sideEffects: "Tiredness; not for some people with asthma." },
+      { name: "Radioactive iodine", evidence: "proven", what: "One drink or capsule that shrinks an overactive gland or nodule. Most people then need levothyroxine for life.", timeline: "Works over 2 to 6 months.", sideEffects: "Not in pregnancy or breastfeeding; can worsen Graves' eye disease, especially in smokers." },
+      { name: "Thyroid surgery", evidence: "proven", what: "For large goitres, suspicious nodules, severe Graves' eye disease or when other options fail.", timeline: "One-time; levothyroxine afterwards.", sideEffects: "Voice change or low calcium in a small share of cases; lowest with a high-volume surgeon." },
+    ],
+    experimental:
+      "Selenium may lower anti-TPO antibodies, but trials show no clear benefit for symptoms or thyroid function (it does help mild Graves' eye disease). Adding T3 (liothyronine) helps a minority who still feel unwell on levothyroxine, in trials with mixed results. Gluten-free diets help only if you also have coeliac disease. Ashwagandha and other herbs are untested and can shift thyroid levels.",
+    costs: [
+      { item: "TSH blood test", usa: "$25–100", india: "$2–6", thailand: "$8–20", indonesia: "$7–18", sriLanka: "$3–8" },
+      { item: "Full panel (TSH, free T4, anti-TPO)", usa: "$60–200", india: "$8–20", thailand: "$30–70", indonesia: "$25–60", sriLanka: "$10–25" },
+      { item: "Levothyroxine, per month", usa: "$4–15", india: "$1–2", thailand: "$2–6", indonesia: "$2–5", sriLanka: "$1–3" },
+      { item: "Carbimazole or methimazole, per month", usa: "$10–30", india: "$1–3", thailand: "$2–6", indonesia: "$2–6", sriLanka: "$1–3" },
+      { item: "Endocrinologist visit", usa: "$150–350", india: "$6–20", thailand: "$30–80", indonesia: "$15–40", sriLanka: "$10–30" },
+      { item: "Radioactive iodine, one-time", usa: "$1,500–5,000", india: "$100–400", thailand: "$500–1,500", indonesia: "$300–1,000", sriLanka: "$100–400" },
+      { item: "Thyroidectomy", usa: "$10,000–25,000", india: "$1,000–3,000", thailand: "$4,000–8,000", indonesia: "$2,500–6,000", sriLanka: "$1,500–4,000" },
+    ],
+    costNote: "Ongoing care is cheap everywhere: generic tablets plus one or two TSH tests a year. Travelling only makes sense for surgery or radioiodine, and follow-up TSH checks can be done at any local lab.",
+    plan: {
+      budget: [
+        "Start with TSH alone, plus free T4 only if TSH is outside the range. Add anti-TPO once if TSH is mildly high.",
+        "Generic levothyroxine from a reliable maker. Stay on the same brand where you can, and retest TSH if it changes.",
+        "Retest 6 to 8 weeks after each dose change, then once a year when stable, at a low-cost lab.",
+        "Use iodised salt; skip kelp, iodine drops, glandulars and 'thyroid support' blends.",
+        "Overactive: generic carbimazole or methimazole with a beta-blocker; radioiodine in India or Sri Lanka costs a fraction of US prices if you need a definitive fix.",
+      ],
+      convenient: [
+        "One tablet on waking with water, then a 30 to 60-minute gap before tea or breakfast. A bedtime dose (3 or more hours after dinner) works too if mornings are hard.",
+        "A 90-day supply and a yearly TSH test booked on the same date every year.",
+        "Pregnancy plans: a TSH test before trying, and a pre-agreed dose increase as soon as the test is positive.",
+      ],
+    },
+    food: {
+      eat: [
+        "Iodised salt, in normal amounts",
+        "Protein foods with selenium and zinc: eggs, fish, dal, curd, sunflower and pumpkin seeds",
+        "Plenty of fibre and vegetables, including cooked cabbage, cauliflower and broccoli",
+        "Calcium and iron foods, eaten at least 4 hours apart from the tablet",
+      ],
+      avoid: [
+        "Kelp, seaweed tablets and iodine drops",
+        "Calcium, iron, antacids or coffee within 30 minutes to 4 hours of levothyroxine",
+        "Biotin supplements in the days before a blood test",
+        "Large amounts of raw cruciferous juice or soy supplements, if iodine intake is low",
+      ],
+      note: "No diet cures autoimmune thyroid disease. Food matters mainly for timing around the tablet and for avoiding iodine excess.",
+    },
+    safety: [
+      "Confirm with a repeat test: one abnormal TSH is rechecked with free T4 before starting lifelong treatment, unless very abnormal.",
+      "Tell your doctor about biotin, recent iodine contrast scans, amiodarone, lithium, steroids or the pill, which change results.",
+      "Pregnant or planning: TSH before conception, and an early dose increase on levothyroxine (often about 25 to 30%).",
+      "On antithyroid tablets: know the warning sign, sore throat or fever, and get a blood count the same day.",
+      "Older adults or heart disease: start low and increase slowly.",
+      "Any lump in the neck: ultrasound first; a fine-needle biopsy only if the scan suggests it.",
+    ],
+    redFlags: [
+      "Racing or irregular heartbeat, chest pain or breathlessness",
+      "Sore throat with fever while on carbimazole or methimazole",
+      "A new neck lump, hoarse voice or trouble swallowing",
+      "Bulging, red or painful eyes, or double vision",
+      "Extreme drowsiness, confusion or feeling very cold (severe underactive thyroid)",
+    ],
+    sources: [
+      { label: "Jonklaas et al., ATA Guidelines for the Treatment of Hypothyroidism (Thyroid, 2014)", url: "https://pubmed.ncbi.nlm.nih.gov/25266247/" },
+      { label: "Ross et al., ATA Guidelines for Diagnosis and Management of Hyperthyroidism (Thyroid, 2016)", url: "https://pubmed.ncbi.nlm.nih.gov/27521067/" },
+      { label: "Alexander et al., ATA Guidelines for Thyroid Disease During Pregnancy and Postpartum (Thyroid, 2017)", url: "https://pubmed.ncbi.nlm.nih.gov/28056690/" },
+      { label: "Garber et al., AACE/ATA Clinical Practice Guidelines for Hypothyroidism in Adults (2012)", url: "https://pubmed.ncbi.nlm.nih.gov/23246686/" },
+      { label: "Unnikrishnan et al., Prevalence of hypothyroidism in adults: eight cities of India (2013)", url: "https://pubmed.ncbi.nlm.nih.gov/23961480/" },
+      { label: "Surks & Hollowell, Age-specific distribution of TSH in the US population (JCEM, 2007)", url: "https://pubmed.ncbi.nlm.nih.gov/17911171/" },
+      { label: "Biondi & Cooper, Subclinical thyroid disease (Lancet, 2012)", url: "https://pubmed.ncbi.nlm.nih.gov/22273398/" },
+      { label: "van Zuuren et al., Selenium supplementation for Hashimoto's thyroiditis (Cochrane, 2013)", url: "https://pubmed.ncbi.nlm.nih.gov/23744563/" },
     ],
   },
 
