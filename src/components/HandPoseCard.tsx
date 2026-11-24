@@ -1,42 +1,35 @@
-import { useReducedMotion } from "framer-motion";
 import { HAND_POSE, type TechniqueId } from "../data/breathwork";
 import { assetUrl } from "../lib/assets";
 import { MudraArt } from "./MudraArt";
 
 /**
- * Mudra and posture for a breathing technique. A short muted loop where we have one
- * (a still image when the user prefers reduced motion), then the how-to lines.
+ * Mudra and posture for a breathing technique: a calm full-body pose image, softly
+ * blended into the card, then the how-to lines. Where the image can't show the hand
+ * clearly, a small accurate hand drawing sits in the corner.
  */
 export function HandPoseCard({ id, light = false }: { id: TechniqueId; light?: boolean }) {
   const pose = HAND_POSE[id];
-  const reduced = useReducedMotion();
-  const m = pose.media;
-  const art = !m;
+  const img = pose.image;
   return (
-    <section className={`hand-pose ${light ? "hand-pose-light" : ""} ${m || art ? "has-media" : ""}`} aria-label="Hands and posture">
-      {m && (
-        <div className="hand-pose-media">
-          {reduced ? (
-            <img src={assetUrl(m.still)} alt={m.alt} loading="lazy" decoding="async" />
-          ) : (
-            <video
-              src={assetUrl(m.video)}
-              poster={assetUrl(m.still)}
-              aria-label={m.alt}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              disablePictureInPicture
-            />
+    <section className={`hand-pose ${light ? "hand-pose-light" : ""} ${img ? "has-media" : ""}`} aria-label="Hands and posture">
+      {img && (
+        <figure className="hand-pose-media">
+          <img
+            src={assetUrl(img.src)}
+            srcSet={`${assetUrl(img.src.replace(".webp", "-sm.webp"))} 480w, ${assetUrl(img.src)} 900w`}
+            sizes="(min-width: 768px) 260px, 70vw"
+            width={900}
+            height={1125}
+            alt={img.alt}
+            loading="lazy"
+            decoding="async"
+          />
+          {pose.inset && (
+            <span className="hand-pose-inset" aria-hidden="true">
+              <MudraArt id={id} />
+            </span>
           )}
-        </div>
-      )}
-      {art && (
-        <div className="hand-pose-media">
-          <MudraArt id={id} />
-        </div>
+        </figure>
       )}
       <div className="hand-pose-text">
         <p className="hand-pose-h">
